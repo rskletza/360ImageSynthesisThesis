@@ -1,0 +1,24 @@
+\chapter{Background and Related Work}
+
+\section{Terminology}
+
+\paragraph{Planar image}
+\paragraph{360\degree image}
+\paragraph{Interpolation vs Synthesis}
+\paragraph{Viewpoint, capture, camera} input viewpoint, output viewpoint
+Capture/Viewpoint is the term used here to signify the location and image data of a 360\degree photograph taken at a certain position in the scene
+capture is more for when the images are actually recorded
+viewpoint is more for during processing
+
+\section{Fundamentals of 360\degree Images}
+
+\subsection{Projections for Planar Viewing \label{projections}}
+\begin{itemize}
+    \item sphere, latlong/equirectangular, cube
+    \item interpolation \ar working with pixels \ar want minimal distortion
+    \item sphere \& latlong have extreme distortion around edges/poles
+    \item cube has some distortion in corners/edges, but a lot less than the other projections
+    \item introduce world coordinates vs image coordinates
+\end{itemize}
+
+\section{Related Work}

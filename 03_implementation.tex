@@ -1,0 +1,71 @@
+\chapter{Proof of Concept Design and Implementation}
+\begin{itemize}
+\item two distinct approaches: for 1D interpolation and for 2D/3D interpolation
+\item 1D interpolation: interpolate along a line between two viewpoints
+\item 2D interpolation: viewpoints are all taken on a plane \ar synthesize a new viewpoint anywhere on the plane
+\item 3D interpolation: viewpoints are in 3D space \ar a new viewpoint can be synthesized anywhere within this space
+\missingfigure{representation of 1D, 2D and 3D interpolation}
+\end{itemize}
+
+
+\section{1D Interpolation}
+\begin{itemize}
+\item no information on position needed, images should be rotated to face the same direction for best results, otherwise the rotation from A to B will also be interpolated
+\item viewpoint "selection" is trivial, as there are only two
+\item there already is a solution to this problem by Richardt et al. \cite{megastereo} for planar images
+\item using projection (see Section \ref{projections}) can transform the 360\degree image to a planar image and use flow-based blending for interpolation from \cite{megastereo}
+\end{itemize}
+
+\subsection{Adapting the 360\degree Image for Optical Flow Algorithms}
+Optical Flow algorithms exist aplenty, however they are devised for 2D, planar images. In order to use already existing algorithms, the panoramic image must be represented asa 2D plane, which is achieved by projection.
+
+There are two key problems in adapting the optical flow calculation for panoramic input images:
+\begin{enumerate}
+\item What kind of effect does distortion in the projection have on the accuracy of the calculation (goal: what kind of projection to use in what way)
+\item What to do at the edges of the projection: what to do if the camera moves in a way that a point moves across the projection boundary (from the left edge to the right edge in a latlong projection or from one face to the next in a cube projection) (goal: find a method that mitigates this problem)
+\end{enumerate}
+
+1. I presume that areas where there is an extreme distortion (poles in latlong and edges in sphere) are not useful for flow calculation. I can imagine that the cube representation is the most useful, as there is no area where the distortion is particularly high. \ar need to test this (wireframe cube/s in blender, move camera by a small amount, calculate optical flow, display ~1/4 of the vectors like for sparse optical flow) \todo{actually check this}
+
+In order to solve the problem of points moving across projection boundaries, the cube faces are extended by a certain amount by using a field of view larger than 45\degree for each face. This results in the area around the boundaries of each face to be doubled. If a point then moves across the ``original'' border, it can still be tracked to a certain degree. Of course this only works as long as the point stays within the new projection boundaries.
+
+After calculating the optical flow on the extended cube, the flow vectors within the original face boundaries can be used in order to apply flow-based blending.
+
+\ldots
+
+\section{2D/3D Interpolation}
+
+\begin{itemize}
+    \item note: algorithm designed for 3D, which can be reduced to 2D, so from now on use of 3D unless otherwise specified
+    \item every viewpoint theoretically has information about every point in the scene (because the captures are 360\degree images)
+    \item synthesized viewpoint can be anywhere in 3D space \ar no longer an interpolation between two viewpoints
+    \item reduction to planar images no longer possible, since the viewpoint selection is no longer trivial \ar use different image for different parts of the image?
+    \item which viewpoints to use for which areas of the synthesized image?
+\end{itemize}
+
+\subsection{Basic Idea}
+\begin{itemize}
+    \item all viewpoints more or less capture complete surroundings from different perspectives \ar each point from an input viewoint will be somewhere on the synthesized viewpoint
+    \item find corresponding points with the output viewpoint for each input viewpoint (\emph{``where would point P (seen in viewpoint A) be in the synthesized viewpoint S''})
+    \item to determine which viewpoints to use for which output image areas, use weighting function $W(viewpoint)$ that is dependent on specific properties of the input viewpoint (e.g. euclidean distance of locations)
+    \item in order to do all this, need scene model which is a sphere since we have no geometry information
+\end{itemize}
+
+\subsection{Implementation}
+
+\subsubsection{Preprocessing and CaptureSet}
+\begin{itemize}
+  \item rotate all images so that they all have the same orientation
+  \item center point cloud
+  \item find appropriate sphere radius
+  \item make access to location and image data of a viewpoint contained in a set easy and intuitive
+\end{itemize}
+
+\subsubsection{Interpolation}
+\begin{itemize}
+  \item ray and scene intersection
+  \item viewpoint reprojection
+  \item deviation angle calculation
+  \item weighting function
+\end{itemize}
+
