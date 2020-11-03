@@ -7,31 +7,41 @@
 \missingfigure{representation of 1D, 2D and 3D interpolation}
 \end{itemize}
 
-
 \section{1D Interpolation}
+The simplest type of synthesis in the scope of this thesis is the creation of a new viewpoint that lies exactly on a line between two existing viewpoints. Assuming that the existing viewpoints are facing the same direction, the line describes a transformation with one degree of freedom, i.e. movement along the line. A solution to a similar problem has already been published by Richardt et al. in ``Megastereo'' \cite{megastereo} which introduces an approach using optical flow in order to reduce ghosting artefacts in planar images. The following section shows how the problem of 1D interpolation for 360\degree images can be reduced to the problem solved in Megastereo.
+
+\subsection{Flow-based Blending in Megastereo}
+Megastereo aims to generate high-resolution stereo panoramas by combining images captured on a circle. Their approach is to interpolate between two adjacent images in order to synthesize any image on the line between the two images. In order to \ldots
+
+\subsection{Reducing 360\degree Image Synthesis to Planar Image Synthesis}
+
+A 360\degree image can be projected in several ways, as described in Section \ref{projections}. The output of these projections is a planar image, meaning that flow-based blending could be applied directly. However, this would not lead to optimal results for several reasons: Most projections distort the image in some areas, which would result in distorted optical flow values. Furthermore, in order to make planar viewing possible, the 360\degree image must be ``unfolded'' along some seam. When calculating optical flow, points that move across the seam will not be tracked, even though they do not move out of the image space, as would happen in a regular image.
+\missingfigure{points moving across edge in regular vs 360\degree image}
+
+Of the existing projections, only two really come into consideration for this problem: the equirectangular representation and the cubemap representation. Spherical representations are impractical, as aligning seams is not feasible. The equirectangular representation has fewer seams to handle, but also distorts the image greatly around the poles. The cubemap representation hardly distorts the image at all, but contains a number of seams. In this case, the distortion is more difficult to deal with, since the effects on the optical flow algorithm are unclear. Handling seams is more straightforward, which is why the cubemap representation was chosen for 1D interpolation.
+
+In order to handle points moving across seams, the optical flow algorithm must be able to read data \emph{across the seams}. For example, when calculating optical flow on the ``front'' face, data from the ``top'', ``left'', ``right'' and ``bottom'' faces is required. Intuitively, one might just assemble these faces in a plus shape, with the ``front'' face at the center. However, this is a fallacy, since the cubemap projection uses a different virtual camera for each face, which means that linearity is not preserved for points moving across seams.
+
+\missingfigure{plus shape with point moving across seam}
+
+To solve this problem, the ``extended cube map'' is introduced, which was also used by Huang et. al. \cite{6dof}. Instead of projecting a field of view of 90\degree for each camera, which covers 360\degree of the image, the extended cube map uses a larger field of view for each camera. As a result, the areas of the image that are split by a seam are represented twice: Once on each face that is adjacent to the seam. This way, when calculating optical flow on each face separately, points that move across where the seam would be in a regular cube map remain on the face with the corresponding projection. 
+
+Naturally, this method is limited by the field of view used by the virtual cameras. If the maximum displacement is larger than the face extension, the extended cube map will fail. Also, the larger the field of view, the more the image will be distorted towards the edges of a face, which may lead to distorted optical flow results. This means that displacement between two images is limited. However, the displacement that is trackable by optical flow algorithms is also limited. The effect of these limitations will be explored in section \ref{evaluation1D}.
+
+The optical flow calculation on the extended cube map yields flow vectors describing how each pixel of each face moves from the first to the second image. This information can then be used to interpolate between the two images using flow-based blending.
+
+
+further points to include
 \begin{itemize}
 \item no information on position needed, images should be rotated to face the same direction for best results, otherwise the rotation from A to B will also be interpolated
 \item viewpoint "selection" is trivial, as there are only two
-\item there already is a solution to this problem by Richardt et al. \cite{megastereo} for planar images
-\item using projection (see Section \ref{projections}) can transform the 360\degree image to a planar image and use flow-based blending for interpolation from \cite{megastereo}
+\item inverting flow is non-trivial
 \end{itemize}
 
-\subsection{Adapting the 360\degree Image for Optical Flow Algorithms}
-Optical Flow algorithms exist aplenty, however they are devised for 2D, planar images. In order to use already existing algorithms, the panoramic image must be represented asa 2D plane, which is achieved by projection.
 
-There are two key problems in adapting the optical flow calculation for panoramic input images:
-\begin{enumerate}
-\item What kind of effect does distortion in the projection have on the accuracy of the calculation (goal: what kind of projection to use in what way)
-\item What to do at the edges of the projection: what to do if the camera moves in a way that a point moves across the projection boundary (from the left edge to the right edge in a latlong projection or from one face to the next in a cube projection) (goal: find a method that mitigates this problem)
-\end{enumerate}
+\subsection{Optical Flow Parameter Choice}
+Parameters need to be chosen based on the size of the images (?)
 
-1. I presume that areas where there is an extreme distortion (poles in latlong and edges in sphere) are not useful for flow calculation. I can imagine that the cube representation is the most useful, as there is no area where the distortion is particularly high. \ar need to test this (wireframe cube/s in blender, move camera by a small amount, calculate optical flow, display ~1/4 of the vectors like for sparse optical flow) \todo{actually check this}
-
-In order to solve the problem of points moving across projection boundaries, the cube faces are extended by a certain amount by using a field of view larger than 45\degree for each face. This results in the area around the boundaries of each face to be doubled. If a point then moves across the ``original'' border, it can still be tracked to a certain degree. Of course this only works as long as the point stays within the new projection boundaries.
-
-After calculating the optical flow on the extended cube, the flow vectors within the original face boundaries can be used in order to apply flow-based blending.
-
-\ldots
 
 \section{2D/3D Interpolation}
 
@@ -69,3 +79,30 @@ After calculating the optical flow on the extended cube, the flow vectors within
   \item weighting function
 \end{itemize}
 
+\subsection{Debugging and Verification}
+\begin{itemize}
+  \item in order to verify correct results and check for bugs, use of the ``checkersphere'' in which the scene model exactly matches the scene \ar reprojection will yield exact results (excluding resolution)
+  \item explain why it will yield correct results and why the resolution is not perfect
+\end{itemize}
+
+\section{Combining 1D and 2D/3D}
+\subsection{Implementation challenges}
+``one on each side''
+\begin{itemize}
+  \item define ``on either side'' for angles: split the circle in two 180\degree halves; one is positive, the other is negative
+  \item selection of a viewpoint ``on either side'' \ar what if the viewpoint on one side has a very large deviation angle or does not exist?
+  \item can it not exist if we are looking at the convex hull? Yes, if the point is exctly on the border
+  \item possible solution: if none is found, use only one side
+  \item what to do with zero degree difference? \ar only use zero, not the other (should be solved by the function that defines the 1D interpolation position)
+\end{itemize}
+using only 2D data
+\begin{itemize}
+  \item ``left and right'' only possible in 2D (can use signed angles)
+  \item in 3D, finding viewpoint on ``either side'' becomes a lot more complex
+  \item reducing viewpoints to 2D is simple, but scene model is still in 3D. simplifying scene model to 2D as well
+\end{itemize}<++>
+``ground truth optical flow by blender''
+\begin{itemize}
+  \item ``misuse'' of vector render layer
+  \item problem: in order to get the correct optical flow, the scene needs to move, not the camera \ldots ugh
+\end{itemize}<++>
