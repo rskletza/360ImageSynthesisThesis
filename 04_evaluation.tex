@@ -1,22 +1,39 @@
 \chapter{Results and Evaluation}
 
+\subsection{1D Evaluation \label{evaluation1D}}
+
+Parameters used in evaluation
 \begin{itemize}
-  \item different datasets: checkersphere, virtual room, real data
-  \item use evaluation in order to determine the effect of the different parameters on quality? \ar relative quality
-  \item compare flow-based and regular 2D interpolation
-  \item can only compare if flow algorithm works more or less correctly \ar narrows the parameter space for comparison
+  \item viewpoint density / ``resolution'' of captures
+  \item distance of scene from model (checkersphere, square room, arbitrary room)
+  \item number of samples/viewpoints used for interpolation \ar two vs all within semi-large radius (all would be very computation intensive)
+  \item flow-based blending vs deviation-angle-based blending
+  \item only makes sense to compare if flow algorithm works more or less correctly \ar narrows the parameter space for comparison
 \end{itemize}
 
-Parameters that (may) have an effect on quality
+Fixed params:
 \begin{itemize}
-  \item distance between captures / ``resolution'' of captures
-  \item distance of scene from model (checkersphere, square room, arbitrary room) and accuracy of closest radius (were captures actually taken near edges of the scene?)
-  \item weight function
-  \item accuracy of capture locations
-  \item actual distance from scene to viewpoint (are there objects close to the camera)
-  \item accuracy of optical flow algorithm
-  \item number of samples/viewpoints used for interpolation (closest, within radius, etc)
+  \item radius accuracy?
+  \item weight metric only deviation angle, not distance
+  \item only 2D
+  \item metadata is present and correct
 \end{itemize}
+
+weak points:
+\begin{itemize}
+  \item objects are not clearly classified/measured, so no quantifiable evaluation possible
+\end{itemize}
+
+Assuming radius accuracy does in fact make a slight assumption about the scene geometry. Using only the deviation angle will lead to ``spots'' where the distance is fairly large but the angle is zero. 
+
+Future work based on fixed params:
+\begin{itemize}
+  \item ``guess'' an optimal radius without using viewpoint locations e.g. outside
+  \item find a good weight function that balances deviation angle and distance appropriately
+  \item figure out a good way to find a ``left and right'' for 3D, also make it more stable for 2D (so that viewpoints are chosen that are relatively close to one another so that the optical flow algorithm works better)
+  \item use methods like SLAM in order to be independent of actually recording metadata by hand
+\end{itemize}
+
 
 Process:
 \begin{itemize}
@@ -24,7 +41,7 @@ Process:
   \item diagonal movement, left to right, front to back for each resolution setting
   \item interpolation in 0.1 steps \ar render out (or record) correct values
   \item where in the scene? close to the walls? in the middle?
-\end{itemize}<++>
+\end{itemize}
 
 \section{Optical Flow}
 \begin{itemize}

@@ -11,9 +11,13 @@
 The simplest type of synthesis in the scope of this thesis is the creation of a new viewpoint that lies exactly on a line between two existing viewpoints. Assuming that the existing viewpoints are facing the same direction, the line describes a transformation with one degree of freedom, i.e. movement along the line. A solution to a similar problem has already been published by Richardt et al. in ``Megastereo'' \cite{megastereo} which introduces an approach using optical flow in order to reduce ghosting artefacts in planar images. The following section shows how the problem of 1D interpolation for 360\degree images can be reduced to the problem solved in Megastereo.
 
 \subsection{Flow-based Blending in Megastereo}
-Megastereo aims to generate high-resolution stereo panoramas by combining images captured on a circle. Their approach is to interpolate between two adjacent images in order to synthesize any image on the line between the two images. In order to \ldots
+Megastereo aims to generate high-resolution stereo panoramas by combining images captured on a circle. Their approach is to combine corresponding strips of the captured images and to create a view for each eye (see section \ref{megastereo}). In order to mitigate artefacts such as ghosting, they use ``flow-based blending'' to combine two images A and B. This consists of using the optical flow vectors $F_{A\rightarrow B}$ and their inverse $F_{B\rightarrow A}$. To get the interpolated image at position $\alpha$ between image A and B, first, image A is shifted by $\alpha \cdot F_{A\to B}$ and image B is shifted by $(1 - \alpha) \cdot F_{A\to B}$, yielding $I_A$ and $I_B$, respectively. Then, $I_A$ is multiplied by $(1-\alpha)$ and $I_B$ by $\alpha$ and these pixel values are added together to give the resulting interpolation. This is described by the following function, in which each pixel at position x is defined by: 
+\begin{align}
+S(x) = (1-\alpha ) \cdot I_A( x + \alpha \cdot F_{A\to B}(x) \\
+     + \alpha \cdot I_B( x + (1-\alpha) \cdot F_{B\to A}(x))
+\end{align}
 
-\subsection{Reducing 360\degree Image Synthesis to Planar Image Synthesis}
+\subsection{Reducing 360\degree Interpolation to Planar Interpolation}
 
 A 360\degree image can be projected in several ways, as described in Section \ref{projections}. The output of these projections is a planar image, meaning that flow-based blending could be applied directly. However, this would not lead to optimal results for several reasons: Most projections distort the image in some areas, which would result in distorted optical flow values. Furthermore, in order to make planar viewing possible, the 360\degree image must be ``unfolded'' along some seam. When calculating optical flow, points that move across the seam will not be tracked, even though they do not move out of the image space, as would happen in a regular image.
 \missingfigure{points moving across edge in regular vs 360\degree image}
@@ -26,34 +30,40 @@ In order to handle points moving across seams, the optical flow algorithm must b
 
 To solve this problem, the ``extended cube map'' is introduced, which was also used by Huang et. al. \cite{6dof}. Instead of projecting a field of view of 90\degree for each camera, which covers 360\degree of the image, the extended cube map uses a larger field of view for each camera. As a result, the areas of the image that are split by a seam are represented twice: Once on each face that is adjacent to the seam. This way, when calculating optical flow on each face separately, points that move across where the seam would be in a regular cube map remain on the face with the corresponding projection. 
 
-Naturally, this method is limited by the field of view used by the virtual cameras. If the maximum displacement is larger than the face extension, the extended cube map will fail. Also, the larger the field of view, the more the image will be distorted towards the edges of a face, which may lead to distorted optical flow results. This means that displacement between two images is limited. However, the displacement that is trackable by optical flow algorithms is also limited. The effect of these limitations will be explored in section \ref{evaluation1D}.
+Naturally, this method is limited by the field of view used by the virtual cameras. If the maximum displacement is larger than the face extension, the extended cube map will not be sufficient, which will result in black edges on the faces. Also, the larger the field of view, the more the image will be distorted towards the edges of a face, which may lead to distorted optical flow results. This means that displacement between two images is limited. However, the displacement that is trackable by optical flow algorithms is also limited. The effect of these limitations will be explored in section \ref{evaluation1D}.
 
-The optical flow calculation on the extended cube map yields flow vectors describing how each pixel of each face moves from the first to the second image. This information can then be used to interpolate between the two images using flow-based blending.
-
+Using the extended cube map, it is now possible to process each face separately, meaning that the 360\degree 1D interpolation has been reduced to planar images. At the end of the interpolation step, the extended cube map must be clipped back to the original cube map size.
+\missingfigure{1D interpolation process diagram}
 
 further points to include
 \begin{itemize}
 \item no information on position needed, images should be rotated to face the same direction for best results, otherwise the rotation from A to B will also be interpolated
-\item viewpoint "selection" is trivial, as there are only two
 \item inverting flow is non-trivial
+\item optical flow parameter choice (maybe in background chapter)
 \end{itemize}
 
 
-\subsection{Optical Flow Parameter Choice}
-Parameters need to be chosen based on the size of the images (?)
-
-
 \section{2D/3D Interpolation}
+The main difference between 1DoF and 2/3DoF synthesis is that in 1DoF interpolation, the choice of viewpoints is trivial, as there are only two by definition. In 2/3DoF synthesis, the idea is to have an unlimited number of viewpoints as input (for 2DoF synthesis, these viewpoints must all be on a plane). Since all the images are 360\degree images, each one theoretically captures the complete surroundings. This means that every existing point should be present somewhere in each image (ignoring occlusions at the moment).
+%The challenge in 2DoF synthesis is to find the ``most fitting'' capture for each point of the synthesized image and then rearrange these found points so that they are as close as possible to the image captured at our desired viewpoint. 
+The basic idea of the 2/3DoF algorithm is to find the image areas from the set of existing viewpoints that are the ``most fitting'' for the synthesized viewpoint and transform these areas to approximate where they would be in the synthesized image. This means that a metric is necessary that measures how ``fitting'' a specific pixel of a viewpoint image is. Also, a reprojection needs to be found that transforms the ``fitting'' image areas to the appropriate image coordinates for the synthesized viewpoint.
+\missingfigure{point correspondences and reprojection intro}
+
+\subsection{Distance metric}
+In order to find the ``most fitting'' image area from all of the viewpoint images, there first needs to be a metric that measures how ``fitting'' an image area is. 
+
+One example is the euclidean distance of the viewpoint locations in space. This would mean that for each pixel, the corresponding pixel of the \emph{nearest viewpoint} would be used. This is the simplest approach, and would simply return the nearest neighbor. 
 
 \begin{itemize}
     \item note: algorithm designed for 3D, which can be reduced to 2D, so from now on use of 3D unless otherwise specified
-    \item every viewpoint theoretically has information about every point in the scene (because the captures are 360\degree images)
-    \item synthesized viewpoint can be anywhere in 3D space \ar no longer an interpolation between two viewpoints
     \item reduction to planar images no longer possible, since the viewpoint selection is no longer trivial \ar use different image for different parts of the image?
     \item which viewpoints to use for which areas of the synthesized image?
 \end{itemize}
 
 \subsection{Basic Idea}
+
+
+
 \begin{itemize}
     \item all viewpoints more or less capture complete surroundings from different perspectives \ar each point from an input viewoint will be somewhere on the synthesized viewpoint
     \item find corresponding points with the output viewpoint for each input viewpoint (\emph{``where would point P (seen in viewpoint A) be in the synthesized viewpoint S''})
@@ -100,9 +110,8 @@ using only 2D data
   \item ``left and right'' only possible in 2D (can use signed angles)
   \item in 3D, finding viewpoint on ``either side'' becomes a lot more complex
   \item reducing viewpoints to 2D is simple, but scene model is still in 3D. simplifying scene model to 2D as well
-\end{itemize}<++>
+\end{itemize}
 ``ground truth optical flow by blender''
 \begin{itemize}
   \item ``misuse'' of vector render layer
-  \item problem: in order to get the correct optical flow, the scene needs to move, not the camera \ldots ugh
-\end{itemize}<++>
+\end{itemize}
