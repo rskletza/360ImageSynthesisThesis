@@ -1,4 +1,15 @@
-\chapter{Proof of Concept Design and Implementation}
+%\chapter{Proof of Concept Design and Implementation}
+\chapter{Pixel-based Synthesis of 360\degree Viewpoints}
+\begin{itemize}
+  \item most other approaches rely on either geometry or correspondences
+  \item usually some form of triangulation
+  \item use of sphere for ray tracing, then use texture lookup to find the pixel values
+  \item combination of reprojection ie warping with angle constraint and flow-based blending
+  \item first part relies on radius, but no other geometry, second part relies on image correspondences
+  \item pixel-based, in that each pixel is calculated separately, there are not image-area based constraints
+\end{itemize}
+
+methodology
 \begin{itemize}
 \item two distinct approaches: for 1D interpolation and for 2D/3D interpolation
 \item 1D interpolation: interpolate along a line between two viewpoints
@@ -7,7 +18,7 @@
 \missingfigure{representation of 1D, 2D and 3D interpolation}
 \end{itemize}
 
-\section{1D Interpolation}
+\section{Flow-based Interpolation for 1DoF}
 The simplest type of synthesis in the scope of this thesis is the creation of a new viewpoint that lies exactly on a line between two existing viewpoints. Assuming that the existing viewpoints are facing the same direction, the line describes a transformation with one degree of freedom, i.e. movement along the line. A solution to a similar problem has already been published by Richardt et al. in ``Megastereo'' \cite{megastereo} which introduces an approach using optical flow in order to reduce ghosting artefacts in planar images. The following section shows how the problem of 1D interpolation for 360\degree images can be reduced to the problem solved in Megastereo.
 
 \subsection{Flow-based Blending in Megastereo}

@@ -1,6 +1,6 @@
 \chapter{Results and Evaluation}
 
-\subsection{1D Evaluation \label{evaluation1D}}
+%\subsection{1D Evaluation \label{evaluation1D}}
 
 Parameters used in evaluation
 \begin{itemize}
@@ -13,15 +13,17 @@ Parameters used in evaluation
 
 Fixed params:
 \begin{itemize}
-  \item radius accuracy?
-  \item weight metric only deviation angle, not distance
+  \item radius accuracy
+  \item weight metric only deviation angle, not distance (although distance is limited by viewpoint choice)
   \item only 2D
   \item metadata is present and correct
 \end{itemize}
 
-weak points:
+limits of the evaluation:
 \begin{itemize}
   \item objects are not clearly classified/measured, so no quantifiable evaluation possible
+  \item positional and rotational knowledge may be calculable by sfm algos, but we don't know what kind of impact accuracy of the metadata will have, since we are hand-recording metadata meticulously
+  \item only measuring at center and corners, which should be the extreme cases. no data on intermediate cases
 \end{itemize}
 
 Assuming radius accuracy does in fact make a slight assumption about the scene geometry. Using only the deviation angle will lead to ``spots'' where the distance is fairly large but the angle is zero. 
@@ -53,7 +55,6 @@ Process:
 "correctness" of optical flow interpolation is limited even with perfect optical flow:
 \begin{itemize}
    \item points that are not visible because of perspective shift will not have a correspondence
-   \item the actual trajectory of a specific point is not necessarily linear, but due to the nature of the algorithm, the movement will always be linear
 \end{itemize}
 errors that are unrelated to the algorithm:
 \begin{itemize}
