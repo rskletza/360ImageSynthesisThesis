@@ -126,9 +126,10 @@ In the first experimentation step, view interpolation is implemented in 1D space
 
 The results of this work are:
 \begin{itemize}
-\item an implementation of 360$^{\circ}$ panoramic view interpolation within the convex hull
+\item an implementation of 360\degree view interpolation with 3DOF for scenes with no geometry
+\item an implementation of 360\degree view interpolation with 2DOF using flow-based blending to alleviate artefacts caused by not using 3D geometry
 \item an extensive evaluation that describes the quality of 360$^{\circ}$ panoramic view interpolation using image-based rendering without any supplemental geometric information
-\item $[$ other findings / insights $]$
+\item evaluation methodology for 360\degree images, including models and samples that can be used for benchmarking other methods
 \end{itemize}
 
 The results of this thesis can be the basis of various future work. For example, the range of application can be extended to outdoor scenes, or to scenes with higher variation in distances to the camera. In these cases, the result implementation can be used as a base and the the problems and limitations found in the evaluation can be utilized as guidelines. Furthermore, it could be valuable to explore the possibility of combining this image-based rendering approach with approaches that use 3D geometry.

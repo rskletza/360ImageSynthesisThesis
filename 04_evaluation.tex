@@ -1,7 +1,7 @@
-\chapter{Results and Evaluation}
+\chapter{Evaluation and Discussion}
 
-%\subsection{1D Evaluation \label{evaluation1D}}
-
+\section{Evaluation}
+\subsection{Parameters}
 Parameters used in evaluation
 \begin{itemize}
   \item viewpoint density / ``resolution'' of captures
@@ -19,16 +19,80 @@ Fixed params:
   \item metadata is present and correct
 \end{itemize}
 
+\subsection{Error Calculation}
+
+\begin{verbatim}
+- no publicly available benchmarks for image-based rendering for 360\degree images
+- create metrics to measure quality
+- create datasets to test algorithm with different parameters
+- these datasets could be used in the future to compare different algorithms
+\end{verbatim}
+
+\subsection{Synthesizing Optical Flow}
+\begin{itemize}
+  \item optical flow ground truth is impossible to get from real scenes
+  \item however, virtual scenes contain all necessary information for retrieving ground truth for optical flow
+  \item virtual camera rig that captures one image per ``side'' with a fov that corresponds to that used in the ExtendedCubeMap \ar extended flow cube
+\end{itemize}
+
+``correctness'' of optical flow interpolation is limited even with ``perfect'' optical flow:
+\begin{itemize}
+   \item points that are not visible because of perspective shift will not have a correspondence
+   \item distortion due to wide fov may have an effect on the results
+   \item even blender motion vectors are for frame to frame use, so it is possible, that large jumps do not work well because the blender algo can't handle it
+\end{itemize}
+
+\subsection{Scenarios}
+\subsubsection{Minimum vs Maximum Number of Input Viewpoints}
+\begin{verbatim}
+Hypothesis: 2vps is better for flow-based, radius is better for regular. flow based does not do well with image patches with different viewpoint indices (extreme discontinuities)
+
+Test: 
+  -use the two simplest scenes with a medium number of viewpoints and synthesize using only two vs all within the radius of 1/2*scene radius
+
+Show: 
+  - compare flow to flow and regular to regular --> we only want to know which is better for each blending method, not in comparison
+  - y axis: box plot for error
+  - x axis: checkersphereRviewpoints, checkersphere2viewpoints, squareroomRviewoints, squareroom2viewpoints, maybe more
+
+Even if the hypothesis is not proven, or is not very distinct, we can still argue that >2 or >4 is computationally too costly for consideration
+
+\end{verbatim}
+
+\subsubsection{Viewpoint density effect on flow-based blending and regular blending}
+\begin{verbatim}
+Hypothesis: higher density --> better results, but difference is larger for flow-based. (optional: High density and 2vps may be better than 4)
+Hypothesis II: the effect of higher density is more marked near walls and corners
+
+Test:
+  - use square room and test 2x2, 6x6, 10x10
+  - compare flow with flow, reg with flow, and reg with reg -> 3 graphs
+
+\end{verbatim}<++>
+
+\subsubsection{Flow-based blending vs regular depending on model-scene difference}
+\begin{verbatim}
+Hypothesis: the closer the scene is to the model, the better regular blending is. the farther away, the worse it is and the better flow-based blending is
+
+Test: compare the two with their respective better vp selection in the different scenes
+
+\end{verbatim}
+
+
+\section{Discussion}
+
+\subsection{Limits}
+
 limits of the evaluation:
 \begin{itemize}
   \item objects are not clearly classified/measured, so no quantifiable evaluation possible
   \item positional and rotational knowledge may be calculable by sfm algos, but we don't know what kind of impact accuracy of the metadata will have, since we are hand-recording metadata meticulously
-  \item only measuring at center and corners, which should be the extreme cases. no data on intermediate cases
+  \item pixel differences and ssim give no indication on human perception, so it is not possible to judge believability
 \end{itemize}
 
 Assuming radius accuracy does in fact make a slight assumption about the scene geometry. Using only the deviation angle will lead to ``spots'' where the distance is fairly large but the angle is zero. 
 
-Future work based on fixed params:
+\subsection{Future Work}
 \begin{itemize}
   \item ``guess'' an optimal radius without using viewpoint locations e.g. outside
   \item find a good weight function that balances deviation angle and distance appropriately
@@ -36,29 +100,3 @@ Future work based on fixed params:
   \item use methods like SLAM in order to be independent of actually recording metadata by hand
 \end{itemize}
 
-
-Process:
-\begin{itemize}
-  \item first, for each scene, determine resolution for which optical flow still works by using 1D interpolation 
-  \item diagonal movement, left to right, front to back for each resolution setting
-  \item interpolation in 0.1 steps \ar render out (or record) correct values
-  \item where in the scene? close to the walls? in the middle?
-\end{itemize}
-
-\section{Optical Flow}
-\begin{itemize}
-  \item optical flow ground truth is impossible to get from real scenes
-  \item however, virtual scenes contain all necessary information for retrieving ground truth for optical flow
-  \item virtual camera rig that captures one image per ``side'' with a fov that corresponds to that used in the ExtendedCubeMap \ar extended flow cube
-\end{itemize}
-
-"correctness" of optical flow interpolation is limited even with perfect optical flow:
-\begin{itemize}
-   \item points that are not visible because of perspective shift will not have a correspondence
-\end{itemize}
-errors that are unrelated to the algorithm:
-\begin{itemize}
-  \item slight displacement due to ExtendedCubeMap
-  \item black edges due to latlong-cube conversion
-  \item these need to be taken into account (normalized out)
-\end{itemize}

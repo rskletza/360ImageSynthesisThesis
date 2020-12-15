@@ -15,19 +15,19 @@ image-based rendering vs pixel-based rendering
 %\section{Fundamentals of 360\degree Images}
 \section{Fundamentals}
 
-\subsection{360\degree Images}
+\subsection{360\degree Images}\label{fundamentals_360}
 Capturing an image with a 360\degree camera can be regarded mathematically as a series of projections. The sensors of a 360\degree camera can be simplified as a unit sphere covered in light receptors, where the number of light receptors corresponds to the resolution of the camera. This means that the complete surroundings are projected onto this sphere by way of incoming light rays (see Figure~\ref{lightrays}). The limited number of sensors acts as a discretizer and captures a specific color value for each resolution point (pixel). At this point, the data is in \emph{world coordinates}, meaning that each pixel value corresponds to a point on the surface of the unit sphere. 
 \missingfigure{incoming light rays on unit sphere, maybe with uv indices \label{lightrays}}
 
-As the majority of viewing devices is planar (e.g. computer or smartphone screens), the image data needs to be projected to a flat surface in order to be viewed on a flat screen. This problem is well-known in cartography, and several different types of projections exist, which transform the data from world coordinates to \emph{image coordinates}.
+As the majority of viewing devices is planar (e.g. computer or smartphone screens), the image data needs to be projected to a flat surface in order to be viewed on a flat screen. This problem is well-known in cartography, and several different types of projections exist, which transform the data from world coordinates to \emph{image coordinates}. No data loss \ar conversions between projections possible.
 
 \subsubsection{Projections for Planar Viewing \label{projections} \cite{hdrbook}}
 The most common projections for 360\degree images are the \emph{ideal mirrored sphere}, the \emph{angular map},  \emph{equirectangular}, also known as \emph{latitude-longitude} (\emph{latlong}) and the \emph{cube map} \cite{hdrbook}.
 
 \paragraph{Cube Map}
-The cube map is a mapping that splits the data into six separate square views, one in each direction (top, front, left, right, back, bottom). This is the equivalent of capturing the surroundings with six different cameras with a field of view of 90\degree each and stitching the resulting images together in a shape that can be ``folded'' into a cube (see Figure~\ref{fig:cubemap-intro}), which also gives this mapping its name.
+The cube map is a mapping that splits the data into six separate square views, one in each direction (top, front, left, right, back, bottom). This is the equivalent of capturing the surroundings with six different cameras with a field of view of 90\degree each, and then stitching the resulting images into a shape that can be ``folded'' into a cube (see Figure~\ref{fig:cubemap-intro}), which also gives this mapping its name.
 
-Due to the projection of each side to a plane, there is some distortion towards the edges of each face, though this distortion is limited, which is a significant advantage compared to other mappings. The disadvantage is that there are many seams and there tend to be directional discontinuities at these seams. This type of mapping is often used to simulate complex environments in 3D scenes (e.g. for game or animation graphics), as it is easy to use and reduces render time significantly compared to a 3D model of the same environment.
+Due to the projection of a spherical surface to a plane, there is some distortion towards the edges of each face. However, this distortion is comparable to the distortion at the edges of a regular, planar image, which is a significant advantage compared to other mappings. The disadvantage is that each face is projected separately, which leads to directional discontinuities at the seams, which are numerous. This type of mapping is often used to simulate complex environments in 3D scenes (e.g. for game or animation graphics), as it is easy to use and reduces render time significantly compared to a 3D model of the same environment.
 \cite{hdrbook}
 
 \paragraph{Ideal Mirrored Sphere}
@@ -38,7 +38,10 @@ The ideal mirrored sphere is a mapping to a circle within a square. It represent
 At first sight, the angular map seems very similar to the ideal mirrored sphere. It also maps to a circle within a square, however it samples the input in such a way that the back of the image is allotted more space and is less distorted than the mirrored sphere (see Figure~\ref{fig:angular-intro}). This mapping is also used for high dynamic range calculations.
 
 \paragraph{Equirectangular}
-The equirectangular, or latitude-longitude mapping is a common type of mapping in cartography. The data is mapped to a rectangular image space, in which the width is twice the height. The azimuth (around the circumference) of the world coordinates is mapped to the map's horizontal coordinate and the elevation to the vertical coordinate. This representation suffers from the same problem as is known from cartography: The distortion increases significantly towards the poles, as can be seen in Figure~\ref{fig:latlong-intro}. Otherwise, this mapping is convenient as it has very few seams. It is used as a storage format for 360\degree images.
+The equirectangular, or latitude-longitude mapping is a common type of mapping in cartography. The data is mapped to a rectangular image space, in which the width is twice the height. The azimuth (around the circumference) of the world coordinates is mapped to the map's horizontal coordinate and the elevation to the vertical coordinate. The main problem of this representation is well known in cartography: The distortion increases significantly towards the poles, as can be seen in Figure~\ref{fig:latlong-intro}. Otherwise, this mapping is convenient as it has very few seams. It is used as a storage format for 360\degree images.
+
+\paragraph*{}
+All of these projections are static, showing the entirety of the 360\degree image at once. It is also possible to view 360\degree images interactively. In this case the field of view tends to be limited, so only a certain part of the image needs to be projected: the part of the image the viewer is ``facing'' virtually. Once the viewing direction has been determined, the projection can be calculated such that the center of the image has minimal distortion. Theoretically, any of the above projections could be used for this. 
 
 \begin{figure}
 \centering
@@ -114,14 +117,14 @@ The equirectangular, or latitude-longitude mapping is a common type of mapping i
 
 \subsection{Optical Flow}
 
-Optical flow describes the displacement of specific points between two images. It is generally used on consecutive frames of video sequences, for semantic segmentation, structure-from-motion, data compression or other applications where information about movement between images is required. For example, Figure~\ref{fig:of_example_bike} shows two consecutive frames of a video sequence. On a high level, an optical flow algorithm should recognize that the pixels representing the bicyclist are moving towards the bottom left of the image, and the pixels representing the background are moving to the right (because the camera is panning slightly to the left).
+Optical flow describes the displacement of specific points between two images. It is generally used on consecutive frames of video sequences, for example for semantic segmentation, structure-from-motion, data compression or other applications where information about movement between images is required. To illustrate, Figure~\ref{fig:of_example_bike} shows two consecutive frames of a video sequence. On a high level, an optical flow algorithm should recognize that the pixels representing the bicyclist are moving towards the bottom left of the image, and the pixels representing the background are moving to the right (because the camera is panning slightly to the left).
 
-There are two types of optical flow: Sparse optical flow and dense optical flow. Sparse optical flow algorithms calculate the motion of several select points that can be either chosen manually, or by some kind of automatic selection (e.g. based on features). This type of optical flow can be used for example to track only specific objects in a scene (e.g. the direction and relative velocity of a certain car in traffic).
+There are two types of optical flow: Sparse optical flow and dense optical flow. Sparse optical flow algorithms calculate the motion of several select points that can be either chosen manually, or by some kind of automatic selection (e.g. based on features). This type of optical flow can be used to track only specific objects in a scene (e.g. the direction and relative velocity of a certain car in traffic).
 Dense optical flow algorithms compute the motion of \emph{each pixel} between two images, which yields a more exact result than sparse optical flow. This can be used for more general object tracking (e.g. direction and relative velocity of complete surroundings in traffic), to estimate 3D geometry (in structure-from-motion algorithms), or to identify parts of the image that are not changing for video compression. Dense optical flow can also be used for image synthesis, as will be shown in the proof of concept of this thesis, which builds on work by Richardt et. al \cite{megastereo} described in section~\ref{megastereo}.
 
 There are a number of optical flow algorithms, ranging from methods using parametrization, or regularization \cite{of-survey}, to methods relying on Deep Learning \cite{of-deep}. Although these algorithms differ greatly in approach, they have in common the type of result, which is a vector field. For dense optical flow, this vector field contains a vector for each pixel, describing the displacement of this pixel between the input images. Sparse optical flow only contains a vector for each pre-chosen point, not for every pixel.
 
-Figure~\ref{fig:of_vis} shows two different visualizations of the vector field calculated by the dense optical flow algorithm by Farneb\"ack \cite{farneback} between the frames in Figure~\ref{fig:of_example_bike}. Visualization (a) is a color-based visualization: the hue encodes the vector direction, the saturation encodes the vector length for each pixel. Using this visualization, it is possible to roughly distinguish two separately moving areas of the image, which could be used for semantic segmentation. Visualization (b) shows the pixel displacements with vectors: the origin of the vector is shown by a small point and the direction and length of the vector are represented by a line.
+Figure~\ref{fig:of_vis} shows two different visualizations of the vector field calculated by the dense optical flow algorithm by Farneb\"ack \cite{farneback} between the frames in Figure~\ref{fig:of_example_bike}. Visualization (a) is a color-based visualization: the hue encodes the vector direction, the saturation encodes the vector length for each pixel. Using this visualization, it is possible to roughly distinguish two separately moving areas of the image, which could be used for semantic segmentation. Visualization (b) shows the pixel displacements with vectors: the origin of the vector is shown by a point and the direction and length of the vector are represented by a line.
 
 These visualizations can help in understanding if and how well an optical flow algorithm is working. Although there are a large number of different algorithms, most of them still struggle with common issues such as occlusions, too-large displacements and intensity changes \cite{of-survey}. Occlusions are problematic, since the displacements between two images may reveal or cover image areas that have no correspondence in the previous image. This problem is exacerbated when displacements are very large (e.g. due to fast-moving objects). Large displacements are also problematic in themselves, as most algorithms are not designed to handle them. How these challenges affect the use of optical flow for image synthesis will be explored in section \ref{evaluation-1D}.
 
@@ -165,9 +168,26 @@ These visualizations can help in understanding if and how well an optical flow a
 \subsection{UV coordinates}
 
 \section{Related Work}
-Many approaches to image-based rendering go the path of using the 3D geometry of the scene in order to recalculate image points. The scene geometry is hereby either meticulously recorded at the time of the image capture, as with Kanade et. al's 3D Dome \cite{geometry97}, or inferred from the image data alone, such as 
+Image-based Rendering (IBR) and viewpoint interpolation started gaining interest with the advent of virtual walkthroughs, for example for Apple's QuickTime\textsuperscript{\textregistered} VR, in order to save render time by generating views from images instead of using complex 3D scenes including textures, lights and complex geometric models \cite{quicktime}.
 
-Since the approach presented in this thesis is \emph{pixel-based}, i.e. using no geometry information, the following section will first outline research aiming to synthesize viewpoints with the use of little to no geometry. Then, research on image-based synthesis of 360\degree images is also examined. As the amount of research on 360\degree image synthesis is limited, approaches using geometry are also included.
+Chen et. al., in their survey on image-based rendering \cite{survey2004} use the terms \emph{source description} and \emph{appearance description} to compare these basic rendering techniques: ``Traditional'' rendering techniques use \emph{source description}, i.e. the scene is described by the objects within it, their positions and properties. On the other hand, IBR techniques try to achieve the same goal through \emph{appearance description}. Vision itself has little to do with 3D geometries, it is the processing of a dense set of light rays by the brain which are captured through the eye. This process can also be synthesized by a capture device like a camera. So, instead of trying to describe the scene through the objects it contains, IBR rendering techniques try to model the \emph{light rays} that reach the viewer. 
+
+A theoretical model for \emph{appearance description} was developed by Adelson et. al. \cite{Adelson91}: the \emph{plenoptic function} (Equation~\ref{eq:plenoptic}). The plenoptic function is a 7D function that describes the observable light at every point in space $V_x$, $V_y$, $V_z$, from every direction $\theta$, $\varphi$, at every wavelength $\lambda$, at every possible point in time $t$.
+
+\begin{equation}
+  \label{eq:plenoptic}
+  P = P(\theta, \varphi, \lambda, t, V_x, V_y, V_z)
+\end{equation}
+
+In practice, it is unfeasible, if not impossible, to cover all dimensions of this function, as this would require a capture device at every location, at every point in time, capturing light rays coming from every direction. However, by making assumptions, IBR techniques try to reconstruct simplified versions of the plenoptic function. Depending on which assumptions are made and how the surroundings are sampled, varying requirements are met and different results are achieved.
+
+Chen et. al. summarize these different types of assumptions in their survey \cite{survey2004} and categorize different techniques by their use of these assumptions. The first 
+
+Shum et. al. \cite{survey2000} break different image-based rendering approaches down by categorizing how much geometry is used.  
+
+Many of these approaches however, do use some geometry information in order to recalculate image points. The scene geometry is hereby either meticulously recorded at the time of the image capture, as with Kanade et. al's 3D Dome \cite{geometry97}, or inferred from the image data alone, 
+
+The approach presented in this thesis is \emph{pixel-based}, i.e. using no geometry information, so the following section will first outline research aiming to synthesize viewpoints with the use of little to no geometry. Since the majority of pixel-based rendering research uses planar images, the second part will focus on research using 360\degree images, including approaches using geometry.
 
 \begin{itemize}
   \item type of warping: uv mapping, warping based on triangulation and homography
@@ -175,6 +195,8 @@ Since the approach presented in this thesis is \emph{pixel-based}, i.e. using no
   \item constraints? color / angle / \ldots
   \item geometry? sparse, dense, none
   \item correspondences needed? sparse, dense, none
+  \item type of input: planar, 360, 180 pano
+  \item type of output: planar, 360, 180 pano
 \end{itemize}
 
 \subsection{Image Synthesis without 3D Geometry for Planar Images}
