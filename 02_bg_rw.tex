@@ -1,21 +1,21 @@
 \chapter{Background and Related Work}
 
-\section{Terminology \ar Glossary?}
-
-\paragraph{Planar image}
-\paragraph{360\degree image} vs panorama
-\paragraph{Interpolation vs Synthesis} In the context of this thesis, the two terms are very similar. Interpolation is used as a type of synthesis where two images are weighted by a certain amount and added together \ldots ?
-\paragraph{Viewpoint, capture, camera} input viewpoint, output viewpoint
-Capture/Viewpoint is the term used here to signify the location and image data of a 360\degree photograph taken at a certain position in the scene
-capture is more for when the images are actually recorded
-viewpoint is more for during processing
-\paragraph{UV coordinates}
-image-based rendering vs pixel-based rendering
+%\section{Terminology \ar Glossary?}
+%
+%\paragraph{Planar image}
+%\paragraph{360\degree image} vs panorama
+%\paragraph{Interpolation vs Synthesis} In the context of this thesis, the two terms are very similar. Interpolation is used as a type of synthesis where two images are weighted by a certain amount and added together \ldots ?
+%\paragraph{Viewpoint, capture, camera} input viewpoint, output viewpoint
+%Capture/Viewpoint is the term used here to signify the location and image data of a 360\degree photograph taken at a certain position in the scene
+%capture is more for when the images are actually recorded
+%viewpoint is more for during processing
+%\paragraph{UV coordinates}
+%image-based rendering vs pixel-based rendering
 
 %\section{Fundamentals of 360\degree Images}
 \section{Fundamentals}
 
-\subsection{360\degree Images}\label{fundamentals_360}
+\subsubsection{360\degree Images}\label{fundamentals_360}
 Capturing an image with a 360\degree camera can be regarded mathematically as a series of projections. The sensors of a 360\degree camera can be simplified as a unit sphere covered in light receptors, where the number of light receptors corresponds to the resolution of the camera. This means that the complete surroundings are projected onto this sphere by way of incoming light rays (see Figure~\ref{lightrays}). The limited number of sensors acts as a discretizer and captures a specific color value for each resolution point (pixel). At this point, the data is in \emph{world coordinates}, meaning that each pixel value corresponds to a point on the surface of the unit sphere. 
 \missingfigure{incoming light rays on unit sphere, maybe with uv indices \label{lightrays}}
 
@@ -27,7 +27,7 @@ The most common projections for 360\degree images are the \emph{ideal mirrored s
 \paragraph{Cube Map}
 The cube map is a mapping that splits the data into six separate square views, one in each direction (top, front, left, right, back, bottom). This is the equivalent of capturing the surroundings with six different cameras with a field of view of 90\degree each, and then stitching the resulting images into a shape that can be ``folded'' into a cube (see Figure~\ref{fig:cubemap-intro}), which also gives this mapping its name.
 
-Due to the projection of a spherical surface to a plane, there is some distortion towards the edges of each face. However, this distortion is comparable to the distortion at the edges of a regular, planar image, which is a significant advantage compared to other mappings. The disadvantage is that each face is projected separately, which leads to directional discontinuities at the seams, which are numerous. This type of mapping is often used to simulate complex environments in 3D scenes (e.g. for game or animation graphics), as it is easy to use and reduces render time significantly compared to a 3D model of the same environment.
+Due to the projection of a spherical surface to a plane, there is some distortion towards the edges of each face. However, this distortion is comparable to the distortion at the edges of a regular, planar image, which is a significant advantage compared to other mappings. The disadvantage is that each face is projected separately, which leads to directional discontinuities at the many seams. This type of mapping is often used to simulate complex environments in 3D scenes (e.g. for game or animation graphics), as it is easy to use and reduces render time significantly compared to a 3D model of the same environment.
 \cite{hdrbook}
 
 \paragraph{Ideal Mirrored Sphere}
@@ -115,7 +115,7 @@ All of these projections are static, showing the entirety of the 360\degree imag
   \footnotetext{Figure~\ref{fig:cubemap-intro}(b) does not correctly represent the distortion in cube maps. It was chosen as a baseline because cube maps have relatively small distortion compared to other mappings and it visualizes clearly which parts of the image are mapped where.}
 
 
-\subsection{Optical Flow}
+\subsubsection{Optical Flow}
 
 Optical flow describes the displacement of specific points between two images. It is generally used on consecutive frames of video sequences, for example for semantic segmentation, structure-from-motion, data compression or other applications where information about movement between images is required. To illustrate, Figure~\ref{fig:of_example_bike} shows two consecutive frames of a video sequence. On a high level, an optical flow algorithm should recognize that the pixels representing the bicyclist are moving towards the bottom left of the image, and the pixels representing the background are moving to the right (because the camera is panning slightly to the left).
 
@@ -164,8 +164,8 @@ These visualizations can help in understanding if and how well an optical flow a
     \caption[Optical flow visualizations]{(a) Visualization of optical flow with color: the hue encodes the vector direction, the saturation encodes the vector length for each pixel. (b) Visualization of optical flow with vectors: the origin of the vector is shown by a small point (only a limited number of vectors are shown)}\label{fig:of_vis}
 \end{figure}
 
-\subsection{Ray Tracing}
-\subsection{UV coordinates}
+\subsubsection{Ray Tracing}
+\subsubsection{UV coordinates}
 
 \section{Related Work}
 Image-based Rendering (IBR) and viewpoint interpolation started gaining interest with the advent of virtual walkthroughs, for example for Apple's QuickTime\textsuperscript{\textregistered} VR, in order to save render time by generating views from images instead of using complex 3D scenes including textures, lights and complex geometric models \cite{quicktime}.
