@@ -1,4 +1,4 @@
-\chapter{Evaluation and Discussion}
+\chapter{Evaluation and Discussion} \label{chap:evaluation}
 
 \section{Evaluation}
 \subsection{Parameters}
@@ -68,9 +68,13 @@ Test:
   - use square room and test 2x2, 6x6, 10x10
   - compare flow with flow, reg with flow, and reg with reg -> 3 graphs
 
-\end{verbatim}<++>
+\end{verbatim}
 
 \subsubsection{Flow-based blending vs regular depending on model-scene difference}
+\begin{itemize}
+  \item ``checkersphere'' in which the scene model exactly matches the scene \ar reprojection will yield exact results (excluding resolution)
+  \item explain why it will yield correct results and why the resolution is not perfect
+\end{itemize}
 \begin{verbatim}
 Hypothesis: the closer the scene is to the model, the better regular blending is. the farther away, the worse it is and the better flow-based blending is
 
@@ -88,6 +92,8 @@ limits of the evaluation:
   \item objects are not clearly classified/measured, so no quantifiable evaluation possible
   \item positional and rotational knowledge may be calculable by sfm algos, but we don't know what kind of impact accuracy of the metadata will have, since we are hand-recording metadata meticulously
   \item pixel differences and ssim give no indication on human perception, so it is not possible to judge believability
+  \item all gt points are exactly in the middle of input points (except 2x2) this has a definite effect on optical flow interpolation, especially between 2 viewpoints
+  \item interactions between different parameters are not examined exhaustively, so no conclusive information
 \end{itemize}
 
 Assuming radius accuracy does in fact make a slight assumption about the scene geometry. Using only the deviation angle will lead to ``spots'' where the distance is fairly large but the angle is zero. 
@@ -98,5 +104,9 @@ Assuming radius accuracy does in fact make a slight assumption about the scene g
   \item find a good weight function that balances deviation angle and distance appropriately
   \item figure out a good way to find a ``left and right'' for 3D, also make it more stable for 2D (so that viewpoints are chosen that are relatively close to one another so that the optical flow algorithm works better)
   \item use methods like SLAM in order to be independent of actually recording metadata by hand
+  \item undistort extended cubemap e.g. by using methods like \cite{fov} which can undistort images up to 120\degree
+  \item extend to 3D \ar input viewpoints could improve flow-based blending for areas towards the poles
+  \item parallelization and offloading to gpu
+  \item improve choice of $\delta$
 \end{itemize}
 
