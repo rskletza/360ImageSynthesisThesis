@@ -313,20 +313,15 @@ Using the chosen viewpoints A and B, and the calculated interpolation distance $
   \item make access to location and image data of a viewpoint contained in a set easy and intuitive (CaptureSet)
 \end{itemize}
 
-\subsection{Basic 2DoF synthesis}
-\begin{itemize}
-  \item ray and scene intersection
-  \item viewpoint reprojection
-  \item deviation angle calculation
-  \item weighting function + viewpoint selection
-\end{itemize}
-%further points to include
-%- inverting flow is non-trivial
+The input data consists of a set of captured viewpoint images, a text file containing the positions and orientations of these viewpoints, and the approximate scene radius. In order to better handle this data, a class is 
+
+\subsection{Basic 2DoF Synthesis}
+This section will present the technical and mathematical details on which the basic 2DoF synthesis is based. This includes the calculation of the ray-scene intersection, and the texture lookup introduced in Section~\ref{texture-lookup}, and the deviation angle calculation and blending function from Section~\ref{dev-metric}.
 
 \subsubsection{Calculating Ray-sphere Intersection}
-The vectors representing these rays can be easily derived from the \emph{world coordinates} of the image (see~Section~\ref{subsec:fundamentals_360}).
+The ray-sphere intersection is used in the raytracing-based texture lookup in order to find the scene points captured by the synthesized viewpoint. The vectors representing the rays of a viewpoint can be easily derived from the \emph{world coordinates} of the 360\degree image (see~Section~\ref{subsec:fundamentals_360}). Each point of the world coordinates is a vector on the unit sphere, representing the location of an image value (pixel). These coordinates are in \emph{model space}, meaning that they are centered around zero. Translating them into \emph{world space} moves the rays to their respective location in the scene, where the vectors represent the rays cast into the scene, where they will intersect with the model geometry.
 
-The intersections of these rays with the model geometry can be calculated analytically: The model sphere which is centered at the origin can be represented implicitly by Equation~\ref{eq:rsi_spherefull}. The set of points P defined by this equation make up the surface of the sphere (Equation~\ref{eq:rsi_sphereP}). 
+The intersections of these rays with the model sphere can be calculated analytically: The model sphere, which is centered at the origin, can be represented implicitly by Equation~\ref{eq:rsi_spherefull}. The set of points P defined by this equation make up the surface of the sphere (Equation~\ref{eq:rsi_sphereP}). 
 The equation describing any point on the ray can be expressed by Equation~\ref{eq:rsi_point}, where $O$ is the origin of the ray, which is the center of projection of the new viewpoint, $t$ is the length of the ray and $D$ is a unit vector describing the direction. 
 
 \begin{align}
@@ -350,14 +345,17 @@ The point $P$ in Equation~\ref{eq:rsi_sphereP} can be substituted with the equat
   t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:solvequadf}
 \end{align}
 
-This equation can then be solved for t. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e. two intersections): one for which the vector length $t$ is negative, and one for which the vector length is positive. The positive value is used to find the intersection in question.
+This equation can then be solved for t. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e. two intersections): one for which the vector length $t$ is negative, and one for which the vector length is positive. Since the original ray used for the calculation is unidirectional, it needs to be extended by a positive value. The original ray, being a unit ray of length 1, can then be multiplied by the positive $t$, which yields the intersection point. 
+
+Using Numpy's vectorization, this calculation can be performed on a matrix of values, representing all the rays of the synthesized image.
 
 \subsubsection{Texture Lookup}
+The texture lookup shown in \ref{texture-lookup} is performed using uv coordinates: Given a captured viewpoint at the location V and the ray-scene intersections $T_{i,j} | i \in image width, j \in image height$ from the synthesized viewpoint, the rays from the V to the intersections can easily be calculated by $T_{i,j}-V$. These rays can then be normalized to have length 1
 \begin{itemize}
   \item uv mapping using EnvironmentMap from soravux
 \end{itemize}
 
-\subsubsection{Deviation Angle Calculation}
+\subsubsection{Deviation Angle Calculation and Knn Blending}
 
 \subsection{Flow-based blending}
 \begin{itemize}
@@ -374,6 +372,8 @@ This equation can then be solved for t. Since the radius of the sphere is chosen
   \item what to do with zero degree difference? \ar only use zero, not the other (should be solved by the function that defines the 1D interpolation position)
   \item intersection outside of AB \ar delta = ?
 \end{itemize}
+%further points to include
+%- inverting flow is non-trivial
 
 \missingfigure{1D interpolation process diagram}
 
