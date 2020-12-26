@@ -304,6 +304,7 @@ Once the viewpoints A and B are chosen for each target point T, the interpolatio
 Using the chosen viewpoints A and B, and the calculated interpolation distance $\delta$, a 1DoF interpolation is calculated for each approximated ray. Using this interpolated viewpoint, a texture lookup is then performed for each pixel associated with that ray. This results in a mosaicked image where each image area (vertical strip in equirectangular representation) is an interpolated, reprojected viewpoint. The 1DoF interpolation step should improve some of the artefacts caused by the use of the model sphere instead of the actual scene geometry. Its effectiveness and limitations are explored in Chapter~\ref{chap:evaluation}.
 
 \section{Implementation Details} \label{sec:impl_details}
+The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending were implemented in Python3 \cite{python}, using the libraries NumPy \cite{numpy}, OpenCV \cite{opencv}, and SciPy \cite{scipy}. 
 
 \subsection{Preprocessing}
 \begin{itemize}
