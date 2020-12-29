@@ -111,10 +111,9 @@ All of these projections are static, showing the entirety of the 360\degree imag
 \subsubsection{Optical Flow}
 Optical flow describes the displacement of specific points between two images. It is generally used on consecutive frames of video sequences, for example for semantic segmentation, structure-from-motion, data compression or other applications where information about movement between images is required. To illustrate, Figure~\ref{fig:of_example_bike} shows two consecutive frames of a video sequence. On a high level, an optical flow algorithm should recognize that the pixels representing the bicyclist are moving towards the bottom left of the image, and the pixels representing the background are moving to the right (because the camera is panning slightly to the left).
 
-\todo{investigate why there is vertical space between the paragraphs}
 There are two types of optical flow: Sparse optical flow and dense optical flow. Sparse optical flow algorithms calculate the motion of several select points that can be either chosen manually, or by some kind of automatic selection (e.g. based on features). This type of optical flow can be used to track only specific objects in a scene (e.g. the direction and relative velocity of a certain car in traffic).
 
-Dense optical flow algorithms compute the motion of \emph{each pixel} between two images, which yields a more exact result than sparse optical flow. This can be used for more general object tracking (e.g. direction and relative velocity of complete surroundings in traffic), to estimate 3D geometry (in structure-from-motion algorithms), or to identify static sections of the image for video compression. Dense optical flow can also be used for image synthesis, such as in Richardt et. al's Megastereo \cite{megastereo} described in section~\ref{subsec:megastereo}, which is also the basis of the flow-based interpolation presented in this thesis.
+Dense optical flow algorithms compute the motion of \emph{each pixel} between two images, which yields a more exact result than sparse optical flow. This can be used for more general object tracking (e.g. direction and relative velocity of complete surroundings in traffic), to estimate 3D geometry (in structure-from-motion algorithms), or to identify static sections of the image for video compression. Dense optical flow can also be used for image synthesis, such as in Richardt et al's Megastereo \cite{megastereo} described in section~\ref{subsec:megastereo}, which is also the basis of the flow-based interpolation presented in this thesis.
 
 There are a number of optical flow algorithms, ranging from methods using parametrization, or regularization \cite{of-survey}, to methods relying on Deep Learning \cite{of-deep}. Although these algorithms differ greatly in approach, they have in common the type of result, which is a vector field. For dense optical flow, this vector field contains a vector for each pixel, describing the displacement of this pixel between the input images. Sparse optical flow only contains a vector for each pre-chosen point, not for every pixel.
 
@@ -168,9 +167,9 @@ too trivial?
   
 Image-based Rendering (IBR) and viewpoint interpolation started gaining interest with the advent of virtual walkthroughs, for example for Apple's QuickTime\textsuperscript{\textregistered} VR, in order to save render time by generating views from images instead of using complex 3D scenes including textures, lights and complex geometric models \cite{quicktime}.
 
-Chen et. al., in their survey on image-based rendering \cite{survey2004} use the terms \emph{source description} and \emph{appearance description} to compare these basic rendering techniques: ``Traditional'' rendering techniques use \emph{source description}, i.e. the scene is described by the objects within it, their positions and properties. On the other hand, IBR techniques try to achieve the same goal through \emph{appearance description}. Vision itself has little to do with 3D geometries, it is the processing of a dense set of light rays by the brain which are captured through the eye. This process can also be synthesized by a capture device like a camera. So, instead of trying to describe the scene through the objects it contains, IBR rendering techniques try to model the \emph{light rays} that reach the viewer. 
+Chen et al., in their survey on image-based rendering \cite{survey2004} use the terms \emph{source description} and \emph{appearance description} to compare these basic rendering techniques: ``Traditional'' rendering techniques use \emph{source description}, i.e. the scene is described by the objects within it, their positions and properties. On the other hand, IBR techniques try to achieve the same goal through \emph{appearance description}. Vision itself has little to do with 3D geometries, it is the processing of a dense set of light rays by the brain which are captured through the eye. This process can also be synthesized by a capture device like a camera. So, instead of trying to describe the scene through the objects it contains, IBR rendering techniques try to model the \emph{light rays} that reach the viewer. 
 
-A theoretical model for \emph{appearance description} was developed by Adelson et. al. \cite{Adelson91}: the \emph{plenoptic function} (Equation~\ref{eq:plenoptic}). The plenoptic function is a 7D function that describes the observable light at every point in space $V_x$, $V_y$, $V_z$, from every direction $\theta$, $\varphi$, at every wavelength $\lambda$, at every possible point in time $t$.
+A theoretical model for \emph{appearance description} was developed by Adelson et al.\ \cite{Adelson91}: the \emph{plenoptic function} (Equation~\ref{eq:plenoptic}). The plenoptic function is a 7D function that describes the observable light at every point in space $V_x$, $V_y$, $V_z$, from every direction $\theta$, $\varphi$, at every wavelength $\lambda$, at every possible point in time $t$.
 
 \begin{equation}
   \label{eq:plenoptic}
@@ -179,11 +178,11 @@ A theoretical model for \emph{appearance description} was developed by Adelson e
 
 In practice, it is unfeasible, if not impossible, to cover all dimensions of this function, as this would require a capture device at every location, at every point in time, capturing light rays coming from every direction. However, by making assumptions, IBR techniques try to reconstruct simplified versions of the plenoptic function. Depending on which assumptions are made and how the surroundings are sampled, varying requirements are met and different results are achieved.
 
-Chen et. al. summarize these different types of assumptions in their survey \cite{survey2004} and categorize different techniques by their use of these assumptions. The first 
+Chen et al.\ summarize these different types of assumptions in their survey \cite{survey2004} and categorize different techniques by their use of these assumptions. The first 
 
-Shum et. al. \cite{survey2000} break different image-based rendering approaches down by categorizing how much geometry is used.  
+Shum et al.\ \cite{survey2000} break different image-based rendering approaches down by categorizing how much geometry is used.  
 
-Many of these approaches however, do use some geometry information in order to recalculate image points. The scene geometry is hereby either meticulously recorded at the time of the image capture, as with Kanade et. al's 3D Dome \cite{geometry97}, or inferred from the image data alone, 
+Many of these approaches however, do use some geometry information in order to recalculate image points. The scene geometry is hereby either meticulously recorded at the time of the image capture, as with Kanade et al's 3D Dome \cite{geometry97}, or inferred from the image data alone, 
 
 The approach presented in this thesis is \emph{pixel-based}, i.e. using no geometry information, so the following section will first outline research aiming to synthesize viewpoints with the use of little to no geometry. Since the majority of pixel-based rendering research uses planar images, the second part will focus on research using 360\degree images, including approaches using geometry.
 
@@ -203,7 +202,7 @@ The approach presented in this thesis is \emph{pixel-based}, i.e. using no geome
 \subsubsection{Megastereo \label{subsec:megastereo}}
 \begin{comment}
 correspondences needed: dense, geometry: none, constraints: angle?, image rep: planar, type of warping: none, because planar
-Richardt et. al. \cite{megastereo} use a combination of image stitching and their own optical flow-based blending algorithm in order to create high resolution stereo panoramas from a set of planar images captured on a radius. The goal is to synthesize stereoscopic viewpoints (an image for the left and right eye, each) from the captured monoscopic images. After transforming the images so that they all have scene-independent orientation and minimal distortion, strips of the captured images are extracted for each ``eye'' based on the best matching image ray (Figure~\ref{fig:megastereo-figure}a and b). In cases where there is no perfect ray correspondence, the ray with the smallest deviation angle can be chosen, however, this can lead to artefacts as illustrated in Figure~\ref{fig:megastereo-figure}c. In order to mitigate these artefacts, Richardt et. al. introduce a blending algorithm based on optical flow: 
+Richardt et al.\ \cite{megastereo} use a combination of image stitching and their own optical flow-based blending algorithm in order to create high resolution stereo panoramas from a set of planar images captured on a radius. The goal is to synthesize stereoscopic viewpoints (an image for the left and right eye, each) from the captured monoscopic images. After transforming the images so that they all have scene-independent orientation and minimal distortion, strips of the captured images are extracted for each ``eye'' based on the best matching image ray (Figure~\ref{fig:megastereo-figure}a and b). In cases where there is no perfect ray correspondence, the ray with the smallest deviation angle can be chosen, however, this can lead to artefacts as illustrated in Figure~\ref{fig:megastereo-figure}c. In order to mitigate these artefacts, Richardt et al.\ introduce a blending algorithm based on optical flow: 
 
 In order to blend two images, they take the two closest viewpoints $I_K$ and $I_L$ and interpolate $\widetilde{I_M}$ using the optical flow vectors $F_{k\rightarrow l}$ and $F_{l\rightarrow k}$.  The corresponding strip is then taken from this new viewpoint which contains the matching ray (Figure~\ref{fig:megastereo-figure}d).
 
@@ -225,7 +224,7 @@ The interpolated image $\widetilde{I_M}$ at point $\alpha$ between the images $I
 
 \subsubsection{6-DOF VR Videos with a Single 360-Camera}
 correspondences needed: none, geometry: dense, constraints: none, image rep: cube, type of warping: triangulation
-Huang et. al. \cite{6dof} propose a method to expand regular 360\degree video data into stereoscopic video data viewable with six degrees of freedom. Their approach is based on reconstructing the 3D scene and the camera path.
+Huang et al.\ \cite{6dof} propose a method to expand regular 360\degree video data into stereoscopic video data viewable with six degrees of freedom. Their approach is based on reconstructing the 3D scene and the camera path.
 
 This reconstruction is achieved by adapting well-established structure-from-motion (SfM) algorithms for 360\degree data. Since SfM algorithms are designed for planar images with a limited field of view (FoV), the six separate faces of the cube map representation are used as input for the SfM algorithm. SfM algorithms work by tracking points across a series of images (e.g. frames), so for cube mappings, potential points moving across seams need to be accounted for. This is done by extending the field of view of each face so that regions around seams are represented on both sides of the seam. After the points are correctly tracked, the extended cube map is reduced back to its original format.
 
@@ -234,21 +233,21 @@ Then, the sparse scene geometry and camera path are calculated by incrementation
 \begin{figure}[]
 \centering
 \includegraphics[width=0.6\textwidth]{02/6dof-figure.jpg}
-\caption[Image warping from Huang et. al.]{The warping field is computed by finding the movement between the projections of each 3D scene point in the reference and the synthesized frame. Then the warping field is used to map each pixel of the synthesized image to its corresponding pixel in the reference to look up its color information. \emph{Adapted from \cite{6dof}}}
+\caption[Image warping from Huang et al.]{The warping field is computed by finding the movement between the projections of each 3D scene point in the reference and the synthesized frame. Then the warping field is used to map each pixel of the synthesized image to its corresponding pixel in the reference to look up its color information. \emph{Adapted from \cite{6dof}}}
 \label{fig:6dof-figure}
 \end{figure}
 
 \subsubsection{Panorama Image Interpolation for Real-time Walkthrough}
 correspondences needed: sparse, geometry: none, constraints: none, image rep: ?, type of warping: triangulation
-Kawai et. al. \cite{walkthrough} approach the problem of interpolating between images without using 3D geometry. Their basic setup is to capture four 360\degree images at each corner of a rectangular area and use their algorithm to interpolate within this area.
+Kawai et al.\ \cite{walkthrough} approach the problem of interpolating between images without using 3D geometry. Their basic setup is to capture four 360\degree images at each corner of a rectangular area and use their algorithm to interpolate within this area.
 
 First, they manually select corresponding feature points in all four images, which they map to a sphere and triangulate. They create their synthesized mesh with bilinear interpolation, in which the triangulated meshes are deformed by using the Slerp (Spherical Linear Interpolation) function. To calculate the actual image, they use a combination of ray tracing and barycentric coordinates to get the uv coordinates of the synthesized image. Finally, the new image can be rendered by using the uv coordinates for texture mapping.
 
 \subsubsection{On the Use of Ray-tracing for Viewpoint Interpolation in Panoramic Imagery}
 correspondences needed: none, geometry: none/dense, constraints: color-constraint, image rep: cube, type of warping: pixel blending
-Shi et. al. \cite{raytracing} examine how ray tracing can be used to calculate arbitrary new viewpoints based on knowledge of relative positions between the viewpoints which are stored as cube maps. For every pixel in the target image, a ray is cast into the scene. At the point where the ray intersects with the scene, the rays from the reference images that also intersect with the scene at the same position, are calculated, yielding the corresponding point in the reference images.
+Shi et al.\ \cite{raytracing} examine how ray tracing can be used to calculate arbitrary new viewpoints based on knowledge of relative positions between the viewpoints which are stored as cube maps. For every pixel in the target image, a ray is cast into the scene. At the point where the ray intersects with the scene, the rays from the reference images that also intersect with the scene at the same position, are calculated, yielding the corresponding point in the reference images.
 
-Shi et. al. introduce a color consistency constraint, which determines whether the pixel values of the reference images are similar. In areas where N reference images result in different colors, the pixel with the largest deviation is eliminated and the synthesized pixel is based on N - 1 reference pixels.
+Shi et al.\ introduce a color consistency constraint, which determines whether the pixel values of the reference images are similar. In areas where N reference images result in different colors, the pixel with the largest deviation is eliminated and the synthesized pixel is based on N - 1 reference pixels.
 
 In order to calculate an intersection with the scene, they propose two different methods: A brute-force depth search which searches along the ray until the pixel values are similar enough to fulfill their color constraint requirements, or a guided depth search using sparse 3D reconstruction.
 

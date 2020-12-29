@@ -4,7 +4,7 @@
 
 \ldots The different appraches to image-based rendering presented in the previous chapter use different assumptions and simplifications of the plenoptic function in order to facilitate its reconstruction. Most of these approaches are based on planar images, which already significantly reduces the complexity of the data to be processed. The approach presented here, on the other hand, works on 360\degree images, which increases data processing and storage. As a result, other assumptions and simplifications are made, the most prominent being the exemption of scene geometry, and the limitation to two degrees of freedom (2DoF). Limiting movement to 2DoF means that the location of possible synthesized points is restricted to a plane. 
 
-This chapter presents the assumptions and simplifications made for the pixel-based synthesis of 360\degree viewpoints, the basic approach and an improvement to the basic approach based on flow-based blending from Richardt et. al.'s Megastereo \cite{megastereo}, and the implementation details of the method.
+This chapter presents the assumptions and simplifications made for the pixel-based synthesis of 360\degree viewpoints, the basic approach and an improvement to the basic approach based on flow-based blending from Richardt et al.'s Megastereo \cite{megastereo}, and the implementation details of the method.
 
 \section{Approach}
 %\begin{itemize}
@@ -28,7 +28,7 @@ This chapter presents the assumptions and simplifications made for the pixel-bas
   \item the scale (radius) of the scene is known
 \end{itemize}
 
-\subsection{Basic 2DoF Synthesis}
+\subsection{Basic 2DoF Synthesis} \label{subsec:basic-synthesis}
 With these assumptions and using a basic model geometry with the same scale as the captured scene, it is already possible to synthesize new viewpoints with varying accuracy, depending on the scene. The process presented here for basic 2DoF synthesis is a combination of texture lookup through raytracing, and mosaicking by using a constraint based on the ray deviation angle.
 
 \subsubsection{Raytracing-based Texture Lookup}
@@ -112,14 +112,16 @@ In order to do this, several steps of raytracing are necessary, which are visual
 
 
 \subsubsection{Deviation-angle-based Mosaicking}
-The example in Figure~\ref{fig:raytracing} contains only one captured viewpoint, so the choice of which viewpoint to use for texture lookup is trivial. In cases where several viewpoints are available, a choice must be made as to which viewpoint should be used. In the case where the real scene has the same geometry as the model sphere, this is practically irrelevant, since the raytracing is always accurate. However, this is unrealistic, since the number of spherical rooms containing no objects is negligible. As a result, as soon as the real scene differs from the model sphere, some viewpoints are more appropriate than others. Figure~\ref{fig:dev_angle}a shows how a discrepancy between the real scene and the model sphere can lead to inaccurate results.
+The example in Figure~\ref{fig:raytracing} contains only one captured viewpoint, so the choice of which viewpoint to use for texture lookup is trivial. In cases where several viewpoints are available, a choice must be made as to which viewpoint should be used. In the case where the real scene has the same geometry as the model sphere, this is practically irrelevant, since the raytracing is always accurate. However, this is unrealistic, since the number of spherical rooms containing no objects is negligible. As a result, as soon as the real scene differs from the model sphere, some viewpoints yield better results than others. Figure~\ref{fig:dev_angle}a shows how a discrepancy between the real scene and the model sphere can lead to inaccurate results.
 
-When considering appropriateness, two metrics can be examined: the euclidean distance of a captured viewpoint from the synthesized viewpoint, and the deviation angle between the rays. Figure~\ref{fig:dev_angle}b compares the two metrics and in the example it is evident that the deviation angle is more appropriate. In fact, assuming that there is no obscuring element in the air such as fog, and disregarding diffusion over distance, the same light ray is captured by any viewpoint located on that ray. Sampling rates and resolution also have an effect on the accuracy of this assumption but these will also be foregone at the moment.
+When comparing rays from different viewpoints, two metrics can be examined: the euclidean distance of the captured viewpoint from the synthesized viewpoint, and the deviation angle between the rays. Figure~\ref{fig:dev_angle}b visualizes the two metrics and in the example, the $vp2$ with the smaller deviation angle is a better match. In fact, assuming that there is no obscuring element in the air such as fog, and disregarding diffusion and scattering over distance, the same light ray is captured by any viewpoint located on the ray in question. This means the closer the deviation angle is to zero, the more accurate the result will be, no matter the distance of the viewpoints. However, sampling rates and resolution also have an effect on the sampled point, so the euclidean distance cannot be completely ignored.
 
-With these assumptions, it is evident that using the deviation angle as the metric on a per-pixel basis produces more accurate results than using the euclidean distance. As a result, depending on the number and relative location of the captured viewpoints, using a per-pixel, deviation-angle-based constraint leads to a synthesized image made up of patches from different viewpoints (i.e. mosaic). 
+Instead of combining these metrics in a function that might have to be weighted differently depending on the scene size, the distribution viewpoints, and more, the choice of which viewpoints to use is divided into two different steps: The choice of input viewpoints from all captured viewpoints for the synthesis of a specific point, and the choice of which of the input viewpoints to use for each ray of the synthesized point. 
 
-\todo{finish} - calculate deviation angle and blend the best 2 based on a blending function (inverse sigmoid)
-%    \item to determine which viewpoints to use for which output image areas, use weighting function $W(viewpoint)$ that is dependent on specific properties of the input viewpoint (e.g. euclidean distance of locations)
+The pre-selection of input viewpoints from all captured viewpoints is based on the assumption that the closer the captured viewpoints are to the synthesized viewpoint, the more accurate the sampling of the surroundings will be (i.e. the relative size of the objects). As a result, all viewpoints further than a certain distance are discarded from the input.
+
+After selecting the most appropriate captured viewpoints, the synthesized image is created by comparing the deviation angles of these viewpoints for each ray (i.e. pixel). The two closest viewpoints are then blended together on a per-pixel basis, so that there are no abrupt edges between mosaic areas. The blending function and is presented in more detail in Section~\ref{sec:impl_details}.
+%depending on the number and relative location of the captured viewpoints, using a per-pixel, deviation-angle-based constraint leads to a synthesized image made up of patches from different viewpoints (i.e. mosaic). 
 
 \begin{figure}
 \centering
@@ -146,7 +148,7 @@ With these assumptions, it is evident that using the deviation angle as the metr
 %One example is the euclidean distance of the viewpoint locations in space. This would mean that for each pixel, the corresponding pixel of the \emph{nearest viewpoint} would be used. This is the simplest approach, and would simply return the nearest neighbor. 
 
 \subsection{2DoF Synthesis using Flow-based Blending}
-Using basic 2DoF Synthesis works fairly well as long as the real scene geometry corresponds roughly to the model sphere. The basic shape of many rooms can be approximated by a sphere, however the objects within these rooms can diverge greatly from the model geometry. In these cases, ghosting and doubling artefacts become visible, such as areas appearing twice, not at all, or two areas overlapping inconsistently. This problem is exacerbated when the synthesized viewpoint is very close to an object, as is visualized in Figure~\ref{fig:flow-based-mot}: In this example the synthesized viewpoint is very close to a detailed object whose geometry diverges significantly from the model sphere. The values of the points captured by the two viewpoints $vp1$ and $vp2$ differ (orange and purple), and neither of them is the desired ground truth value (gray) (Figure~\ref{fig:flow-based-mot}a). In order to improve the result, an adapted variation of the flow-based blending method from Richardt et. al's Megastereo \cite{megastereo} is introduced. This method allows interpolation between two 360\degree viewpoints using optical flow. Figure~\ref{fig:flow-based-mot}b shows how the interpolation can be used to achieve a more accurate result: A new viewpoint $vp$1-2 is interpolated between $vp1$ and $vp2$ such that the interpolated viewpoint is located on the ray in question\footnote{Positioning the interpolated viewpoint directly on the ray is only possible for rays that are on the 2D plane containing all the viewpoints. All other cases must be approximated.} This new viewpoint is then used for the texture lookup to create the synthesized image with the goal of improving the accuracy of the mapped point.
+Using basic 2DoF Synthesis works fairly well as long as the real scene geometry corresponds roughly to the model sphere. The basic shape of many rooms can be approximated by a sphere, however the objects within these rooms can diverge greatly from the model geometry. In these cases, ghosting and doubling artefacts become visible, such as areas appearing twice, not at all, or two areas overlapping inconsistently. This problem is exacerbated when the synthesized viewpoint is very close to an object, as is visualized in Figure~\ref{fig:flow-based-mot}: In this example the synthesized viewpoint is very close to a detailed object whose geometry diverges significantly from the model sphere. The values of the points captured by the two viewpoints $vp1$ and $vp2$ differ (orange and purple), and neither of them is the desired ground truth value (gray) (Figure~\ref{fig:flow-based-mot}a). In order to improve the result, an adapted variation of the flow-based blending method from Richardt et al.'s al.'s Megastereo \cite{megastereo} is introduced. This method allows interpolation between two 360\degree viewpoints using optical flow. Figure~\ref{fig:flow-based-mot}b shows how the interpolation can be used to achieve a more accurate result: A new viewpoint $vp$1-2 is interpolated between $vp1$ and $vp2$ such that the interpolated viewpoint is located on the ray in question\footnote{Positioning the interpolated viewpoint directly on the ray is only possible for rays that are on the 2D plane containing all the viewpoints. All other cases must be approximated.} This new viewpoint is then used for the texture lookup to create the synthesized image with the goal of improving the accuracy of the mapped point.
 
 \begin{figure}
 \centering
@@ -211,7 +213,7 @@ The challenge presented by the many seams of the cube map is to be able to track
   \caption[Points traversing seams in the cube map]{Points in the scene moving across seam edges need to be tracked by optical flow (the back face of the cube map was omitted for simplicity's sake} \label{fig:flow_seams}
 \end{figure}
 
-To solve this problem, an \emph{extended} cube map is introduced, which was also used by Huang et. al. \cite{6dof} to adapt 360\degree images for structure-from-motion algorithms. Instead of projecting a field of view of 90\degree for each camera, which covers exactly 360\degree of the image, the extended cube map uses a larger field of view for each camera. As a result, some areas of the scene are represented several times: the areas of the image that are near a seam are represented on each face that is adjacent to the seam. This way, when calculating optical flow on each face separately, points that move across where the seam would be in a regular cube map remain on the face with the corresponding projection. Figure~\ref{fig:flow_seams_ext} shows the front, top, and left faces of the extended cube map representation of the cube map shown in Figure~\ref{fig:flow_seams}. In the extended cube map, the tracked points do not traverse a seam on any of the faces, meaning optical flow can be calculated on the entire original face.
+To solve this problem, an \emph{extended} cube map is introduced, which was also used by Huang et al.\ \cite{6dof} to adapt 360\degree images for structure-from-motion algorithms. Instead of projecting a field of view of 90\degree for each camera, which covers exactly 360\degree of the image, the extended cube map uses a larger field of view for each camera. As a result, some areas of the scene are represented several times: the areas of the image that are near a seam are represented on each face that is adjacent to the seam. This way, when calculating optical flow on each face separately, points that move across where the seam would be in a regular cube map remain on the face with the corresponding projection. Figure~\ref{fig:flow_seams_ext} shows the front, top, and left faces of the extended cube map representation of the cube map shown in Figure~\ref{fig:flow_seams}. In the extended cube map, the tracked points do not traverse a seam on any of the faces, meaning optical flow can be calculated on the entire original face.
 
 \begin{figure}
 \centering
@@ -236,7 +238,7 @@ To solve this problem, an \emph{extended} cube map is introduced, which was also
 
 Nonetheless, this method is still limited by the field of view used by the virtual cameras. If the maximum displacement is larger than the face extension, the extended cube map will not be sufficient, as the points can also traverse the extended seams. Also, the larger the field of view, the more the image will be distorted towards the edges of a face, which may lead to distorted optical flow results. Both problems are visible in Figure~\ref{fig:flow_seams_ext}: The lamp in the left face has such a large displacement between a and b that it is partly cut off in b. On top of being cut off, it is also greatly distorted, which will result in distorted optical flow values for that area.
 
-In general, this means that displacement between two images is limited. However, the displacement that is trackable by optical flow algorithms is also limited. The effect of these limitations will be explored in Section \todo{Implementation Details or Limitations?}.
+In general, this means that displacement between two images is limited. However, the displacement that is trackable by optical flow algorithms is also limited. The effect of these limitations will be explored in Chapter~\ref{chap:evaluation}.
 
 Inside these limitations, however, using the extended cube map makes it possible to calculate optical flow on each face separately, meaning that Megastereo's flow-based blending method can be applied to two 360\degree viewpoints A and B: First, the extended cube map projections $A_{ext}$ and $B_{ext}$ are created from the image data. From this point, each set of faces $A_{ext}^{i}$ and $B_{ext}^{i}, i \in [top, left, front, right, bottom, back]$ is handled separately. Optical flow $F_{A\to B}^i$ and inverse optical flow $F_{B\to A}^i$ are calculated for $A_{ext}^{i}$ and $B_{ext}^{i}$. Then, the shifted image is calculated using Function~\ref{eq:flow_blending}. Finally, for each face, the extended parts of the extended cube map are clipped so that each face once again has a field of view of 90$^{\circ}$, resulting in the blended 360\degree image at position $\delta$ between viewpoints A and B. Since the flow-based blending method is applied to two complete images instead of image strips like in Megastereo, it is equivalent to interpolation with one degree of freedom (i.e. on a line) between viewpoints A and B. This interpolated viewpoint can then be used for texture lookup just like a captured viewpoint.
 
@@ -304,23 +306,17 @@ Once the viewpoints A and B are chosen for each target point T, the interpolatio
 Using the chosen viewpoints A and B, and the calculated interpolation distance $\delta$, a 1DoF interpolation is calculated for each approximated ray. Using this interpolated viewpoint, a texture lookup is then performed for each pixel associated with that ray. This results in a mosaicked image where each image area (vertical strip in equirectangular representation) is an interpolated, reprojected viewpoint. The 1DoF interpolation step should improve some of the artefacts caused by the use of the model sphere instead of the actual scene geometry. Its effectiveness and limitations are explored in Chapter~\ref{chap:evaluation}.
 
 \section{Implementation Details} \label{sec:impl_details}
-The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending were implemented in Python3 \cite{python}, using the libraries NumPy \cite{numpy}, OpenCV \cite{opencv}, and SciPy \cite{scipy}. 
+This section presents the technical and mathematical details on which the basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are based. 
+The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are implemented in Python3 \cite{python}, using the libraries NumPy \cite{numpy}, OpenCV \cite{opencv}, and SciPy \cite{scipy}. For the conversion between different 360\degree projections, as well as the calculation of the extended cube map, the library ``skylibs'' \cite{skylibs} is used.
 
 \subsection{Preprocessing}
-\begin{itemize}
-  \item rotate all images so that they all have the same orientation
-  \item center point cloud
-  \item find appropriate sphere radius
-  \item make access to location and image data of a viewpoint contained in a set easy and intuitive (CaptureSet)
-\end{itemize}
-
-The input data consists of a set of captured viewpoint images, a text file containing the positions and orientations of these viewpoints, and the approximate scene radius. In order to better handle this data, a class is 
+The input data consists of a set of captured viewpoint images, a text file containing the metadata (positions and orientations) of these viewpoints, and the approximate scene radius. In order to easily and intuitively access the locations and image data of the captured viewpoints, the data is encapsulated in the CaptureSet class. The CaptureSet class first parses the metadata, then, with this information, rotates all the images so that they have the same orientation, and shifts the viewpoint cloud so that it is centered around the origin (0,0,0). This is done under the assumption that images were captured in a regular distribution throughout the room. The model sphere representing the scene is also centered at the origin. Instead of storing the image data directly in the CaptureSet, the file paths are stored so that the images can be dynamically loaded when needed. The CaptureSet can then be used by the ImgSynthesizer to synthesize a new image either using regular blending or flow-based blending at any given location within the scene\footnote{Given that it is within the convex hull of the captured viewpoints}.
 
 \subsection{Basic 2DoF Synthesis}
-This section will present the technical and mathematical details on which the basic 2DoF synthesis is based. This includes the calculation of the ray-scene intersection, and the texture lookup introduced in Section~\ref{texture-lookup}, and the deviation angle calculation and blending function from Section~\ref{dev-metric}.
+For the basic 2DoF Synthesis, the steps described in detail in this section are the calculation of the ray-scene intersection and the texture lookup, as well as the deviation angle calculation and blending function introduced in Section~\ref{subsec:basic-synthesis}.
 
 \subsubsection{Calculating Ray-sphere Intersection}
-The ray-sphere intersection is used in the raytracing-based texture lookup in order to find the scene points captured by the synthesized viewpoint. The vectors representing the rays of a viewpoint can be easily derived from the \emph{world coordinates} of the 360\degree image (see~Section~\ref{subsec:fundamentals_360}). Each point of the world coordinates is a vector on the unit sphere, representing the location of an image value (pixel). These coordinates are in \emph{model space}, meaning that they are centered around zero. Translating them into \emph{world space} moves the rays to their respective location in the scene, where the vectors represent the rays cast into the scene, where they will intersect with the model geometry.
+The ray-sphere intersection is used in the raytracing-based texture lookup to find the scene points captured by the synthesized viewpoint (see \ref{fig:raytracing}c). The vectors representing the rays of a viewpoint can be easily derived from the world coordinates of the 360\degree image (see~Section~\ref{subsec:fundamentals_360}): Each point of the world coordinates is a vector on the unit sphere, representing the location of an image value (pixel). These coordinates are in \emph{model space}, meaning that they are centered around zero. Translating them into \emph{world space} moves the rays to their respective location in the scene, where the vectors represent the rays cast into the scene, where they will intersect with the model geometry.
 
 The intersections of these rays with the model sphere can be calculated analytically: The model sphere, which is centered at the origin, can be represented implicitly by Equation~\ref{eq:rsi_spherefull}. The set of points P defined by this equation make up the surface of the sphere (Equation~\ref{eq:rsi_sphereP}). 
 The equation describing any point on the ray can be expressed by Equation~\ref{eq:rsi_point}, where $O$ is the origin of the ray, which is the center of projection of the new viewpoint, $t$ is the length of the ray and $D$ is a unit vector describing the direction. 
@@ -341,24 +337,57 @@ The point $P$ in Equation~\ref{eq:rsi_sphereP} can be substituted with the equat
 \end{align}
 
 \begin{align}
-  a = D^2, b = 2OD, c = O^2-R^2 \\
+  a = D^2, b = 2OD, c = O^2-R^2 \nonumber \\
   f(t) = at^2 + bt + c \label{eq:quadf}\\
   t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:solvequadf}
 \end{align}
 
-This equation can then be solved for t. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e. two intersections): one for which the vector length $t$ is negative, and one for which the vector length is positive. Since the original ray used for the calculation is unidirectional, it needs to be extended by a positive value. The original ray, being a unit ray of length 1, can then be multiplied by the positive $t$, which yields the intersection point. 
+This equation can then be solved for t. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e. two intersections): one for which the vector length $t$ is negative, and one for which the vector length is positive. Since the original ray used for the calculation is unidirectional (i.e. it cannot invert its direction), it needs to be extended by a positive value. The original ray, being a unit ray of length 1, can then be multiplied by the positive $t$, which yields the intersection point. 
 
 Using Numpy's vectorization, this calculation can be performed on a matrix of values, representing all the rays of the synthesized image.
 
 \subsubsection{Texture Lookup}
-The texture lookup shown in \ref{texture-lookup} is performed using uv coordinates: Given a captured viewpoint at the location V and the ray-scene intersections $T_{i,j} | i \in image width, j \in image height$ from the synthesized viewpoint, the rays from the V to the intersections can easily be calculated by $T_{i,j}-V$. These rays can then be normalized to have length 1
-\begin{itemize}
-  \item uv mapping using EnvironmentMap from soravux
-\end{itemize}
+The texture lookup shown in Figure~\ref{fig:raytracing}d-f is performed by remapping uv coordinates. Given a captured viewpoint at the location V and the ray-scene intersections from the synthesized viewpoint $T_i$, where $i$ denotes which ray is being examined, the rays from the V to the intersections can easily be calculated by $T_i-V$. These rays are then normalized to have length 1, returned to model space, and transformed from world coordinates to image coordinates. These image coordinates (i.e. uv coordinates) can be used to resample the data, which is equivalent to actually performing a ray-by-ray texture lookup, but much faster. This resampling based on uv coordinates is implemented in the library Skylibs \cite{skylibs} and utilizes scipy's function \emph{scipy.ndimage.map\_coordinates}.
 
 \subsubsection{Deviation Angle Calculation and Knn Blending}
+The deviation angle calculation is a simple angle calculation between vectors. This calculation is performed for each ray of the synthesized point and the corresponding rays of all of the input viewpoints. This results in a set of deviation angles for each viewpoint that are associated with each ray/pixel of the synthesized image. For each pixel, the best k input viewpoints are extracted and the ``regular'', k-nearest-neighbor (knn) blending is performed.
 
-\subsection{Flow-based blending}
+The regular blending function combines the values of the rays of the k closest deviation angles. The idea behind it is to weight deviation angles of 0 very highly and all larger deviation angles with exponentially low values. This is done with an inverse sigmoid function (Function~\ref{eq:sigmoid}, visualized in Figure~\ref{fig:sigmoid}). The parameters of the function were found by trial and error.
+
+\begin{align}
+  f(x) = \frac{1}{(1 + e^{500\cdot(x - 0.017)})} \label{eq:sigmoid}
+\end{align}
+
+\begin{figure}
+		\centering
+		\includegraphics[width=0.5\textwidth]{03/inverse_sigmoid.jpg}
+		\caption{The inverse sigmoid function used for weighting}
+		\label{fig:sigmoid}
+\end{figure}
+
+Then, the per-pixel weights are normalized so that their sum for each pixel is one, so that the final image is not oversaturated. Finally, the pixel values of the different remapped viewpoints are multiplied by the weights associated with that viewpoint and the weighted images are added up to give the final synthesized image. Figure~\ref{fig:knn} shows the difference between $k=1$ and $k=2$. Blending the two best viewpoints per pixel results in smoother transitions between the mosaicked areas. Using $k>2$ does not have much impact, since most deviation angles where $k>3$ are too large to have an effect.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[t]{0.5\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{03/C_max_vps_knn1.jpg}
+            \caption{$k=1$}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.5\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{03/C_max_vps_knn2.jpg}
+            \caption{$k=2$}
+    \end{subfigure}
+    \hfill
+  \caption{Knn blending with different ks} \label{fig:knn}
+\end{figure}
+
+\subsection{Flow-based Blending}
+The 2DoF synthesis with flow-based blending utilizes some steps from the basic 2DoF synthesis, such as the deviation angle calculation and the texture mapping. The details of the choice of viewpoints A and B for the 1DoF interpolation, the calculation of the interpolation distance $\delta$, as well as the 1DoF intepolation are explained in this section. 
+
 \begin{itemize}
   \item extending the cube map and clipping the extended cube map
   \item optical flow (limitations + blender optical flow)
@@ -377,6 +406,8 @@ The texture lookup shown in \ref{texture-lookup} is performed using uv coordinat
 %- inverting flow is non-trivial
 
 \missingfigure{1D interpolation process diagram}
+
+\subsubsection{Choosing the Viewpoints A and B}
 
 \subsubsection{Determining the 1DoF Interpolation distance $\delta$} \label{subsec:flow-based-blending}
 Like in basic 2DoF synthesis, having only two input viewpoints A and B trivializes the choice of viewpoints for flow-based blending. For any point in the scene, the ray from the synthesized point is retrieved (same as in basic 2DoF synthesis). However, instead of a texture lookup, the distance factor $\delta \in [0,1]$ of the interpolated viewpoint $vp_{AB}$ is calculated. $vp_{AB}$ is the intersection between $\overrightarrow{AB}$ and the ray between the synthesized point $S$ and the target point in the scene (Figure~\ref{fig:flow_pos}). This interpolated viewpoint $vp_{AB}$ is calculated using 
