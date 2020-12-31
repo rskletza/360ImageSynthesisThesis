@@ -1,6 +1,6 @@
 %\chapter{Proof of Concept Design and Implementation}
 %\chapter{Pixel-based Synthesis of 360\degree Viewpoints}
-\chapter{Pixel-based Synthesis of 360\degree Viewpoints with 2DoF}
+\chapter{Pixel-based Synthesis of 360\degree Viewpoints with 2DoF}\label{chap:implementation}
 
 \ldots The different appraches to image-based rendering presented in the previous chapter use different assumptions and simplifications of the plenoptic function in order to facilitate its reconstruction. Most of these approaches are based on planar images, which already significantly reduces the complexity of the data to be processed. The approach presented here, on the other hand, works on 360\degree images, which increases data processing and storage. As a result, other assumptions and simplifications are made, the most prominent being the exemption of scene geometry, and the limitation to two degrees of freedom (2DoF). Limiting movement to 2DoF means that the location of possible synthesized points is restricted to a plane. 
 
@@ -307,7 +307,7 @@ Using the chosen viewpoints A and B, and the calculated interpolation distance $
 
 \section{Implementation Details} \label{sec:impl_details}
 This section presents the technical and mathematical details on which the basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are based. 
-The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are implemented in Python3 \cite{python}, using the libraries NumPy \cite{numpy}, OpenCV \cite{opencv}, and SciPy \cite{scipy}. For the conversion between different 360\degree projections, as well as the calculation of the extended cube map, the library ``skylibs'' \cite{skylibs} is used.
+The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are implemented in Python3 \cite{python}, using the libraries NumPy \cite{numpy}, OpenCV \cite{opencv}, SciPy \cite{scipy}, and scikit-image \cite{skimage}. For the conversion between different 360\degree projections, as well as the calculation of the extended cube map, the library ``skylibs'' \cite{skylibs} is used.
 
 \subsection{Preprocessing}
 The input data consists of a set of captured viewpoint images, a text file containing the metadata (positions and orientations) of these viewpoints, and the approximate scene radius. In order to easily and intuitively access the locations and image data of the captured viewpoints, the data is encapsulated in the CaptureSet class. The CaptureSet class first parses the metadata, then, with this information, rotates all the images so that they have the same orientation, and shifts the viewpoint cloud so that it is centered around the origin (0,0,0). This is done under the assumption that images were captured in a regular distribution throughout the room. The model sphere representing the scene is also centered at the origin. Instead of storing the image data directly in the CaptureSet, the file paths are stored so that the images can be dynamically loaded when needed. The CaptureSet can then be used by the ImgSynthesizer to synthesize a new image either using regular blending or flow-based blending at any given location within the scene\footnote{Given that it is within the convex hull of the captured viewpoints}.

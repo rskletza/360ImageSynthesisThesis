@@ -12,12 +12,33 @@
 \end{verbatim}
 
 \section{Evaluation Methodology}
-\subsection{Approach}
-\subsection{Error Calculation}
-In order to evaluate the synthesized images, it is necessary to define a metric with which to measure their accuracy. Since it is outside of the scope of this thesis to evaluate human perception of the quality of the results, different error metrics are used to compare each result to its ground truth image. Two different metrics are used that measure different image features so that potential limitations of each metric can be compensated for.
+In order to evaluate the effect of different parameters on the 2DoF synthesis algorithm developed in \ar scenarios, whether the
+The evaluation process of each scenario is divided into four phases: scenario definition, where the parameters to test in the scenario are selected, synthesis, where the synthesized images are calculated using the 2DoF synthesis presented in chapter~\ref{chap:implementation}, error calculation, where the accuracy of the synthesized images is measured, and result analysis, where the the cause and effect of the parameters is examined. 
+
+\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{04/eval_methodology.png}
+		\caption{Evaluation Methodology}
+		\label{fig:eval-methodology}
+\end{figure}
+
+\subsubsection{Scenario Definition}
+First, a scenario must be defined that illustrates the parameter that should be examined. This includes determining which of the parameters should be static, and which should be dynamic. There are two dynamic parameters at maximum, one to be examined, and one to increase the significance of the results. Adding more dynamic parameters at per scenario would allow for a more definitive evaluation, but is outside of the scope of this thesis.
+
+The set of parameters (whether static or dynamic) contains the choice of scene in which to synthesize the images. The scene is defined by its captured viewpoints, metadata, and radius, which are all passed on to the synthesis step along with the other parameters defined for the scenario.
+
+\subsubsection{Synthesis}
+The synthesis step consists of two parts: the 2DoF synthesis presented in \ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a trivial algorithm. The results of the trivial algorithm serve as a baseline comparison to verify whether the developed 2DoF algorithm is an improvement to a naive approach. The trivial algorithm consists of simply selecting the nearest neighbor viewpoint based on euclidean distance. The input parameters are the same for both algorithms and both results are passed on to error calculation.
+
+\subsubsection{Error Calculation}
+In order to evaluate the synthesized images, it is necessary to define metrics with which to measure their accuracy. Since it is outside of the scope of this thesis to evaluate the quality of the results based on human perception, mathematical error metrics are used to compare each result to its ground truth image. Two different metrics are chosen based on different image features so that potential limitations of each metric can be compensated for by the other.
 
 \paragraph{L1 error on RGB}
-The first metric is the L1 error calculated on the ground truth and result images in RGB color space. This is a simple error metric that calculates the mean absolute difference of the RGB values. The RGB differences are added together for the complete image and then divided by the number of pixels in the image. This results in an error value $e \in [0,3]$, since the maximum error per pixel is 3 for color values $RGB \in [0,1]$. The L1 error can also be visualized by calculating the absolute difference per pixel without averaging the values. Figure~\ref{fig:l1_example} shows an example visualization of the L1 error between two images. The visualization encodes areas of the image where there is a very large difference with a value closer to white and areas where there is no difference as black, which clearly shows where the problematic areas are in the image. \todo{why L1}
+The first metric is the L1 error calculated on the ground truth and result images in RGB color space. This is a simple error metric that calculates the mean absolute difference of the RGB values and therefore indicates the mean accuracy of each pixel of the image. The RGB errors of each pixel are added together for the complete image and then divided by the number of pixels in the image. This results in an error value $e \in [0,3]$, since the maximum error per pixel is 3 for floating point RGB color values $\in [0,1]$.
+
+The L1 error can also be visualized by calculating the absolute difference per pixel without averaging the values. Figure~\ref{fig:l1_example} shows an example visualization of the L1 error between two images. The visualization encodes areas of the image where there is a very large difference with a value closer to white and areas where there is no difference as black, which clearly shows where the problematic areas are in the image.
+
+The L1 error is useful because it gives a rough estimation of how accurately each pixel is synthesized. The visualization indicates in which areas the synthesized image is inaccurate, which is helpful for classifying problems. However, a drawback of the L1 error is that it relies on color values, which means that images with large differences in pixel values will generally produce a higher error value than images with smaller differences in pixel values, even though the distortion and displacement is the same. \todo{maybe example with checkerboard?}
 
 \begin{figure}
 \centering
@@ -47,16 +68,30 @@ The first metric is the L1 error calculated on the ground truth and result image
 As in the case of optical flow calculation, some adjustment must be made to adapt this metric for 360\degree images. Since the equirectangular projection is not equal-area, the areas towards the poles would intrinsically have higher weighting, since RGB L1 is calculated per pixel. In order to avoid this problem, the cube map projection is used, since it does not significantly distort the image. The average value is then calculated using the six faces of the cube, omitting the black background.
 
 \paragraph{SSIM error on Grayscale}
-The other metric to complement the RGB L1 error uses the structural similarity index (SSIM) \cite{ssim}, which measures the \emph{similarity} between two images. Instead of comparing the images pixel by pixel, the SSIM uses the luminance, contrast and structure of the images for comparison. Instead of comparing these features globally, it compares them locally, i.e.\ it compares smaller areas instead of the image as a whole. As a result, it is possible that the SSIM does not register small displacements in the scene if the objects are not distorted. However, the additional comparison with the RGB L1 error should mitigate this potential problem.
+The other metric to complement the RGB L1 error uses the structural similarity index (SSIM) \cite{ssim}, which measures the \emph{similarity} between two images. Instead of comparing the images pixel by pixel, the SSIM uses the luminance, contrast and structure of the images for comparison. It compares these locally, i.e.\ it compares smaller areas instead of the image as a whole. As a result, it is possible that the SSIM does not register small displacements in the scene if the objects are not distorted. However, the additional comparison with the RGB L1 error should mitigate this potential problem.
 
-The SSIM metric in general, and the implementation used in the evaluation return a value $\in [-1, 1]$ with 1 signifying an extremely similar image and -1 signifying a very different image. In order to more easily compare it with the RGB L1 error, the SSIM value is converted to an error value $ e \in [0,1]$, with 0 signifying an identical image and 1 signifying a very different image.
+The SSIM metric in general, and the implementation used in the evaluation\footnote{skimage.metrics.structural\_similarity \cite{skimage}} return a value $\in [-1, 1]$ with 1 signifying an extremely similar image and -1 signifying a very different image. In order to more easily compare it with the RGB L1 error, the SSIM value is converted to an error value $ e \in [0,1]$, with 0 signifying an identical image and 1 signifying a very different image.
 
-The SSIM error is calculated on the grayscale image in cubemap representation. There is no need to use an RGB image, since it does not use the color values of an image. The cubemap representation is again used for its minimal distortion attribute, since the behavior of the SSIM on distorted images is not clear.
+The SSIM error is calculated on the grayscale image in cubemap representation. There is no need to use an RGB image, since it does not use the color values of an image. To avoid possible problems with distortion, the cubemap representation is again used.
 
-\subsection{Result Visualization}
-- compare complete scenes with boxplot
-- compare positions in the scene with top view + color coded viewpoints
-- qualitative examination of specific result images
+\subsubsection{Result Analysis}
+The number of parameters and synthesized viewpoints combined with the comparison to the baseline results and the use of two different error metrics results in a large number of error values. In order to analyse these effectively, it is necessary to create different visualizations that highlight different attributes of the results.
+
+\paragraph{Distribution Comparison}
+The analysis starts with a comparison of error value distribution. In order to compare all the error values of a scenario, they are plotted using a boxplot. The different parameter variations of the scenario are plotted on the y axis and the error distribution (i.e. the error values of all the synthesized viewpoints) are plotted on the x axis. This allows for a general evaluation of the effect of the parameters examined in the scenario.
+
+\paragraph{Scene Analysis}
+Based on the insights gained in the distribution comparison, several interesting cases are selected for closer analysis. These cases are then examined by putting the error values of the synthesized viewpoints in context with the scene surroundings by color coding the error values and assigning the colors to the positions in the scene (e.g. Figure~\ref{fig:posmap_example}). For comparisons between different visualizations, the same color mapping is used. This way, it is possible to estimate the effect of the scenario parameters in conjunction with the scene geometry, which can help with understanding the effect of the parameters on the result accuracy.
+
+\begin{figure}
+		\centering
+		\includegraphics[width=0.3\textwidth]{04/posmap_example.jpg}
+		\caption{Example of the Scene Analysis Visualization: The error values are mapped to colors, with dark red representing the worst and dark blue the best value.}
+		\label{fig:posmap_example}
+\end{figure}
+
+\paragraph{Sample Inspection}
+In order to further understand the effects of the parameters on specific positions, some of the synthesised viewpoints from the scene analysis are examined manually by comparing the synthesized image to the ground truth image. The manual examination may also reveal information that the error metrics are unable to extract.
 
 \section{Evaluation of Limits using Virtual Scenes}
 
@@ -66,12 +101,20 @@ internal vs external parameters
   \item internal:
   \item viewpoint density
   \item distance of scene from model (checkersphere, square room, arbitrary room)
-  \item choice of gt points \ar fixed
   \item flow-based blending vs deviation-angle-based blending
   \item external:
   \item number of samples/viewpoints used for interpolation \ar two vs all within semi-large radius (all would be very computation intensive)
   \item limit to certain scenarios so that the explored space stays manageable
 \end{itemize}
+
+parameters that are not examined (within the assumptions of the function)
+\begin{itemize}
+  \item choice of gt points \ar fixed
+  \item \ar offset of synth point from the line between two points (this would measure the effect of th 2DoF approximation
+  \item distance from captured point (in the scenes, the gt points are always the furthest possible distance from all other points)
+  \item optical flow accuracy in relation to the scene size etc
+\end{itemize}
+limitations also here?
 
 \subsubsection{Choice of Ground Truth Viewpoints and Captures}
 
@@ -96,7 +139,8 @@ Checkersphere, square room, oblong room, (oblong room v2)
 \end{itemize}
 
 \subsection{Results}
-\paragraph{Minimum vs Maximum Number of Input Viewpoints}
+\subsubsection{Minimum vs Maximum Number of Input Viewpoints}
+input selection and scenes are var, all others are fixed
 \begin{verbatim}
 Hypothesis: 2vps is better for flow-based, radius is better for regular.
 flow based does not do well with image patches with different viewpoint indices
@@ -116,7 +160,8 @@ can still argue that >2 or >4 is computationally too costly for consideration
 
 \end{verbatim}
 
-\paragraph{Viewpoint density effect on flow-based blending and regular blending}
+\subsubsection{Viewpoint density effect on flow-based blending and regular blending}
+density, blending var, others fixed
 \begin{verbatim}
 Hypothesis: higher density --> better results, but difference is larger for flow-based.
 (optional: High density and 2vps may be better than 4)
@@ -129,7 +174,8 @@ Test:
 
 \end{verbatim}
 
-\paragraph{Flow-based blending vs regular depending on model-scene difference}
+\subsubsection{Flow-based blending vs regular depending on model-scene difference}
+blending and scene var, others fixed
 \begin{itemize}
   \item ``checkersphere'' in which the scene model exactly matches the scene
     \ar reprojection will yield exact results (excluding resolution)
@@ -143,7 +189,6 @@ Test: compare the two with their respective better vp selection in the different
 
 \end{verbatim}
 
-\paragraph{Position of Synthesized Viewpoint Relative to Objects}
 
 \section{Proof-of-Concept Evaluation of Real Scenes}
 
