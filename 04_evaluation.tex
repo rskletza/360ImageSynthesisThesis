@@ -1,19 +1,14 @@
 \chapter{Evaluation and Results} \label{chap:evaluation}
 
+Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis or image-based rendering for comparison with other methods. Instead, this chapter presents a basic evaluation of the algorithm presented in chapter~\ref{chap:implementation} that assesses the effects of different parameters by using mathematically calculable error metrics. Furthermore, it compares the results of regular blending, flow-based blending, and a naive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
 
-\begin{verbatim}
-- no publicly available benchmarks for 360\degree image synthesis / image based rendering available for comparison with other methods
-- scope: basic evaluation of mathematically measurable values (no human perception)
-- create virtual datasets to test the limits of the method
-- capture real datasets to perform a proof of concept
+First the evaluation methodology is presented, outlining how the effects of a parameter are measured and evaluated. Then, the limits of the algorithm are explored using virtual scenes. With the information gleaned from this limit evaluation, the parameters are chosen for a proof-of-concept evaluation using real scenes. The results and limitations are then discussed\ldots
 
-- these datasets could be used in the future to compare different algorithms
-- benchmark used will be nearest neighbor (naive algorithm)
-\end{verbatim}
+%- scope: basic evaluation of mathematically measurable values (no human perception)
+%- these datasets could be used in the future to compare different algorithms
 
 \section{Evaluation Methodology}
-In order to evaluate the effect of different parameters on the 2DoF synthesis algorithm developed in \ar scenarios, whether the
-The evaluation process of each scenario is divided into four phases: scenario definition, where the parameters to test in the scenario are selected, synthesis, where the synthesized images are calculated using the 2DoF synthesis presented in chapter~\ref{chap:implementation}, error calculation, where the accuracy of the synthesized images is measured, and result analysis, where the the cause and effect of the parameters is examined. 
+In order to evaluate the effect of different parameters on the 2DoF synthesis algorithm, it is necessary to define scenarios in which the evaluated parameter can be tested. The evaluation process of each scenario is divided into four phases: scenario definition, where the parameters to test in the scenario are selected, synthesis, where the synthesized images are calculated using the 2DoF synthesis presented in chapter~\ref{chap:implementation}, error calculation, where the accuracy of the synthesized images is measured, and result analysis, where the the cause and effect of the parameters is examined. The evaluation methodology is depicted in Figure~\ref{fig:eval-methodology}.
 
 \begin{figure}
 		\centering
@@ -31,7 +26,7 @@ The set of parameters (whether static or dynamic) contains the choice of scene i
 The synthesis step consists of two parts: the 2DoF synthesis presented in \ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a trivial algorithm. The results of the trivial algorithm serve as a baseline comparison to verify whether the developed 2DoF algorithm is an improvement to a naive approach. The trivial algorithm consists of simply selecting the nearest neighbor viewpoint based on euclidean distance. The input parameters are the same for both algorithms and both results are passed on to error calculation.
 
 \subsubsection{Error Calculation}
-In order to evaluate the synthesized images, it is necessary to define metrics with which to measure their accuracy. Since it is outside of the scope of this thesis to evaluate the quality of the results based on human perception, mathematical error metrics are used to compare each result to its ground truth image. Two different metrics are chosen based on different image features so that potential limitations of each metric can be compensated for by the other.
+In order to evaluate the synthesized images, it is necessary to define metrics with which to measure their accuracy. Since it is outside of the scope of this thesis to evaluate the quality of the results based on human perception, mathematical error metrics are used to compare each result to its ground truth image. Two different metrics are chosen based on different image features so that potential limitations of each metric can be compensated for by the other. However, it must be taken into account that neither are perfect for the task of measuring accuracy on 360\degree synthesized images, so their validity should always be taken with a grain of salt. 
 
 \paragraph{L1 error on RGB}
 The first metric is the L1 error calculated on the ground truth and result images in RGB color space. This is a simple error metric that calculates the mean absolute difference of the RGB values and therefore indicates the mean accuracy of each pixel of the image. The RGB errors of each pixel are added together for the complete image and then divided by the number of pixels in the image. This results in an error value $e \in [0,3]$, since the maximum error per pixel is 3 for floating point RGB color values $\in [0,1]$.
@@ -93,9 +88,38 @@ Based on the insights gained in the distribution comparison, several interesting
 \paragraph{Sample Inspection}
 In order to further understand the effects of the parameters on specific positions, some of the synthesised viewpoints from the scene analysis are examined manually by comparing the synthesized image to the ground truth image. The manual examination may also reveal information that the error metrics are unable to extract.
 
+\section{Parameters}
+Before defining the parameters to test in the limitation and proof-of-concept evaluations, this section gives an overview of possible parameters.
+The 2DoF approach already makes a number of assumptions (stated in section \ref{sec:approach} on page \pageref{sec:approach}), which are upheld in the evaluation. 
+
+There are two types of parameters that will be discussed: internal parameters (i.e. based within the algorithm), such as the blending type and the selection of input viewpoints, and external parameters (i.e. based on the properties of the captured scene), such as the viewpoint density, or the geometry of the scene. The internal parameters can be modified after capturing the scene, the external ones cannot. 
+
+The internal parameters based on the implementation from chapter~\ref{chap:implementation} are:
+\begin{itemize}
+  \item location of synthesized points in comparison to the scene
+  \item flow-based blending vs deviation-angle-based blending
+  \item selection of input viewpoints \ar two vs all within semi-large radius (all would be very computation intensive)
+  \item optical flow algorithm used for flow-based blending
+\end{itemize}
+
+There are more internal parameters that could theoretically be modified, such as the regular blending function (inverse sigmoid), or the method of approximation for 2DoF in flow-based blending, but these will be assumed as immutable for this evaluation, as this would be outside the scope of this thesis.
+
+As for the possible external parameters, the number of different possible scenes is infinite, but the assumed key parameters are:
+\begin{itemize}
+  \item type of scene (outdoor, indoor, etc) \ar size and shape of scene
+  \item objects within the scene
+  \item density of captured viewpoints (how many?)
+  \item distribution of captured viewpoints (where in the scene?)
+\end{itemize}
+limitations also here?
+limit to certain scenarios so that the explored space stays manageable
+
+optical flow:
+optical flow accuracy in relation to the scene size etc
+
 \section{Evaluation of Limits using Virtual Scenes}
 
-\subsection{Parameters}
+\subsection{Dynamic and Static Parameters}
 internal vs external parameters
 \begin{itemize}
   \item internal:
@@ -124,12 +148,13 @@ limitations also here?
 Checkersphere, square room, oblong room, (oblong room v2)
 
 \subsection{Synthesizing Ground Truth Optical Flow}
- only makes sense to compare if flow algorithm works more or less correctly \ar narrows the parameter space for comparison
-\begin{itemize}
-  \item optical flow ground truth is impossible to get from real scenes
-  \item however, virtual scenes contain all necessary information for retrieving ground truth for optical flow
-  \item virtual camera rig that captures one image per ``side'' with a fov that corresponds to that used in the ExtendedCubeMap \ar extended flow cube
-\end{itemize}
+As mentioned in section~\ref{subsec:optical_flow}, most optical flow algorithms struggle with large displacements. The flow-based blending algorithm used for the 2DoF synthesis, however, assumes perfect optical flow. As a result, there is no attempt to judge whether the optical flow calculation is feasible between two selected viewpoints, which means that given the wrong circumstances, the optical flow algorithm may fail, leading the flow-based blending to output undesirable results.
+
+However, the focus of this evaluation is the 2DoF synthesis algorithm and not the accuracy of an optical flow algorithm given different parameters. So, instead of calculating the optical flow on the virtually generated images, it is generated virtually along with the images. This ``ground truth'' optical flow was first presented by Butler et al.\ \cite{sintel} as a benchmark for optical flow algorithms but is used in this context to forego the optical flow calculation.
+
+%-optical flow ground truth is impossible to get from real scenes
+%-however, virtual scenes contain all necessary information for retrieving ground truth for optical flow
+%-virtual camera rig that captures one image per ``side'' with a fov that corresponds to that used in the ExtendedCubeMap \ar extended flow cube
 
 ``correctness'' of optical flow interpolation is limited even with ``perfect'' optical flow:
 \begin{itemize}

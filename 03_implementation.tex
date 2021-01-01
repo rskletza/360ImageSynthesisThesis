@@ -6,7 +6,7 @@
 
 This chapter presents the assumptions and simplifications made for the pixel-based synthesis of 360\degree viewpoints, the basic approach and an improvement to the basic approach based on flow-based blending from Richardt et al.'s Megastereo \cite{megastereo}, and the implementation details of the method.
 
-\section{Approach}
+\section{Approach} \label{sec:approach}
 %\begin{itemize}
 %  \item most other approaches rely on either geometry or correspondences
 %  \item usually some form of triangulation
@@ -20,12 +20,12 @@ This chapter presents the assumptions and simplifications made for the pixel-bas
 \subsection{Assumptions and Simplifications}
 \todo{running text}
 \begin{itemize}
-  \item static scene
-  \item all images were captured on a plane parallel to the floor that is at that is at z=0 (viewpoint plane)
-  \item all synthesized viewpoints are located inside the scene boundaries and are also on the plane
-  \item all images are oriented the same
-  \item the positions of the captures are known
-  \item the scale (radius) of the scene is known
+  \item the scene is static
+  \item all images were captured on a plane parallel to the floor (viewpoint plane)
+  \item all synthesized viewpoints are located inside the scene boundaries and are also located on the viewpoint plane
+  \item the positions and orientations of the captures are known
+  \item the scale (max radius) of the scene is known
+  \item the optical flow gives a decent result for any distance
 \end{itemize}
 
 \subsection{Basic 2DoF Synthesis} \label{subsec:basic-synthesis}
@@ -114,7 +114,7 @@ In order to do this, several steps of raytracing are necessary, which are visual
 \subsubsection{Deviation-angle-based Mosaicking}
 The example in Figure~\ref{fig:raytracing} contains only one captured viewpoint, so the choice of which viewpoint to use for texture lookup is trivial. In cases where several viewpoints are available, a choice must be made as to which viewpoint should be used. In the case where the real scene has the same geometry as the model sphere, this is practically irrelevant, since the raytracing is always accurate. However, this is unrealistic, since the number of spherical rooms containing no objects is negligible. As a result, as soon as the real scene differs from the model sphere, some viewpoints yield better results than others. Figure~\ref{fig:dev_angle}a shows how a discrepancy between the real scene and the model sphere can lead to inaccurate results.
 
-When comparing rays from different viewpoints, two metrics can be examined: the euclidean distance of the captured viewpoint from the synthesized viewpoint, and the deviation angle between the rays. Figure~\ref{fig:dev_angle}b visualizes the two metrics and in the example, the $vp2$ with the smaller deviation angle is a better match. In fact, assuming that there is no obscuring element in the air such as fog, and disregarding diffusion and scattering over distance, the same light ray is captured by any viewpoint located on the ray in question. This means the closer the deviation angle is to zero, the more accurate the result will be, no matter the distance of the viewpoints. However, sampling rates and resolution also have an effect on the sampled point, so the euclidean distance cannot be completely ignored.
+When comparing rays from different viewpoints, two metrics can be examined: the euclidean distance of the captured viewpoint from the synthesized viewpoint, and the deviation angle between the rays. Figure~\ref{fig:dev_angle}b visualizes the two metrics and in the example, the $vp2$ with the smaller deviation angle is a better match. In fact, assuming that there is no obscuring element in the air such as fog, and disregarding diffusion and scattering over distance, the same light ray is captured by any viewpoint located on the ray in question. This means the closer the deviation angle is to zero, the more accurate the result will be, no matter the distance of the viewpoints. However, sampling rates and resolution also have an effect on the sampled point, so the euclidean distance cannot be completely ignored. \todo{put a third image in fig 3.2 to illustrate the deviation angle 0}
 
 Instead of combining these metrics in a function that might have to be weighted differently depending on the scene size, the distribution viewpoints, and more, the choice of which viewpoints to use is divided into two different steps: The choice of input viewpoints from all captured viewpoints for the synthesis of a specific point, and the choice of which of the input viewpoints to use for each ray of the synthesized point. 
 
