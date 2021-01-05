@@ -14,16 +14,28 @@
 
 %\section{Fundamentals of 360\degree Images}
 \section{Fundamentals}
-Before diving in to image-based rendering techniques in general and the pixel-based synthesis presented in this thesis, it is important to understand some basic concepts and methods used. Since 360\degree images are used throughout, it is important to understand how such images are created and how the data can be visualized on a planar surface. Furthermore, the concept of optical flow is introduced, as it is utilized in the pixel-based synthesis.
+Before diving into image-based rendering techniques in general and the pixel-based synthesis presented in this thesis, it is important to understand some basic concepts and methods used. Since 360\degree images are used throughout, it is important to understand how such images are created and how the data can be visualized on a planar surface. Furthermore, the concept of optical flow is introduced, as it is utilized in the pixel-based synthesis.
 
-\subsubsection{360\degree Images}\label{subsec:fundamentals_360}
-Capturing an image with a 360\degree camera can be regarded mathematically as a series of projections. The sensors of a 360\degree camera can be simplified as a unit sphere covered in light receptors, where the number of light receptors corresponds to the resolution of the camera. This means that the complete surroundings are projected onto this sphere by way of incoming light rays (see Figure~\ref{fig:lightrays}). The limited number of sensors acts as a discretizer and captures a specific color value for each resolution point (pixel). At this point, the data is in \emph{world coordinates}, meaning that each pixel value corresponds to a point on the surface of the unit sphere. 
-\missingfigure{incoming light rays on unit sphere, maybe with uv indices \label{fig:lightrays}}
+\subsection{360\degree Images}\label{subsec:fundamentals_360}
+Capturing an image with a 360\degree camera can be regarded mathematically as a series of projections. The sensors of a 360\degree camera can be simplified as a unit sphere covered in light receptors, where the number of light receptors corresponds to the resolution of the camera. This means that the complete surroundings are projected onto this sphere by way of incoming light rays. The limited number of sensors acts as a discretizer and captures a specific color value for each sampling point (pixel). At this point, the data is in \emph{world coordinates}, meaning that each pixel value corresponds to a point on the surface of the unit sphere. 
+%\missingfigure{incoming light rays on unit sphere, maybe with uv indices \label{fig:lightrays}}
 
-As the majority of viewing devices is planar (e.g. computer or smartphone screens), the image data needs to be projected to a flat surface in order to be viewed on a flat screen. This problem is well-known in cartography, and several different types of projections exist, which transform the data from world coordinates to \emph{image coordinates}. No data loss \ar conversions between projections possible.
+\subsubsection{UV Mapping for Spherical Geometry}
+As the majority of viewing devices are planar (e.g. computer or smartphone screens), the image data needs to be projected to a flat surface in order to be viewed on a flat screen. This problem is known in computer graphics as \emph{uv mapping} or \emph{texture mapping}, and it describes the process that translates the data from world coordinates to \emph{image coordinates} and vice versa.
 
-\subsubsection{Projections for Planar Viewing \label{subsec:projections} \cite{hdrbook}}
-The most common projections for 360\degree images are the \emph{cube map}, the \emph{ideal mirrored sphere}, the \emph{angular map},  and the \emph{equirectangular} representaion, also known as \emph{latitude-longitude} (\emph{latlong}) \cite{hdrbook}.
+The pixel values in image coordinates (uv) are associated with the world coordinates (x,y,z) by a bijective mapping function. Figure~\ref{fig:uv_mapping} shows an example mapping between the unit sphere and an equirectangular image. In this example, the poles of the sphere are mapped to the entire top and bottom of the image, which means that the mapping function is not \emph{equal area} i.e. it does not conserve how much area a color value occupies. Often the image values are some type of color values, however, other kinds of information can be uv-mapped to a shape, for example illumination data, depth values (bump mapping), and more.
+
+\begin{figure}
+		\centering
+		\includegraphics[width=0.8\textwidth]{02/uv_mapping.png}
+		\caption[UV mapping example]{UV mapping example using an equirectangular image}
+		\label{fig:uv_mapping}
+\end{figure}
+
+In the case of 360\degree images, the first step after capture is to convert the captured color values to a a planar image for storage and viewing. There are a number of common different mappings for this task from which to choose from, depending on the application.
+
+\subsubsection{Mappings for Planar Representation of 360\degree Images \cite{hdrbook}}\label{subsec:projections}
+The most common mappings for 360\degree images are the \emph{cube map}, the \emph{ideal mirrored sphere}, the \emph{angular map},  and the \emph{equirectangular map} \cite{hdrbook}. The image data can be projected with any of these mappings without data loss.\todo{not 100\% sure that this is true}
 
 \paragraph{Cube Map}
 The cube map is a mapping that splits the data into six separate square views, one in each direction (top, front, left, right, back, bottom). This is the equivalent of capturing the surroundings with six different cameras with a field of view of 90\degree each, and then stitching the resulting images into a shape that can be ``folded'' into a cube (see Figure~\ref{fig:cubemap-intro}), which also gives this mapping its name.
@@ -32,14 +44,14 @@ Due to the projection of a spherical surface to a plane, there is some distortio
 \cite{hdrbook}
 
 \paragraph{Ideal Mirrored Sphere}
-The ideal mirrored sphere is a mapping to a circle within a square. It represents how the surroundings would be reflected by a perfect mirrored sphere, given the size of the sphere was considerably smaller than the distance to the surroundings. This mapping, like all the mappings presented here, shows the complete surroundings, albeit very distorted toward the edges. Figure~\ref{fig:sphere-intro}b shows where each direction is mapped and the extent of the distortion. It is clear that the farther away from the ``front'' area, the more distorted the mirrored sphere mapping is. The ideal mirrored sphere mapping can be used for calculating average illumination color for high dynamic range calculations, however, the type of distortion at the edges can cause problems with sampling, which is why the angular map mapping tends to be preferred.
+The ideal mirrored sphere is a mapping to a circle within a square. It represents how the surroundings would be reflected by a perfect mirrored sphere photographed by an orthographic camera, given the size of the sphere was considerably smaller than the distance to the surroundings. This mapping, like all the mappings presented here, shows the complete surroundings, albeit very distorted toward the edges. Figure~\ref{fig:sphere-intro}b shows where each direction is mapped and the extent of the distortion. It is clear that the farther away from the ``front'' area, the more distorted the mirrored sphere mapping is. The ideal mirrored sphere mapping can be used for calculating average illumination color for high dynamic range calculations, however, the type of distortion at the edges can cause problems with sampling, which is why the angular map mapping tends to be preferred.
 \cite{hdrbook}
 
 \paragraph{Angular Map}
 At first sight, the angular map seems very similar to the ideal mirrored sphere. It also maps to a circle within a square, however it samples the input in such a way that the back of the image is allotted more space and is less distorted than the mirrored sphere (see Figure~\ref{fig:angular-intro}). This mapping is also used for high dynamic range calculations.
 
-\paragraph{Equirectangular}
-The equirectangular, or latitude-longitude mapping is a common type of mapping in cartography. The data is mapped to a rectangular image space, in which the width is twice the height. The azimuth (around the circumference) of the world coordinates is mapped to the map's horizontal coordinate and the elevation to the vertical coordinate. The main problem of this representation is well known in cartography: The distortion increases significantly towards the poles, as can be seen in Figure~\ref{fig:latlong-intro}. Otherwise, this mapping is convenient as it has very few seams. It is used as a storage format for 360\degree images.
+\paragraph{Equirectangular Map}
+The equirectangular, or latitude-longitude (latlong) mapping is a common type of mapping in cartography. The data is mapped to a rectangular image space, in which the width is twice the height. The azimuth (around the circumference) of the world coordinates is mapped to the map's horizontal coordinate and the elevation to the vertical coordinate. The main problem of this representation is well known in cartography: The distortion increases significantly towards the poles, as can be seen in Figure~\ref{fig:latlong-intro}. Otherwise, this mapping is convenient as it has very few seams and all pixels are valid (i.e. no ``black'' areas). It is used as a storage format for 360\degree images.
 
 \paragraph*{}
 All of these projections are static, showing the entirety of the 360\degree image at once. It is also possible to view 360\degree images interactively. In this case the field of view tends to be limited, so only a certain part of the image needs to be projected: the part of the image the viewer is ``facing'' virtually. Once the viewing direction has been determined, the projection can be calculated such that the center of the image has minimal distortion. Theoretically, any of the above projections could be used for this. 
@@ -56,7 +68,7 @@ All of these projections are static, showing the entirety of the 360\degree imag
     \begin{subfigure}[t]{0.5\textwidth}
             \centering
             \includegraphics[width=0.5\textwidth]{02/mapping_cube.jpg}
-            \caption{Visualization for comparison to other mappings \protect\footnotemark}
+            \caption{Distortion visualization}
     \end{subfigure}
     \caption[Cube map mapping]{The cube map mapping}\label{fig:cubemap-intro}
 
@@ -71,7 +83,7 @@ All of these projections are static, showing the entirety of the 360\degree imag
     \begin{subfigure}[t]{0.5\textwidth}
             \centering
             \includegraphics[width=0.5\textwidth]{02/mapping_sphere.jpg}
-            \caption{Visualization for comparison to other mappings}
+            \caption{Distortion visualization}
     \end{subfigure}
     \caption[Mirrored sphere mapping]{The mirrored sphere mapping}\label{fig:sphere-intro}
 
@@ -86,7 +98,7 @@ All of these projections are static, showing the entirety of the 360\degree imag
     \begin{subfigure}[t]{0.5\textwidth}
             \centering
             \includegraphics[width=0.5\textwidth]{02/mapping_angular.jpg}
-            \caption{Visualization for comparison to other mappings}
+            \caption{Distortion visualization}
     \end{subfigure}
     \caption[Angular mapping]{The angular mapping}\label{fig:angular-intro}
 
@@ -101,25 +113,24 @@ All of these projections are static, showing the entirety of the 360\degree imag
     \begin{subfigure}[t]{0.5\textwidth}
             \centering
             \includegraphics[width=0.9\textwidth]{02/mapping_latlong.jpg}
-            \caption{Visualization for comparison to other mappings}
+            \caption{Distortion visualization}
     \end{subfigure}
     \caption[Latlong mapping]{The latlong mapping}\label{fig:latlong-intro}
   \end{figure}
   \footnotetext{Figure~\ref{fig:cubemap-intro}b does not correctly represent the distortion in cube maps. It was chosen as a baseline because cube maps have relatively small distortion compared to other mappings and it visualizes clearly which parts of the image are mapped where.}
 
-
-\subsubsection{Optical Flow}
+\subsection{Optical Flow} \label{subsec:optical_flow}
 Optical flow describes the displacement of specific points between two images. It is generally used on consecutive frames of video sequences, for example for semantic segmentation, structure-from-motion, data compression or other applications where information about movement between images is required. To illustrate, Figure~\ref{fig:of_example_bike} shows two consecutive frames of a video sequence. On a high level, an optical flow algorithm should recognize that the pixels representing the bicyclist are moving towards the bottom left of the image, and the pixels representing the background are moving to the right (because the camera is panning slightly to the left).
 
 There are two types of optical flow: Sparse optical flow and dense optical flow. Sparse optical flow algorithms calculate the motion of several select points that can be either chosen manually, or by some kind of automatic selection (e.g. based on features). This type of optical flow can be used to track only specific objects in a scene (e.g. the direction and relative velocity of a certain car in traffic).
 
-Dense optical flow algorithms compute the motion of \emph{each pixel} between two images, which yields a more exact result than sparse optical flow. This can be used for more general object tracking (e.g. direction and relative velocity of complete surroundings in traffic), to estimate 3D geometry (in structure-from-motion algorithms), or to identify static sections of the image for video compression. Dense optical flow can also be used for image synthesis, such as in Richardt et al's Megastereo \cite{megastereo} described in section~\ref{subsec:megastereo}, which is also the basis of the flow-based interpolation presented in this thesis.
+Dense optical flow algorithms compute the motion of \emph{each pixel} between two images, which yields a more exact result than sparse optical flow. This can be used for more general object tracking (e.g. direction and relative velocity of complete surroundings in traffic), to estimate 3D geometry (in structure-from-motion algorithms), or to identify static sections of the image for video compression. Dense optical flow can also be used for image synthesis, such as in Richardt et al's Megastereo \cite{megastereo} described in Section~\ref{subsec:megastereo}, which is also the basis of the flow-based interpolation presented in this thesis.
 
 There are a number of optical flow algorithms, ranging from methods using parametrization, or regularization \cite{of-survey}, to methods relying on Deep Learning \cite{of-deep}. Although these algorithms differ greatly in approach, they have in common the type of result, which is a vector field. For dense optical flow, this vector field contains a vector for each pixel, describing the displacement of this pixel between the input images. Sparse optical flow only contains a vector for each pre-chosen point, not for every pixel.
 
-Figure~\ref{fig:of_vis} shows two different visualizations of the vector field calculated by the dense optical flow algorithm by Farneb\"ack \cite{farneback} between the frames in Figure~\ref{fig:of_example_bike}. Visualization \emph{a} is a color-based visualization: the hue encodes the vector direction, the saturation encodes the vector length for each pixel. Using this visualization, it is possible to roughly distinguish two separately moving areas of the image, which could be used for semantic segmentation. Visualization \emph{b} shows the pixel displacements with vectors: the origin of the vector is shown by a point and the direction and length of the vector are represented by a line.
+Figure~\ref{fig:of_vis} shows two different visualizations of the vector field calculated by the dense optical flow algorithm by Farneb\"ack \cite{farneback} between the frames in Figure~\ref{fig:of_example_bike}. Figure~\ref{fig:of_vis}a is a color-based visualization: the hue encodes the vector direction, the saturation encodes the vector length for each pixel. Using this visualization, it is possible to roughly distinguish two separately moving areas of the image, which could be used for semantic segmentation. Figure~\ref{fig:of_vis}b shows the pixel displacements with vectors: the origin of the vector is shown by a point and the direction and length of the vector are represented by a line.
 
-These visualizations can help in understanding if and how well an optical flow algorithm is working. Although there are a large number of different algorithms, most of them still struggle with common issues such as occlusions, too-large displacements and intensity changes \cite{of-survey}. Occlusions are problematic, since the displacements between two images may reveal or cover image areas that, as a result, have no correspondence in the previous image. This problem is exacerbated when displacements are very large (e.g. due to fast-moving objects). Large displacements are also problematic by and of themselves, as most algorithms are not designed to handle them. How these limitations affect the use of optical flow for image synthesis will be explored in Section~\ref{evaluation-1D}.
+These visualizations can help in understanding if and how well an optical flow algorithm is working. Although there are a large number of different algorithms, most of them still struggle with common issues such as occlusions, too-large displacements and intensity changes \cite{of-survey}. Occlusions are problematic, since the displacements between two images may reveal or cover image areas that, as a result, have no correspondence in the previous image. This problem is exacerbated when displacements are very large (e.g. due to fast-moving objects). Large displacements are also problematic by and of themselves, as most algorithms are not designed to handle them. How these limitations affect the use of optical flow for image synthesis will be explored in chapters~\ref{chap:implementation} and \ref{chap:evaluation}.
 
 \begin{figure}
 \centering
@@ -152,15 +163,6 @@ These visualizations can help in understanding if and how well an optical flow a
     \end{subfigure}
     \caption[Optical flow visualizations]{Optical flow visualizations}\label{fig:of_vis}
 \end{figure}
-
-\subsubsection{Spherical Coordinate System}
-too trivial?
-
-\subsubsection{UV Coordinates for Spherical Geometry}
-\begin{itemize}
-  \item what are uv coordinates
-  \item how can they be used for 360\degree images (mapping different projections)
-\end{itemize}
 
 \section{Related Work}
 \begin{comment}
