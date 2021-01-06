@@ -55,11 +55,10 @@ The evaluation is divided into two distinct phases: an evaluation of limits usin
 \end{figure}
 
 \subsubsection{Scenario Definition}
-Since only In order to do this, a \emph{scenario} is designed for each selected parameter that attempts to demonstrate the effect of this parameter on the accuracy of the result.
-
-First, a scenario must be defined that illustrates the parameter that should be examined. This includes determining which of the parameters should be static, and which should be dynamic. There are two dynamic parameters at maximum, one to be examined, and one to increase the significance of the results. Adding more dynamic parameters at per scenario would allow for a more definitive evaluation, but is outside of the scope of this thesis.
+First, a scenario must be defined that illustrates the parameter that should be examined. This includes determining which of the parameters should be static, and which should be dynamic. There are two dynamic parameters at maximum, one to be examined, and one to increase the significance of the results. Adding more dynamic parameters per scenario would allow for a more definitive evaluation, but is outside of the scope of this thesis.
 
 The set of parameters (whether static or dynamic) contains the choice of scene in which to synthesize the images. The scene is defined by its captured viewpoints, metadata, and radius, which are all passed on to the synthesis step along with the other parameters defined for the scenario.
+\todo{rewrite this section}
 
 \subsubsection{Synthesis}
 The synthesis step consists of two parts: the 2DoF synthesis presented in Chapter~\ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a naive algorithm.
@@ -242,6 +241,7 @@ Test: compare the two with their respective better vp selection in the different
 
 
 \section{Proof-of-Concept Evaluation using Real Scenes}
+%- captured using Ricoh Theta Z1 on a tripod
 
 \section{Discussion}
 
@@ -278,5 +278,6 @@ Assuming radius accuracy does in fact make a slight assumption about the scene g
   \item parallelization and offloading to gpu
   \item improve choice of $\delta$
   \item human perception evaluation with user study
+  \item tradeoff between line consistency and perspective accuracy \ar would be interesting to introduce color constraints / optical flow smoothing, or other techniques to avoid discontinuities. this may come at the cost of accuracy
 \end{itemize}
 

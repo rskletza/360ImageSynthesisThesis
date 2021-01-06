@@ -17,16 +17,18 @@ This chapter presents the assumptions and simplifications made for the pixel-bas
 %  \item pixel-based, in that each pixel is calculated separately, there are not image-area based constraints
 %\end{itemize}
 
-\subsection{Assumptions and Simplifications}
-\todo{running text}
+\subsection{Assumptions}
+In order to simplify the process of synthesis, some assumptions are made based on the scene and the viewpoints in the scene:
+
 \begin{itemize}
   \item the scene is static
-  \item all images were captured on a plane parallel to the floor (viewpoint plane)
+  \item all images are captured on a plane parallel to the floor (viewpoint plane)
   \item all synthesized viewpoints are located inside the scene boundaries and are also located on the viewpoint plane
   \item the positions and orientations of the captures are known
   \item the scale (max radius) of the scene is known
-  \item the optical flow gives a decent result for any distance
 \end{itemize}
+
+Furthermore, for the moment, it is assumed that the optical flow algorithm used in the flow-based blending calculates a decent result between any pair of viewoints.
 
 \subsection{Basic 2DoF Synthesis} \label{subsec:basic-synthesis}
 With these assumptions and using a basic model geometry with approximately the same scale as the captured scene, it is already possible to synthesize new viewpoints with varying accuracy, depending on the scene. The process presented here for basic 2DoF synthesis is a combination of texture lookup through raytracing, and mosaicking by using a constraint based on the ray deviation angle.
@@ -312,7 +314,7 @@ The basic 2DoF synthesis and the 2DoF synthesis with flow-based blending are imp
 \missingfigure{2DoF process diagram}
 
 \subsection{Preprocessing}
-The input data consists of a set of captured viewpoint images, a text file containing the metadata (positions and orientations) of these viewpoints, and the approximate scene radius. In order to easily and intuitively access the locations and image data of the captured viewpoints, the data is encapsulated in the CaptureSet class. The CaptureSet class first parses the metadata, then, with this information, rotates all the images so that they have the same orientation, and shifts the viewpoint cloud so that it is centered around the origin (0,0,0). This is done under the assumption that images were captured in a regular distribution throughout the room. The model sphere representing the scene is also centered at the origin. Instead of storing the image data directly in the CaptureSet, the file paths are stored so that the images can be dynamically loaded when needed. The CaptureSet can then be used by the ImgSynthesizer to synthesize a new image either using regular blending or flow-based blending at any given location within the scene\footnote{Given that it is within the convex hull of the captured viewpoints}.
+The input data consists of a set of captured viewpoint images in equirectangular representation, a text file containing the metadata (positions and orientations) of these viewpoints, and the approximate scene radius. In order to easily and intuitively access the locations and image data of the captured viewpoints, the data is encapsulated in the CaptureSet class. The CaptureSet class first parses the metadata, then, with this information, rotates all the images so that they have the same orientation, and shifts the viewpoint cloud so that it is centered around the origin (0,0,0). This is done under the assumption that images were captured in a regular distribution throughout the room. The model sphere representing the scene is also centered at the origin. Instead of storing the image data directly in the CaptureSet, the file paths are stored so that the images can be dynamically loaded when needed. The CaptureSet can then be used by the ImgSynthesizer to synthesize a new image either using regular blending or flow-based blending at any given location within the scene\footnote{Given that it is within the convex hull of the captured viewpoints}.
 
 \subsection{Basic 2DoF Synthesis}
 For the basic 2DoF Synthesis, the steps described in detail in this section are the calculation of the ray-scene intersection and the texture lookup, as well as the deviation angle calculation and blending function introduced in Section~\ref{subsec:basic-synthesis}.
@@ -349,7 +351,7 @@ The point $P$ in Equation~\ref{eq:rsi_sphereP} can be substituted with the equat
 
 This equation can then be solved for t. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e. two intersections): one for which the vector length $t$ is negative, and one for which the vector length is positive. Since the original ray used for the calculation is unidirectional (i.e. it cannot invert its direction), it needs to be extended by a positive value. The original ray, being a unit ray of length 1, can then be multiplied by the positive $t$, which yields the intersection point. 
 
-Using Numpy's vectorization, this calculation can be performed on a matrix of values, representing all the rays of the synthesized image.
+The vectors and intersection points are each calculated and stored in latlong representation (i.e. matrix of vectors of the same shape as the latlong image), which means that they can handily be associated with the world coordinates, as well as the uv coordinates (and thus, pixel values) using the latlong mapping function. By storing the values in this representation (i.e. 3D matrix), Numpy's vectorization can be used, which greatly facilitates implementation.
 
 \subsubsection{Texture Lookup}
 The texture lookup shown in Figure~\ref{fig:raytracing}d-f is performed by resampling using uv coordinates. Given a captured viewpoint at the location V and the ray-scene intersections from the synthesized viewpoint $T_i$, where $i$ denotes which ray is being examined, the rays from the V to the intersections can easily be calculated by $T_i-V$ (see Figure~\ref{fig:impl_texture_lookup}a). These rays are then normalized to have length 1 and returned to model space (see Figure~\ref{fig:impl_texture_lookup}b). The normalized rays in model space are then transformed from world coordinates to image coordinates. These image coordinates (i.e. uv coordinates) can be used to resample the data, which is equivalent to actually performing a ray-by-ray texture lookup, but much faster. The result of the resampling along with the ``new'' rays is shown in Figure~\ref{fig:impl_texture_lookup}c. This resampling based on uv coordinates is implemented in the library Skylibs \cite{skylibs} and utilizes Scipy's function \emph{scipy.ndimage.map\_coordinates}.
@@ -384,9 +386,28 @@ The texture lookup shown in Figure~\ref{fig:raytracing}d-f is performed by resam
   \caption{Texture lookup by uv remapping} \label{fig:impl_texture_lookup}
 \end{figure}
 
-
 \subsubsection{Deviation Angle Calculation and Knn Blending}
-The deviation angle calculation is a simple angle calculation between vectors. This calculation is performed for each ray of the synthesized point and the corresponding rays of all of the input viewpoints. This results in an association of each ray/pixel of the synthesized image to a set of deviation angles (one for each input viewpoint). For each pixel, the best k input viewpoints are extracted and the ``regular'', k-nearest-neighbor (knn) blending is performed.
+The deviation angle calculation is a simple angle calculation between vectors. This calculation is performed for each ray of the synthesized point and the corresponding rays of all of the input viewpoints.
+Again, the deviation angles per viewpoint are stored in latlong representation (Figure~\ref{fig:dev_angle_storage}a). The deviation angles for all viewpoints are stacked in a three-dimensional matrix, which allows comparison of the deviation angles per pixel/ray of all the viewpoints (Figure~\ref{fig:dev_angle_storage}b). This makes the  of the viewpoint per pixel very straightforward, since the id of the k best input viewpoints can easily be extracted and the corresponding pixel value retrieved. With this information, the ``regular'', k-nearest-neighbor (knn) blending is performed.
+\todo{whyyy arent the two dev angle images not the same size??}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[t]{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{03/impl_dev_storage01.png}
+            \caption{The deviation angles of one input viewpoint in latlong format}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{03/impl_dev_storage02.png}
+            \caption{The stacked deviation angles of all input viewpoints}
+    \end{subfigure}
+    \hfill
+  \caption{Visualization of deviation angle storage} \label{fig:dev_angle_storage}
+\end{figure}
 
 The regular blending function combines the values of the rays of the k closest deviation angles $\alpha$. The idea behind it is to weight deviation angles of 0 very highly and all larger deviation angles with exponentially low values. This is done with an inverse sigmoid function (Function~\ref{eq:sigmoid}, visualized in Figure~\ref{fig:sigmoid}). The parameters of the function were found by trial and error.
 
@@ -491,6 +512,7 @@ Before passing this on to the blending step of the 2DoF synthesis, the \emph{Ext
 \subsection{Performance}
 %- no parallelization at the moment
 %- O(n^2) because of per-pixel calculations
+%- latlong storage maybe not best option, since there is lots of redundancy
 
 \subsection{Limitations}
 errors that are unrelated to the algorithm:

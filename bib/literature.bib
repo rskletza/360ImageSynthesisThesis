@@ -1,3 +1,34 @@
+############## papers on synthesis ##############
+
+@INPROCEEDINGS{360flowblending,
+  author={S. {Kolhatkar} and R. {Laganière}},
+  booktitle={2010 Canadian Conference on Computer and Robot Vision},
+  title={Real-Time Virtual Viewpoint Generation on the GPU for Scene Navigation},
+  year={2010},
+  volume={},
+  number={},
+  pages={55-62},
+  doi={10.1109/CRV.2010.14}}
+- also a type of flow-based blending, but 1DoF
+
+@inproceedings{simple_poster,
+author = {Kawai, Naoki},
+title = {A Simple Method for Light Field Resampling},
+year = {2017},
+isbn = {9781450350150},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3102163.3102174},
+doi = {10.1145/3102163.3102174},
+booktitle = {ACM SIGGRAPH 2017 Posters},
+articleno = {15},
+numpages = {2},
+keywords = {view interpolation, light field, virtual reality},
+location = {Los Angeles, California},
+series = {SIGGRAPH '17}
+}
+- does reprojection based on sphere
+
 @inproceedings{megastereo,
   author    = {Christian Richardt and Yael Pritch and Henning Zimmer and Alexander Sorkine-Hornung},
   title     = {Megastereo: Constructing High-Resolution Stereo Panoramas},
@@ -18,15 +49,7 @@
   year={2017},
   pages={37-44}
 }
-
-@book{hdrbook,
-  author = {Reinhard, Erik and Ward, Greg and Pattanaik, Sumanta and Debevec, Paul},
-  title = {High Dynamic Range Imaging: Acquisition, Display, and Image-Based Lighting (The Morgan Kaufmann Series in Computer Graphics)},
-  year = {2005},
-  isbn = {0125852630},
-  publisher = {Morgan Kaufmann Publishers Inc.},
-  address = {San Francisco, CA, USA}
-}
+- generate geo with adapted SfM
 
 @INPROCEEDINGS{raytracing,
   author={F. {Shi} and R. {Laganiere} and E. {Dubois} and F. {Labrosse}},
@@ -39,6 +62,7 @@
   pages={200-207},
   doi={10.1109/CRV.2009.34}
 }
+- color consistency constraint (brute force or with dense geo)
 
 @inproceedings{walkthrough,
   author = {Kawai, Naoki and Audras, C\'{e}dric and Tabata, Sou and Matsubara, Takahiro},
@@ -56,16 +80,7 @@
   location = {Anaheim, California},
   series = {SIGGRAPH '16}
 }
-
-@book{hartley_zisserman_2004,
- place={Cambridge},
- edition={2},
- title={Multiple View Geometry in Computer Vision},
- DOI={10.1017/CBO9780511811685},
- publisher={Cambridge University Press},
- author={Hartley, Richard and Zisserman, Andrew},
- year={2004}
-}
+- 4 360 panos, reshape by using manual correspondences
 
 @ARTICLE{geometry97,
   author={T. {Kanade} and P. {Rander} and P. J. {Narayanan}},
@@ -78,6 +93,78 @@
   pages={34-47},
   doi={10.1109/93.580394}
 }
+- meticulously record geo during capture (historic)
+
+@ARTICLE{cube2video,
+  author={Q. {Zhao} and L. {Wan} and W. {Feng} and J. {Zhang} and T. {Wong}},
+  journal={IEEE Transactions on Multimedia}, 
+  title={Cube2Video: Navigate Between Cubic Panoramas in Real-Time},
+  publisher={{IEEE} Computer Society},
+  year={2013},
+  volume={15},
+  number={8},
+  pages={1745-1754},
+  doi={10.1109/TMM.2013.2280249}}
+- 1DoF, 
+
+@inproceedings{quicktime,
+author = {Chen, Shenchang Eric},
+title = {QuickTime VR: An Image-Based Approach to Virtual Environment Navigation},
+year = {1995},
+isbn = {0897917014},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/218380.218395},
+doi = {10.1145/218380.218395},
+booktitle = {Proceedings of the 22nd Annual Conference on Computer Graphics and Interactive Techniques},
+pages = {29–38},
+numpages = {10},
+keywords = {real-time display, panoramic images, virtual reality, view interpolation, image registration, environment maps, image warping},
+series = {SIGGRAPH '95}
+}
+- first ibr (historic)
+
+@INPROCEEDINGS{Adelson91,
+    author = {Edward H. Adelson and James R. Bergen},
+    title = {The Plenoptic Function and the Elements of Early Vision},
+    booktitle = {Computational Models of Visual Processing},
+    year = {1991},
+    pages = {3--20},
+    publisher = {MIT Press}
+}
+- historic
+
+############## surveys on synthesis ##############
+
+@inproceedings{survey2000,
+author = {Harry Shum and Sing Bing Kang},
+title = {{Review of image-based rendering techniques}},
+volume = {4067},
+booktitle = {Visual Communications and Image Processing 2000},
+editor = {King N. Ngan and Thomas Sikora and Ming-Ting Sun},
+organization = {International Society for Optics and Photonics},
+publisher = {SPIE},
+pages = {2 -- 13},
+year = {2000},
+doi = {10.1117/12.386541},
+URL = {https://doi.org/10.1117/12.386541}
+}
+
+@article{survey2004,
+title = "A survey on image-based rendering—representation, sampling and compression",
+journal = "Signal Processing: Image Communication",
+volume = "19",
+number = "1",
+pages = "1 - 28",
+year = "2004",
+issn = "0923-5965",
+publisher = "Elsevier",
+doi = "https://doi.org/10.1016/j.image.2003.07.001",
+url = "http://www.sciencedirect.com/science/article/pii/S0923596503001073",
+author = "Cha Zhang and Tsuhan Chen",
+}
+
+############## papers on misc ##############
 
 @InProceedings{farneback,
 author="Farneb{\"a}ck, Gunnar",
@@ -120,80 +207,6 @@ isbn = {978-3-030-32582-4},
 doi = {10.1007/978-3-030-32583-1_12}
 }
 
-@ARTICLE{cube2video,
-  author={Q. {Zhao} and L. {Wan} and W. {Feng} and J. {Zhang} and T. {Wong}},
-  journal={IEEE Transactions on Multimedia}, 
-  title={Cube2Video: Navigate Between Cubic Panoramas in Real-Time},
-  publisher={{IEEE} Computer Society},
-  year={2013},
-  volume={15},
-  number={8},
-  pages={1745-1754},
-  doi={10.1109/TMM.2013.2280249}}
-
-@inproceedings{quicktime,
-author = {Chen, Shenchang Eric},
-title = {QuickTime VR: An Image-Based Approach to Virtual Environment Navigation},
-year = {1995},
-isbn = {0897917014},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/218380.218395},
-doi = {10.1145/218380.218395},
-booktitle = {Proceedings of the 22nd Annual Conference on Computer Graphics and Interactive Techniques},
-pages = {29–38},
-numpages = {10},
-keywords = {real-time display, panoramic images, virtual reality, view interpolation, image registration, environment maps, image warping},
-series = {SIGGRAPH '95}
-}
-
-@inproceedings{survey2000,
-author = {Harry Shum and Sing Bing Kang},
-title = {{Review of image-based rendering techniques}},
-volume = {4067},
-booktitle = {Visual Communications and Image Processing 2000},
-editor = {King N. Ngan and Thomas Sikora and Ming-Ting Sun},
-organization = {International Society for Optics and Photonics},
-publisher = {SPIE},
-pages = {2 -- 13},
-year = {2000},
-doi = {10.1117/12.386541},
-URL = {https://doi.org/10.1117/12.386541}
-}
-
-@article{survey2004,
-title = "A survey on image-based rendering—representation, sampling and compression",
-journal = "Signal Processing: Image Communication",
-volume = "19",
-number = "1",
-pages = "1 - 28",
-year = "2004",
-issn = "0923-5965",
-publisher = "Elsevier",
-doi = "https://doi.org/10.1016/j.image.2003.07.001",
-url = "http://www.sciencedirect.com/science/article/pii/S0923596503001073",
-author = "Cha Zhang and Tsuhan Chen",
-}
-
-@INPROCEEDINGS{Adelson91,
-    author = {Edward H. Adelson and James R. Bergen},
-    title = {The Plenoptic Function and the Elements of Early Vision},
-    booktitle = {Computational Models of Visual Processing},
-    year = {1991},
-    pages = {3--20},
-    publisher = {MIT Press}
-}
-
-@book{cv_book,
-author = {Szeliski, Richard},
-title = {Computer Vision: Algorithms and Applications},
-year = {2010},
-isbn = {1848829345},
-publisher = {Springer-Verlag},
-address = {Berlin, Heidelberg},
-edition = {1st},
-}
-
 @article{fov,
 author = {Shih, YiChang and Lai, Wei-Sheng and Liang, Chia-Kai},
 title = {Distortion-Free Wide-Angle Portraits on Camera Phones},
@@ -212,6 +225,39 @@ articleno = {61},
 numpages = {12},
 keywords = {content-aware warping, perspective correction, computational photography}
 }
+
+############## reference books ##############
+
+@book{hdrbook,
+  author = {Reinhard, Erik and Ward, Greg and Pattanaik, Sumanta and Debevec, Paul},
+  title = {High Dynamic Range Imaging: Acquisition, Display, and Image-Based Lighting (The Morgan Kaufmann Series in Computer Graphics)},
+  year = {2005},
+  isbn = {0125852630},
+  publisher = {Morgan Kaufmann Publishers Inc.},
+  address = {San Francisco, CA, USA}
+}
+
+@book{hartley_zisserman_2004,
+ place={Cambridge},
+ edition={2},
+ title={Multiple View Geometry in Computer Vision},
+ DOI={10.1017/CBO9780511811685},
+ publisher={Cambridge University Press},
+ author={Hartley, Richard and Zisserman, Andrew},
+ year={2004}
+}
+
+@book{cv_book,
+author = {Szeliski, Richard},
+title = {Computer Vision: Algorithms and Applications},
+year = {2010},
+isbn = {1848829345},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+edition = {1st},
+}
+
+############## software ##############
 
 @misc{python,
     author = {{Python Software Foundation}},
@@ -254,7 +300,6 @@ keywords = {content-aware warping, perspective correction, computational photogr
     version = {2.79},
     year = {2020}
 }
-
 
 @misc{skylibs,
     author = {{Hold, Yannick (Soravux)}},
