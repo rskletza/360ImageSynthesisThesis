@@ -1,8 +1,8 @@
 \chapter{Evaluation and Results} \label{chap:evaluation}
-\ldots
-Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis or image-based rendering for comparison with other methods. Instead, this chapter presents a basic evaluation of the algorithm presented in Chapter~\ref{chap:implementation} that assesses the effects of different parameters on the accuracy of the resulting image compared to the ground truth by using mathematically calculable error metrics. Furthermore, it compares the results of regular blending, flow-based blending, and a naive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
+Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis with two degrees of freedom without 3D geometry, as not many methods exist that try to achieve this. Since the approach presented in Chapter~\ref{chap:implementation} is a first, basic attempt at solving this problem, this chapter presents a basic evaluation of the algorithm, based on mathematically calculable error metrics. These metrics measure the accuracy of a synthesized image compared to the ground truth and are used to assess the effect of a limited number of parameters.
+%Furthermore, it compares the results of regular blending, flow-based blending, and a naive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
 
-First, possible parameters are presented \ldots \todo{structure of the chapter}
+First, possible parameters are discussed (Section~\ref{sec:params}), followed by the presentation of the evaluation methodology (Section~\ref{sec:eval_methodology}). Then a limit evaluation is performed on virtually generated scenes to explore the limits of the algorithm in a controlled environment (Section~\ref{sec:limit_eval}). Based on the knowledge gained in the limit evaluation, a proof-of-concept evaluation is performed on real scenes (Section~\ref{sec:pof_eval}). Finally, the aggregate evaluation findings are discussed (Section~\ref{sec:discussion}).
 
 %First the evaluation methodology is presented, outlining how the effects of a parameter are measured and evaluated. Then, the limits of the algorithm are explored using virtual scenes. With the information gleaned from this limit evaluation, the parameters are chosen for a proof-of-concept evaluation using real scenes. The results and limitations are then discussed\ldots
 
@@ -13,17 +13,23 @@ First, possible parameters are presented \ldots \todo{structure of the chapter}
 %- scope: basic evaluation of mathematically measurable values (no human perception)
 %- these datasets could be used in the future to compare different algorithms
 
-\section{Parameters}
+\section{Parameters} \label{sec:params}
 Before defining the parameters to test in the limitation and proof-of-concept evaluations, this section gives an overview of possible parameters in the context of the 2DoF algorithm presented in Chapter~\ref{chap:implementation}.
 The 2DoF algorithm already makes a few assumptions, for example the constraint to the viewpoint plane, the fact that the scene is static, and more (stated in Section \ref{sec:approach} on page \pageref{sec:approach}). These assumptions are upheld in the evaluation, as they are prerequisite to the function of the algorithm.
 
-The remaining parameters (that are not constrained by the assumptions) can be divided into two categories: internal parameters (i.e. based within the algorithm), such as the blending type and the selection of input viewpoints, and external parameters (i.e. based on the properties of the captured scene), such as the viewpoint density, or the geometry of the scene. The internal parameters can be modified after the scene has been captured, the external ones cannot.
+The remaining parameters (that are not constrained by the assumptions) can be divided into two categories: 
+\begin{description}
+    \item [Internal parameters] i.e. based within the algorithm, such as the blending type and the selection of input viewpoints
+    \item [External parameters] i.e. based on the properties of the captured scene, such as the viewpoint density, or the geometry of the scene.
+\end{description}      
 
-The most prominent internal parameters based on the implementation from Chapter~\ref{chap:implementation} are:
+The internal parameters can be modified after the scene has been captured, the external ones cannot.  The most prominent internal parameters based on the implementation from Chapter~\ref{chap:implementation} are:
+
 \begin{itemize}
   \item the location of synthesized points within the scene (near walls, objects, etc)
+  \item the location of synthesized points relative to the captured points
   \item the blending type, i.e. flow-based blending or deviation-angle-based knn blending (``regular blending'')
-  \item the selection of input viewpoints from the available captured viewpoints
+%  \item the selection of input viewpoints from the available captured viewpoints
   \item the optical flow algorithm used for flow-based blending
 \end{itemize}
 
@@ -37,14 +43,14 @@ As for the possible external parameters, the number of different possible scenes
   \item distribution of captured viewpoints
 \end{itemize}
 
-External parameters such as the camera settings (e.g. aperture, shutter speed, white balance) and the lighting throughout the scene are not considered; it is assumed that all the captures have the same camera settings and the white balance is comparable throughout the scene. Furthermore, the evaluation is restricted to indoor scenes of average size (approximately between $4m^2$ and $36m^2$). This reduces the parameter space significantly, since the scale of indoor scenes contains much less variance, since rooms tend to be enclosed by walls.
+External parameters such as the camera settings (e.g. aperture, shutter speed, white balance) and the lighting throughout the scene are not considered; it is assumed that all the captures have the same camera settings and the white balance is comparable throughout the scene. Furthermore, the evaluation is restricted to indoor scenes of approximately $25m^2$. This reduces the parameter space significantly, since the fact that indoor scenes tend to be enclosed by walls enforces a maximal distance of objects to the camera.
 
 The evaluation presented in this thesis aims to examine the effects of a few select internal and external parameters, instead of exhaustively examining all of them. In order to do this, a \emph{scenario} is designed for each selected parameter that attempts to demonstrate the effect of this parameter on the accuracy of the result. Limiting the evaluation to specific scenarios reduces the testing space but might also lead to missing some interactions between parameters. This is acceptable, since the evaluation does not aim to be comprehensive. 
 
 %The scenario definition is the first step of the evaluation process which is presented in the next section.
 %The parameters to be evaluated, along with their corresponding scenarios depend on the type of evaluation
 
-\section{Evaluation Methodology}
+\section{Evaluation Methodology} \label{sec:eval_methodology}
 The evaluation is divided into two distinct phases: an evaluation of limits using virtual scenes, and a proof-of-concept evaluation using real scenes. Both evaluations follow the methodology depicted in Figure~\ref{fig:eval-methodology}, and consist of four steps: \emph{scenario definition}, where a scenario is designed to exemplify the parameter to test, \emph{synthesis}, where the synthesized images are calculated using the 2DoF synthesis presented in Chapter~\ref{chap:implementation}, \emph{error calculation}, where the accuracy of the synthesized images is measured, and \emph{result analysis}, where the the cause and effect of the parameters is examined. The details of these steps are described in the following sections.
 
 \begin{figure}
@@ -55,10 +61,11 @@ The evaluation is divided into two distinct phases: an evaluation of limits usin
 \end{figure}
 
 \subsubsection{Scenario Definition}
-First, a scenario must be defined that illustrates the parameter that should be examined. This includes determining which of the parameters should be static, and which should be dynamic. There are two dynamic parameters at maximum, one to be examined, and one to increase the significance of the results. Adding more dynamic parameters per scenario would allow for a more definitive evaluation, but is outside of the scope of this thesis.
+A scenario is defined by the parameter that it tests, the static parameters that are used, and the scene where the data was captured. Although a scenario is designed to test a specific parameter, which then is ``dynamic'' (i.e. will be modified throughout the scenario), there might also be more dynamic parameters. For example, in a scenario for exploring viewpoint density, the blending type might also be modified to see what effect the viewpoint density has on regular and flow-based blending. The static parameters include for example the location of the synthesized viewpoints, or any other parameter that remains unchanged throughout the scenario. One other defining factor of a scenario is the scene data that the scenario is tested on. Although the scene is part of the parameters (the external parameters, to be exact), it merits particular mention, as it contains the actual image data that is used for synthesis. This data, along with the other parameters defined in the scenario, are then passed on to the synthesis step.
 
-The set of parameters (whether static or dynamic) contains the choice of scene in which to synthesize the images. The scene is defined by its captured viewpoints, metadata, and radius, which are all passed on to the synthesis step along with the other parameters defined for the scenario.
-\todo{rewrite this section}
+%First, a scenario must be defined that illustrates the parameter that should be examined. This includes determining which of the parameters should be static, and which should be dynamic. There are two dynamic parameters at maximum, one to be examined, and one to increase the significance of the results. Adding more dynamic parameters per scenario would allow for a more definitive evaluation, but is outside of the scope of this thesis.
+
+%The set of parameters (whether static or dynamic) contains the choice of scene in which to synthesize the images. The scene is defined by its captured viewpoints, metadata, and radius, which are all passed on to the synthesis step along with the other parameters defined for the scenario.
 
 \subsubsection{Synthesis}
 The synthesis step consists of two parts: the 2DoF synthesis presented in Chapter~\ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a naive algorithm.
@@ -105,7 +112,7 @@ The L1 error is useful because it gives a rough estimation of how accurately eac
 As in the case of optical flow calculation, some adjustment must be made to adapt this metric for 360\degree images. Since the equirectangular projection is not equal-area, the areas towards the poles would intrinsically have higher weighting, since RGB L1 is calculated per pixel. To avoid this problem, the cube map projection is used, since it does not significantly distort the image. The average value is then calculated using the six faces of the cube, omitting the black background.
 
 \paragraph{SSIM error on Grayscale}
-The other metric to complement the RGB L1 error is a variation of the the structural similarity index (SSIM) \cite{ssim}, which measures the \emph{structural similarity} between two images. Instead of comparing the images pixel by pixel, the SSIM uses the luminance, contrast and structure of the images for comparison. It compares these locally, i.e.\ it operates on smaller areas instead of the image as a whole. As a result, it is possible that the SSIM does not register small displacements in the scene if the objects are not distorted. However, the additional comparison with the RGB L1 error should mitigate this potential problem.
+The metric to complement the RGB L1 error is a variation of the the structural similarity index (SSIM) \cite{ssim}, which measures the \emph{structural similarity} between two images. Instead of comparing the images pixel by pixel, the SSIM uses the luminance, contrast and structure of the images for comparison. It compares these locally, i.e.\ it operates on smaller areas instead of the image as a whole. As a result, it is possible that the SSIM does not register small displacements in the scene if the objects are not distorted. However, the additional comparison with the RGB L1 error should mitigate this potential problem.
 
 The SSIM metric in general, and the implementation used in the evaluation\footnote{skimage.metrics.structural\_similarity \cite{skimage}} return a value $\in [-1, 1]$ with 1 signifying an extremely similar image and -1 signifying a very different image. In order to more easily compare it with the RGB L1 error, the SSIM value is converted to an error value $ e \in [0,1]$, with 0 signifying an identical image (0 error) and 1 signifying a very different image.
 
@@ -142,16 +149,16 @@ Based on the insights gained in the distribution comparison, several interesting
 \end{figure}
 
 \paragraph{Sample Inspection}
-In order to further understand the effects of the parameters on specific positions, some of the synthesised viewpoints from the scene analysis are examined manually by comparing the synthesized image to the ground truth image. The manual examination may also reveal information that the error metrics are unable to extract\todo{example}.
+In order to further understand the effects of the parameters on specific positions, some of the synthesized viewpoints from the scene analysis are examined manually by comparing the synthesized image to the ground truth image. The manual examination may also reveal information that the error metrics are unable to extract, such as specific types of artefacts.
 
-\section{Evaluation of Limits using Virtual Scenes}
+\section{Evaluation of Limits using Virtual Scenes} \label{sec:limit_eval}
 The first step of the evaluation is to test the parameters of choice in a way that explores the limits of the algorithm. In order to have full control over the scene geometry, the objects within, and the positions of the captured and synthesized viewpoints, this limit evaluation is performed on virtual scenes created with the open source 3D animation software Blender \cite{blender}.
 
 The parameters that will be explored are:
 \begin{itemize}
-  \item selection of input viewpoints from the captured viewpoints
   \item flow-based blending compared to regular blending
-  \item viewpoint density
+  \item the position of the synthesized points relative to the captured points
+  \item the density of the captured viewpoints
   \item model-scene difference (how dissimilar is the scene geometry from the model sphere)
 \end{itemize}
 
@@ -160,20 +167,20 @@ The parameters that will be explored are:
 There is one internal parameter that is not specifically tested, but needs to be addressed, since it has a significant effect on the outcome of the flow-based blending: the optical flow algorithm. Fortunately, using virtual scenes generated with Blender can help mitigate mitigate this problem, since Blender has the capabilities to retrieve movement vectors from the geometry data, which can be used as optical flow.
 
 \subsection{Synthesizing Ground Truth Optical Flow}
-As mentioned in Section~\ref{subsec:optical_flow}, most optical flow algorithms struggle with large displacements. The flow-based blending step in the 2DoF synthesis algorithm, however, assumes perfect optical flow and there is no attempt to judge whether the optical flow calculation is feasible between two selected viewpoints. As a result, given the wrong circumstances (two viewpoints A and B that are far apart), the optical flow algorithm may fail, leading the flow-based blending to output undesirable results. The success of the optical flow algorithm is a prerequisite for the success of the 2DoF algorithm with flow-based blending.
+As mentioned in Section~\ref{subsec:optical_flow}, most optical flow algorithms struggle with large displacements. The flow-based blending step in the 2DoF synthesis algorithm, however, assumes decenet optical flow and there is no attempt to judge whether the optical flow calculation is feasible between two selected viewpoints. As a result, given the wrong circumstances (two viewpoints A and B that are far apart), the optical flow algorithm may fail, leading the flow-based blending to output undesirable results. The success of the optical flow algorithm is a prerequisite for the success of the 2DoF algorithm with flow-based blending.
 
-However, the focus of this evaluation is not the accuracy of an arbitrary optical flow algorithm. In the best case, it would be possible to emulate ``perfect'' optical flow, thus decoupling the success of the optical flow from the success of the flow-based blending. While this is practically impossible for real scenes, virtual scenes theoretically contain all necessary information for retrieving ``ground truth'' optical flow. Blender, the rendering program used to create the virtual data for this evaluation, is capable of ``rendering'' motion vectors using its vector speed render pass, which calculates the movement between points from one frame to the next in pixel space. The result is a motion vector field, which corresponds to the result of a ``classic'' optical flow algorithm. This ``ground truth'' optical flow was first presented by Butler et al.\ \cite{sintel} as a benchmark for optical flow algorithms.
+However, the focus of this evaluation is not the accuracy of an arbitrary optical flow algorithm. In the best case, it would be possible to emulate ``perfect'' optical flow, thus decoupling the success of the optical flow from the success of the flow-based blending. While this is practically impossible for real scenes, virtual scenes theoretically contain all necessary information for retrieving ``ground truth'' optical flow. Blender, the rendering program used to create the virtual data for this evaluation, is capable of ``rendering'' motion vectors using its vector speed render pass, which calculates the movement between points from one frame to the next in pixel space. The result is a motion vector field, which corresponds to the result of a ``classic'' optical flow algorithm. This, in the best case, ``ground truth'' optical flow was first presented by Butler et al.\ \cite{sintel} as a benchmark for optical flow algorithms.
 
-Figure~\ref{fig:calc_vs_synth_flow} shows the results of 1DoF interpolation with calculated flow compared to the results using optical flow synthesized by Blender. All captured viewpoints were generated in the same virtual room, with different distances between viewpoints A and B. 25 different viewpoints in in a regular grid were interpolated for this test\todo{compare viewpoint to viewpoint to see if all results are actually better}, \ldots
+Figure~\ref{fig:calc_vs_synth_flow} shows the improvement of the results of the 1DoF interpolation in a simple indoor scene with three different distances of input viewpoints. The interpolated viewpoint (orange) is always calculated at $\delta = 0.5$ between the two captured viewpoints (blue). The graphs show the improvement (decreasing error value) of the result with Blender flow compared to the result with Farneb\"ack optical flow.
 
 \begin{figure}
 		\centering
-		\includegraphics[width=\textwidth]{04/calc_vs_synth_flow2.png}
-		\caption{Comparing 1DoF Interpolation using Calculated Flow vs Blender Flow}
+		\includegraphics[width=\textwidth]{04/blender_flow_improvement.png}
+		\caption[Accuracy improvement with Blender flow versus Farneb\"ack flow]{Accuracy improvement with Blender flow versus Farneb\"ack flow: The y axis shows the improvement of the error metric when using Blender flow.}
 		\label{fig:calc_vs_synth_flow}
 \end{figure}
 
-It is notable that the results using Blender's optical flow tend to have a smaller error value than the results using calculated optical flow, which is expected. It may seem surprising that the results are not perfect, given ``ground truth'' optical flow. However, unfortunately, the accuracy of the 1DoF interpolation is limited, even with ``ground truth'' optical flow provided by Blender. There are several possible reasons for this, mostly based on the fact that the process in Blender, like most optical flow algorithms, is designed for frame-to-frame use. Nevertheless, no definitive explanation can be made at this point, since this would require in-depth understanding of Blender's vector speed render pass, which is outside of the scope of this thesis. Based on the results shown in Figure~\ref{fig:calc_vs_synth_flow}, and experience gained from testing both variants, the Blender optical flow is used for the limit evaluation, because, even though it is not perfect, it still seems to yield better results than Scipy's implementation of Farneb\"ack's optical flow algorithm and as such decouples (to a degree) the succes of the 2DoF synthesis with flow-based blending from the success of the optical flow algorithm.
+It is notable that using Blender's optical flow tends to improve the results, compared to Farneb\"ack's algorithm, but not in all cases. The reason for this is that the Blender optical flow (at least how it was calculated here), does not yield perfect ``ground truth'' optical flow, either. There are several possible reasons for this, mostly based on the fact that the process in Blender, like most optical flow algorithms, is designed for frame-to-frame use, and has been ``misused'' for distances that are infeasible for an actual animation. Nevertheless, no definitive explanation can be made at this point, since this would require in-depth understanding of Blender's vector speed render pass, which is outside of the scope of this thesis. Based on the results shown in Figure~\ref{fig:calc_vs_synth_flow}, and experience gained from testing both variants, the Blender optical flow is used for the limit evaluation, because, even though it is not perfect, it still seems to mostly yield better results than Scipy's implementation of Farneb\"ack's optical flow algorithm and as such decouples (to a degree) the success of the 2DoF synthesis with flow-based blending from the success of the optical flow algorithm.
 
 %\begin{itemize}
 %   \item points that are not visible because of perspective shift will not have a correspondence
@@ -188,33 +195,33 @@ It is notable that the results using Blender's optical flow tend to have a small
 - want to be able to compare them to each other \ar same synthesized viewpoints with different densities \ar need controllable distances to the synthesized viewpoints
 One simple way of doing this is to choose a grid of ground truth viewpoints and captured viewpoints so that the captured viewpoints are always at equal distances to the ground truth points. This is fulfilled with a grid of 5x5 ground truth viewpoints and grids of 6x6 and 12x12 captured viewpoints.
 
-\subsubsection{Selection of Input Viewpoints}
-input selection and scenes are var, all others are fixed
-using only two input vps with synthesized point on the line is equal to using only 1DoF interpolation
-\begin{verbatim}
-Hypothesis: 2vps is better for flow-based, radius is better for regular.
-flow based does not do well with image patches with different viewpoint indices
-(extreme discontinuities)
+%\subsubsection{Selection of Input Viewpoints}
+%input selection and scenes are var, all others are fixed
+%using only two input vps with synthesized point on the line is equal to using only 1DoF interpolation
+%\begin{verbatim}
+%Hypothesis: 2vps is better for flow-based, radius is better for regular.
+%flow based does not do well with image patches with different viewpoint indices
+%(extreme discontinuities)
+%
+%Test: 
+%  -use the two simplest scenes with a medium number of viewpoints and synthesize using
+%only two vs all within the radius of 1/2*scene radius
+%
+%Show: 
+%  - compare flow to flow and regular to regular
+%      --> we only want to know which is better for each blending method,
+%      not in comparison
+%
+%Even if the hypothesis is not proven, or is not very distinct,
+%can still argue that >2 or >4 is computationally too costly for consideration
+%
+%\end{verbatim}
 
-Test: 
-  -use the two simplest scenes with a medium number of viewpoints and synthesize using
-only two vs all within the radius of 1/2*scene radius
-
-Show: 
-  - compare flow to flow and regular to regular
-      --> we only want to know which is better for each blending method,
-      not in comparison
-
-Even if the hypothesis is not proven, or is not very distinct,
-can still argue that >2 or >4 is computationally too costly for consideration
-
-\end{verbatim}
-
-\subsubsection{Viewpoint density effect on flow-based blending and regular blending}
+\subsubsection{Effect of Viewpoint Density on Flow-based Blending and Regular Blending}
+The first parameter to be examined is the viewpoint density and its effect on the accuracy of the results using regular blending versus flow-based blending. To test this, a virtual room with the basic shape of a perfect cube is used. 
 density, blending var, others fixed
 \begin{verbatim}
 Hypothesis: higher density --> better results, but difference is larger for flow-based.
-(optional: High density and 2vps may be better than 4)
 
 Hypothesis II: the effect of higher density is more marked near walls and corners
 
@@ -224,8 +231,95 @@ Test:
 
 \end{verbatim}
 
-\subsubsection{Flow-based blending vs regular depending on model-scene difference}
+\subsubsection{Position of Synthesized Viewpoints Relative to Captured Viewpoints}
+A feature that sets this approach apart from most other viewpoint synthesis algorithms, is that its position is not restricted to a line between two viewpoints, but has two degrees of freedom. 
+\begin{verbatim}
+- hypothesis: no big difference for regular blending, flow-based blending better if on axis
+
+- test: compare results of offset points with centered points in square room (with different densities
+
+- the worse the regular blending is, the worse the jumps/discontinuities at the borders will be for the flow-based(except on a direct line), since it is dependent on the regular blending
+\end{verbatim}
+
+\subsubsection{Effect of Different Scenes on Flow-based Blending and Regular Blending}
+The last parameter to be examined is the effect of different scenes on 
 blending and scene var, others fixed
+The checkersphere scene is a hypothetical room where the geometry of the room is equal to the model used for reprojection: a sphere. Although this kind of room is not likely to exist in reality, it serves as a good comparison, since the result of the reprojection should be very close to the ground truth.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[t]{0.7\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/checkersphere_overview.jpg}
+            \caption{Latlong image from the center of the sphere}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.3\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/checkersphere_outside.jpg}
+            \caption{View from the outside for reference}
+    \end{subfigure}
+    \hfill
+  \caption{Overview of the ``checkersphere''}
+\end{figure}
+
+
+The square room is a scene whose shape is as close to a sphere as possible (i.e. a cube), while at the same time being a more realistic indoor scene. It contains an assortment of furniture with varying complexity and is rendered semi-realistically.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.7\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/square_overview.jpg}
+            \caption{Latlong image from the center of the room}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/square_top.jpg}
+            \caption{Top view}
+    \end{subfigure}
+    \hfill
+  \caption{Overview of the ``square room''}
+\end{figure}
+
+
+The oblong room is a variation of the square room (it contains the same furniture and a similar layout), but its shape is oblong and thus even further away from the ``ideal'' shape. It comes in two variations: one with a high-detail object in the middle of the scene, and one with a high-detail object on the far side of the scene.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includegraphics[height=4cm]{04/oblong_overview.jpg}
+            \caption{``Oblong room I''}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includegraphics[height=4cm]{04/oblong_top.jpg}
+            \caption{Top view}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includegraphics[height=4cm]{04/oblong2_overview.jpg}
+            \caption{``Oblong room I''}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includegraphics[height=4cm]{04/oblong2_top.jpg}
+            \caption{Top view}
+    \end{subfigure}
+    \hfill
+  \caption{Overview of the ``square room'' (I and II)}
+\end{figure}
+
 \begin{itemize}
   \item ``checkersphere'' in which the scene model exactly matches the scene
     \ar reprojection will yield exact results (excluding resolution)
@@ -239,11 +333,14 @@ Test: compare the two with their respective better vp selection in the different
 
 \end{verbatim}
 
+%square room 6x6 C flow is markedly better than regular
 
-\section{Proof-of-Concept Evaluation using Real Scenes}
+
+\section{Proof-of-Concept Evaluation using Real Scenes} \label{sec:pof_eval}
 %- captured using Ricoh Theta Z1 on a tripod
 
-\section{Discussion}
+\section{Discussion} \label{sec:discussion}
+%- latlong storage maybe not best option, since there is lots of redundancy
 
 \subsection{Limits}
 
