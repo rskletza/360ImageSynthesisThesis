@@ -19,9 +19,10 @@ Before diving into image-based rendering techniques in general, and the pixel-ba
 \subsection{360\degree Images}\label{subsec:fundamentals_360}
 Capturing an image with a 360\degree camera differs significantly from capturing an image with a regular camera. A regular camera captures incoming rays of light with a limited field of view. The sensors on the camera (or the film, for analog cameras), are arranged on a plane and register the wavelengths of incoming rays. This process represents a projection of the scene onto a plane. The measured light values can then be stored directly as a planar image (Figure~\ref{fig:cameras}a).
 
-A 360\degree (or ``omnidirectional'') camera, on the other hand, captures light rays with an field of view of 360$^{\circ}$. This means that the sensors are arranged in a way that captures light rays from the entire surroundings. For the sake of simplicity, this can be pictured as a number of sensors in the form of a sphere\footnotemark. The camera must then perform an additional conversion in order to transform the light values captured on a sphere to a planar image (Figure~\ref{fig:cameras}b).
 
-\footnotetext{The sensors cannot actually take the form of a perfect sphere, since the camera needs to have some form of casing. Instead, several lenses are usually used, and the image stitched together in software.}
+A 360\degree camera\footnote{The term ``omnidirectional camera'' is also used informally, however, this term is less exact, since an omnidirectional camera can also be a camera that captures a single hemisphere, instead of the full scene \cite{omnidir}.}, on the other hand, captures light rays with an field of view of 360$^{\circ}$. This means that the sensors are arranged in a way that captures light rays from the entire surroundings. For the sake of simplicity, this can be pictured as a number of sensors in the form of a sphere\footnotemark. The camera must then perform an additional conversion in order to transform the light values captured on a sphere to a planar image (Figure~\ref{fig:cameras}b). \cite{omnidir}
+
+\footnotetext{The sensors cannot actually take the form of a perfect sphere, since the camera needs to have some form of casing. Instead, several lenses are usually used (``polydioptric cameras'' \cite{omnidir}), and the image stitched together in software.}
 
 \begin{figure}
 \centering
@@ -186,16 +187,16 @@ These visualizations can help in understanding if and how well an optical flow a
     \begin{subfigure}[t]{0.5\textwidth}
             \centering
             \includegraphics[width=0.9\textwidth, keepaspectratio]{02/of_vis2.jpg}
-            \caption{Visualization of optical flow with vectors: the origin of the vector is shown by a small point (only a limited number of vectors are shown)}
+            \caption{Visualization of optical flow with arrows: The vectors are represented by arrows (only a limited number of vectors are shown)}
     \end{subfigure}
     \caption[Optical flow visualizations]{Optical flow visualizations}\label{fig:of_vis}
 \end{figure}
 
-\section{Related Work}
+\section{Related Work}\label{sec:related_work}
 Image-based Rendering (IBR) and viewpoint interpolation\footnotemark\ started gaining interest with the advent of virtual walkthroughs, for example for Apple's QuickTime\textsuperscript{\textregistered} VR, in order to save render time by generating views from images instead of using complex 3D scenes including textures, lights and complex geometric models \cite{quicktime}.
 Chen and Zhang, in their survey on image-based rendering \cite{survey2004}, use the terms \emph{source description} and \emph{appearance description} to compare these basic rendering techniques: ``Traditional'' rendering techniques use \emph{source description}, i.e. the scene is described by the objects within it, their positions and properties. On the other hand, IBR techniques try to achieve the same goal through \emph{appearance description}. Vision itself has little to do with 3D geometry; it is the processing of a dense set of light rays by the brain which are ``captured'' by the eye. This process can also be performed by a capture device like a camera. So, instead of trying to describe the scene through the objects it contains, IBR rendering techniques try to model the \emph{light rays} that reach the viewer. 
 
-\footnotetext{There seems to be no explicit difference between ``image-based rendering'', ``viewpoint interpolation'' and ``viewpoint synthesis'' in literature, so they will be used interchangeably in this thesis, although ``interpolation'' is favored for more simple blending techniques, and ``synthesis'' is used to describe more complex algorithms.}
+\footnotetext{There seems to be no explicit difference between the terms ``image-based rendering'', ``viewpoint interpolation'' and ``viewpoint synthesis'' in literature, so they will be used interchangeably in this thesis, although ``interpolation'' is favored for more simple blending techniques, and ``synthesis'' is used to describe more complex algorithms.}
 
 While the differentiation between source description and appearance description is helpful in understanding the basic differences between image-based and traditional rendering, many image-based rendering methods also utilize some form of source description, predominantly in the form of 3D geometry. In different survey on image-based rendering techniques, Kang and Shum \cite{survey2000} classify IBR rendering techniques on a continuum, which ranges from techniques using no geometry, to techniques using implicit geometry (i.e. feature correspondences), to techniques using explicit geometry (see Figure~\ref{fig:survey_categorization}).
 
@@ -207,21 +208,6 @@ While the differentiation between source description and appearance description 
 \end{figure}
 
 The algorithm presented in this thesis is a combination of two different approaches: the first step uses no geometry whatsoever, and the second step uses feature correspondences to correct some problems that arise in the first step. This differentiation guides the related work presented here: The first section presents synthesis approaches using no geometry, and the second section presents approaches using implicit geometry or feature correspondences.
-%Approaches using 360\degree images are preferred, but since these are less common than those using planar images, 
-%Most research in the area of image synthesis is focused on planar images, but some 360\degree approaches can also be found.
-
-%A theoretical model for \emph{appearance description} was developed by Adelson et al.\ \cite{Adelson91}: the \emph{plenoptic function} (Equation~\ref{eq:plenoptic}). The plenoptic function is a 7D function that describes the observable light at every point in space $V_x$, $V_y$, $V_z$, from every direction $\theta$, $\varphi$, at every wavelength $\lambda$, at every possible point in time $t$.
-
-%\begin{equation}
-%  \label{eq:plenoptic}
-%  P = P(\theta, \varphi, \lambda, t, V_x, V_y, V_z)
-%\end{equation}
-
-%In practice, it is unfeasible, if not impossible, to cover all dimensions of this function, as this would require a capture device at every location, at every point in time, capturing light rays coming from every direction. However, by making assumptions, IBR techniques try to reconstruct simplified versions of the plenoptic function. Depending on which assumptions are made and how the surroundings are sampled, varying requirements are met and different results are achieved.
-
-%Many of these approaches however, do use some geometry information in order to recalculate image points. The scene geometry is hereby either meticulously recorded at the time of the image capture, as with Kanade et al's 3D Dome \cite{geometry97}, or inferred from the image data alone, 
-
-%The approach presented in this thesis is \emph{pixel-based}, i.e. using no geometry information, so the following section will first outline research aiming to synthesize viewpoints with the use of little to no geometry. Since the majority of pixel-based rendering research uses planar images, the second part will focus on research using 360\degree images, including approaches using geometry.
 
 %\begin{itemize}
 %  \item type of warping: uv mapping, warping based on triangulation and homography
@@ -234,7 +220,14 @@ The algorithm presented in this thesis is a combination of two different approac
 %\end{itemize}
 
 \subsection{Image Synthesis with no Geometry}
-\ldots light field rendering \cite{lightfield}
+A theoretical model for image synthesis with no geometry, i.e. ``pure'' appearance description was developed by Adelson et al.\ \cite{Adelson91}: the \emph{plenoptic function} (Equation~\ref{eq:plenoptic}). The plenoptic function is a 7D function that describes the observable light at every point in space $V_x$, $V_y$, $V_z$, from every direction $\theta$, $\varphi$, at every wavelength $\lambda$, at every possible point in time $t$.
+
+\begin{equation}
+  \label{eq:plenoptic}
+  P = P(\theta, \varphi, \lambda, t, V_x, V_y, V_z)
+\end{equation}
+
+In practice, it is unfeasible, if not impossible, to cover all dimensions of this function, as this would require a capture device at every location, at every point in time, capturing light rays coming from every direction. However, by making different assumptions, IBR techniques try to reconstruct simplified versions of the plenoptic function. Common assumptions are the reduction of wavelengths to RGB, the removal of the temporal dimension, and the assumption that the light is constant along a ray in empty space (i.e. does not change its wavelength over distance) \cite{survey2004}. The methods for resampling the plenoptic function, or a lower-dimensional version are diverse, from \ldots \cite{lightfield} \ldots 
 
 \begin{itemize}
   \item other approaches, such as light field approaches or neural network approaches
@@ -245,7 +238,9 @@ Kawai \cite{simple_poster} approaches the problem of synthesizing new images wit
 
 The resampling is done by inserting a virtual sphere centered at the synthesized viewpoint representing a projection screen on which to project rays from the captured viewpoints. The locations of the captured viewpoints are known, so the outbound rays of these viewpoints can be calculated by using the image-to-world coordinate conversion from the equirectangular representation. The intersections of these captured rays with the virtual sphere are calculated and the corresponding pixel values used. The projection screen where no rays have intersected are approximated by repeating the reprojection with different resolutions.
 
-In cases where several rays share an intersection, they use a rating based on the inner product of the ray direction and the viewing direction and use the ray with the smallest score. As an alternative, they suggest prioritizing one specific captured viewpoint over the others to completely avoid ghosting artefacts.
+In cases where several rays share an intersection, they propose several methods. The first is to take an average of the rays. As an alternative, they suggest a rating based on the inner product of the ray direction and the viewing direction and use the ray with the smallest score. A final option is to prioritize one specific captured viewpoint over the others to completely avoid ghosting artefacts.
+
+To evaluate their method they capture four viewpoints in a scene (the distances between the viewpoints are not mentioned and calculate an image along a diagonal. They then compare the results of the different ray combination methods by describing visual artefacts.
 
 \subsubsection{``On the Use of Ray-tracing for Viewpoint Interpolation in Panoramic Imagery'' \cite{raytracing}}
 %correspondences needed: none, geometry: none/dense, constraints: color-constraint, image rep: cube, type of warping: pixel blending
@@ -253,20 +248,12 @@ Shi et al.\ \cite{raytracing} examine how ray tracing can be used to calculate a
 
 In order to calculate an intersection with the scene, they propose two different methods: A brute-force depth search using no scene geometry which searches along all of the captured rays until the pixel values are similar enough to fulfill their color constraint requirements, or a guided depth search using sparse 3D reconstruction.
 
-To evaluate their method, they use a set of captured input images with a maximum distance of one meter, from which they remove one to use as ground truth. They evaluate the algorithm by describing the artefacts in the results and compare the brute-force with the guided depth search.
+To evaluate their method, they use a set of five captured input images with a maximum distance of one meter, from which they remove one to use as ground truth. They evaluate the algorithm by comparing the brute-force to the guided depth search based on the artefacts in the results and the computation time.
 
 \subsubsection{``Unconstrained Segue Navigation for an Immersive Virtual Reality Experience'' \cite{segue}}
-Herath et al.\ \cite{segue} propose a system that enables casual users to capture their surroundings with a smartphone in a grid and then navigate that environment with two degrees of freedom. In order to interpolate between two captured 360\degree images, they differentiate between faces that are parallel to the axis of movement and faces that are perpendicular to the axis of movement. For faces that are parallel, they stitch the faces of two adjacent viewpoints together and interpolate by using a sliding window. For faces that are perpendicular, they calculate a homography between the faces of two adjacent viewpoints and morph the image accordingly. To interpolate any image within a rectangular area bounded by four captured viewpoints, they recursively interpolate intermediary viewpoints until they reach the desired position.
+Herath et al.\ \cite{segue} propose a system that enables casual users to capture their surroundings with a smartphone in a grid, and then navigate that environment with two degrees of freedom. In order to interpolate between two captured 360\degree images (1DoF), they differentiate between faces that are parallel to the axis of movement and faces that are perpendicular to the axis of movement. For faces that are parallel, they stitch the faces of two adjacent viewpoints together and interpolate by using a sliding window. For faces that are perpendicular, they calculate a homography between the faces of two adjacent viewpoints and morph the image accordingly. To interpolate any image within a rectangular area bounded by four captured viewpoints (2DoF), they recursively interpolate intermediary viewpoints until they reach the desired position.
 
-Although they do not mention the dimensions of possible scenes, it must be assumed that the scenes are very large and objects very distant from the camera, since calculating a homography would not work given large perspective shifts.
-
-%capture of scene in a grid
-%1DoF interpolation:
-%faces that are perpendicular \ar zoom (calculate homography between four corners and warp)
-%faces that are parallel \ar stitch face from image 1 and two and slide window across depending on the distance travelled
-%2DoF interpolation:
-%extend for arbitrary points by using intermediate images
-%not mentioned, but perspective shifts will not work at all \ar presumably only outdoor scenes with a large distance to the camera
+The focus of this work is on the whole process of capture, navigation, and viewing and the interpolation step is not explicitly evaluated.
 
 \subsection{Image Synthesis with Implicit Geometry}
 Leveraging image correspondences for synthesis has been a popular method almost since the beginning of viewpoint synthesis. Chen and Williams \cite{apple} were one of the first to use ``the morphing method'' that simultaneously blends the shape and texture of two images using image correspondences. A comparable method, based on optical flow, is used by Richardt et al.\ \cite{megastereo} for planar images.
@@ -283,8 +270,9 @@ The flow-based blending approach in this thesis builds on the approaches of \cit
 
 \subsubsection{``Real-Time Virtual Viewpoint Generation on the GPU for Scene Navigation'' \cite{360flowblending}}
 Kolhatkar and Lagani\`ere \cite{360flowblending} propose a method for smoothly interpolating between pairs of 360\degree images. Their approach leverages the optical flow calculated between 
-Their approach is similar to the approach in Megastereo, where optical flow between the images is used to incrementally morph the two images. Since they use 360\degree images, they extend the cube map representation to account for points moving across edges, which is the method that is used in this thesis, as well. To reduce artefacts in the obtained optical flow, they perform a matching and smoothing step. They then implement their algorithm on the GPU, which allows them to interpolate between images in real-time. As to the maximum distances that are possible for interpolation, no definitive values are given, rather, ``reasonable'' distances are quoted.
+Their approach is similar to the approach in Megastereo, where optical flow between the images is used to incrementally morph the two images. Since they use 360\degree images, they extend the cube map representation to account for points moving across edges, which is the method that is used in this thesis, as well. To reduce artefacts in the obtained optical flow, they perform a matching and smoothing step. They then implement their algorithm on the GPU, which allows them to interpolate between images in real-time. 
 
+They evaluate their method by capturing scenes at ``reasonable'' distances and removing every other image in order to obtain ground truth data. The computation time of the optical flow calculation of the extended cubes is measured, as well as the actual interpolation time. Furthermore, they compare the interpolated results with ground truth images, both visually and by using a per-pixel metric.
 
 \subsubsection{``Megastereo: Constructing High-Resolution Stereo Panoramas'' \cite{megastereo} \label{subsec:megastereo}}
 %correspondences needed: dense, geometry: none, constraints: angle?, image rep: planar, type of warping: none, because planar
@@ -306,7 +294,9 @@ Linearly blending the rays of the two closest captures would lead to artefacts d
 %For Megastereo, there is no need to blend the complete images, instead, they restrict their calculations to the strips/pixels they need. For simplicity's sake, the process is described for a full image:
 The interpolated image $\widetilde{I_M}$ at point $\eta$ between the images $I_K$ and $I_L$ is calculated by shifting $I_K$ by $\eta \cdot F_{k\rightarrow l}$ and by shifting $I_L$ by $(1 - \eta) \cdot F_{l\rightarrow k}$. The two shifted images are then blended linearly, using $\eta$ as the weight. Instead of calculating the entire image for each ray, only the necessary image areas are extracted and the interpolation is calculated pixel-wise.
 
-According to the authors, their approach ``can handle angular resolutions from 1\degree to 4\degree, but even 8\degree produces agreeable results''. Although the approach is designed for planar images, the idea of leveraging deviation angles for  flow-blending approach is used 
+To evaluate their method, they leverage datasets used by other approaches, as well as capturing their own images. They visually compare the results, noting improvements based on visible artefacts.
+
+%According to the authors, their approach ``can handle angular resolutions from 1\degree to 4\degree, but even 8\degree produces agreeable results''. Although the approach is designed for planar images, the idea of leveraging deviation angles for  flow-blending approach is used 
 
 %\subsubsection{6-DOF VR Videos with a Single 360-Camera}
 %%correspondences needed: none, geometry: dense, constraints: none, image rep: cube, type of warping: triangulation
@@ -317,12 +307,3 @@ According to the authors, their approach ``can handle angular resolutions from 1
 
 %The sparse scene geometry is inferred from the SfM data and then refined to a dense reconstruction using depth maps and triangulation. Finally, new viewpoints are synthesized by warping the current frame by using triangulation and warping the triangles (see Figure~\ref{fig:6dof}).
 %Then, the sparse scene geometry and camera path are calculated by incrementation and interpolation. The sparse geometry is then refined to a dense reconstruction of the scene using depth maps and Delaunay Triangulation. Finally, new viewpoints are synthesized by warping the current frame. Their warping algorithm projects the dense 3D points to a unit sphere control mesh with icosahedral tesselation\footnote{Icosahedral tesselation of a sphere subdivides the surface of a sphere into triangles. Other terms for this type of sphere are Icosphere or Geodesic Polyhedron} for both the captured viewpoint and the desired viewpoint. Then the vertex motion between each pair of triangles is calculated and the image warped according to these motion vectors (see Figure~\ref{6dof-figure}). 
-
-%\begin{figure}[]
-%\centering
-%\includegraphics[width=0.6\textwidth, keepaspectratio]{02/6dof-figure.jpg}
-%\caption[Image warping from Huang et al. \cite{6dof}]{The warping field is computed by finding the movement between the projections of each 3D scene point in the reference and the synthesized frame. Then the warping field is used to map each pixel of the synthesized image to its corresponding pixel in the reference to look up its color information. \emph{Adapted from \cite{6dof}}}
-%\label{fig:6dof}
-%\end{figure}
-
-
