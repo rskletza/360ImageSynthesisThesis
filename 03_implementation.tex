@@ -528,7 +528,7 @@ As this is a first attempt at 2DoF synthesis, performance was not deemed importa
 The synthesis of an image of 1000x500 pixels with no optimization using regular blending with 4 input viewpoints takes approximately 4s on a single Intel Xeon (Skylake) processor, whereas flow-based blending with the same input takes between 10 and 30 minutes, depending on the constellation of the viewpoints.
 Fortunately, many of the operations are ``embarrassingly parallel'', meaning they can be very easily parallelized, which will be discussed in Section~\ref{sec:future_work}.
 
-\subsection{Implementation-related Problems}
+\subsection{Implementation-related Problems}\label{subsec:bugs}
 Unfortunately, there are some implementation-related problems that are unrelated to the algorithm, but nonetheless have an effect on the result. The extension of the regular cube map to the \emph{ExtendedCubeMap} with the skylibs library slightly distorts the image for an as-of-yet unknown reason, so that when the map is clipped back down to its regular size, it is not identical to the original. Although the difference not extreme, it is nonetheless noticeable.
 
 The other, more visible problem, also from the skylibs library, concerns the conversion from the cubemap back to the latlong representation. Due to a bug in this operation, a black line sometimes appears at on or more borders of a face. Since the synthesized images are made up of mosaicked, reprojected areas, it is possible that in some cases, these lines shift into the middle of faces.
