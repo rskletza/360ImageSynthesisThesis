@@ -1,0 +1,69 @@
+\chapter{Synthesized Images}\label{imgs}
+
+\begin{figure}
+		\centering
+    \includegraphics[width=\textwidth]{04/scenario_scene/stripX_checkersphere_Y.jpg}
+		\caption{Results for synthesized viewpoint Y of the checkersphere}
+		\label{fig:scene_checkersphere_Y}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_O.jpg}
+            \caption{Square room: The proximity to the bookshelf results in extreme inaccuracies in the synthesis}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_O.jpg}
+            \caption{Oblong room: The bookshelf is farther away from the viewpoint, which improves the accuracy immensely}
+    \end{subfigure}
+    \hfill
+  \caption{Comparing the viewpoints at location ``O'' in the square and oblong rooms} \label{fig:scene_square_oblong_O}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_N.jpg}
+            \caption{Synthesized point `N'' (best improvement for L1, good for SSIM)}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_O.jpg}
+            \caption{Synthesized point ``L'' (worst ``improvement'': slight increase of error)}
+    \end{subfigure}
+    \hfill
+  \caption[Best and worst improvements of flow-based blending over regular blending in the square room]{Best (N) and worst (L) improvements of flow-based blending over regular blending in the square room. The ``worst'' improvement is slightly worse than the regular blending result} \label{fig:scene_square_best_worst}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_A.jpg}
+            \caption{Synthesized point ``A'' (best improvement)}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_L.jpg}
+            \caption{Synthesized point ``L'' (worst improvement)}
+    \end{subfigure}
+    \hfill
+  \caption[Best and worst improvements of flow-based blending over regular blending in the oblong room]{Best (A) and worst (L) improvements of flow-based blending over regular blending in the oblong room. The ``worst'' improvement, however, is still slightly better than the regular blending result} \label{fig:scene_oblong_best_worst}
+\end{figure}
+

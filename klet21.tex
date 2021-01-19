@@ -21,14 +21,25 @@
 \usepackage{hyperref} % sorgt für für Hyperlinks in PDF-Dokumenten
 
 \graphicspath{{./images/}}
+
+%custom symbols
+\usepackage{xcolor}
+\usepackage{pifont}
 \newcommand{\degree}{$^{\circ}$ }
 \newcommand{\ar}{$\rightarrow$ }
+\definecolor{forestgreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{cadmiumred}{rgb}{0.89, 0.0, 0.13}
+\newcommand{\checkm}{\textcolor{forestgreen}{\ding{51}}}
+\newcommand{\cross}{\textcolor{cadmiumred}{\ding{55}}}
+
+
 \usepackage{amsmath}
 \usepackage[prependcaption,textsize=tiny]{todonotes} %TODO remove before end
 \usepackage{hyperref}
 \usepackage{subcaption}
 %\usepackage{lstlisting}
 \usepackage{verbatim} %TODO remove before end
+\usepackage{multirow}
 
 \setcounter{secnumdepth}{2} %counter depth for subsubsections
 \setcounter{tocdepth}{2} %list of contents depth %TODO change to 1 before end
@@ -57,6 +68,9 @@
     \input{03_implementation}
     \input{04_evaluation}
     \input{05_conclusion}
+
+    \appendix
+    \input{06_appendix}
 
 % ---------------------------------------------------------------
 \backmatter % ab hier keine Nummerierung mehr
