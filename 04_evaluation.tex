@@ -1,7 +1,7 @@
 \chapter{Evaluation and Results} \label{chap:evaluation}
 %One liability of image-based rendering systems is the lack of a consistent  framework within which to judge the validity of the results. plenoptic modeling: an image-based rendering system mcmillan
 Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis with two degrees of freedom without 3D geometry, as not many methods exist that try to achieve this. Since the approach presented in Chapter~\ref{chap:implementation} is a first, basic attempt at solving this problem, this chapter presents a basic evaluation of the algorithm, based on mathematically calculable error metrics. These metrics measure the accuracy of a synthesized image compared to the ground truth and are used to assess the effect of a limited number of parameters.
-%Furthermore, it compares the results of regular blending, flow-based blending, and a naive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
+%Furthermore, it compares the results of regular blending, flow-based blending, and a na\"ive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
 
 First, possible parameters are discussed (Section~\ref{sec:params}), followed by the presentation of the evaluation methodology (Section~\ref{sec:eval_methodology}). Then a limit evaluation is performed on virtually generated scenes to explore the limits of the algorithm in a controlled environment (Section~\ref{sec:limit_eval}). Based on the knowledge gained in the limit evaluation, a proof-of-concept evaluation is performed on real scenes (Section~\ref{sec:pof_eval}). Finally, the aggregate evaluation findings are discussed (Section~\ref{sec:discussion}).
 
@@ -69,9 +69,9 @@ A scenario is defined by the parameter that it tests, the static parameters that
 %The set of parameters (whether static or dynamic) contains the choice of scene in which to synthesize the images. The scene is defined by its captured viewpoints, metadata, and radius, which are all passed on to the synthesis step along with the other parameters defined for the scenario.
 
 \subsubsection{Synthesis}
-The synthesis step consists of two parts: the 2DoF synthesis presented in Chapter~\ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a naive algorithm.
-The naive algorithm consists of simply selecting the nearest neighbor viewpoint based on euclidean distance. The input parameters are the same for both algorithms and both results are passed on to error calculation.
-The results of the naive algorithm serve as a baseline comparison to verify whether the developed 2DoF algorithm is an improvement to a naive approach. If either the regular or the flow-based blending generally performed worse than the naive algorithm, this would be an indication of a substantial flaw in the approach.
+The synthesis step consists of two parts: the 2DoF synthesis presented in Chapter~\ref{chap:implementation} using either flow-based blending or regular blending depending on the scenario parameters, and a baseline synthesis using a na\"ive algorithm.
+The na\"ive algorithm consists of simply selecting the nearest neighbor viewpoint based on euclidean distance. The input parameters are the same for both algorithms and both results are passed on to error calculation.
+The results of the na\"ive algorithm serve as a baseline comparison to verify whether the developed 2DoF algorithm is an improvement to a na\"ive approach. If either the regular or the flow-based blending generally performed worse than the na\"ive algorithm, this would be an indication of a substantial flaw in the approach.
 
 \subsubsection{Error Calculation}
 There are many properties that a synthesis algorithm can be evaluated for, for example performance, visual acceptability (based on user studies), number of artefacts, or distance from the ground truth. In this evaluation, mathematical
@@ -128,7 +128,7 @@ In order to analyze these results effectively, it is necessary to break them dow
 The first step of the analysis is a comparison of error value distribution. In order to compare all the error values of a scenario, they are plotted using a boxplot (Figure~\ref{fig:boxplot_example}). The different parameter combinations of the scenario are plotted on the y axis (e.g. viewpoint densities a, b, c) and the error distribution (i.e.\ the error values of all the synthesized viewpoints) is plotted on the x axis. The box plot shows the distribution of these values: the thick black line in the colored box is the median value (approx. 0.184 in Figure~\ref{fig:boxplot_example}), the colored ranges to the left and right of the median describe the ``interquartile range'' (IQR), the range of the closest half of the data (25\% on each side). The ``whiskers'' of the plot extend to the minimum and maximum of the values. The minimum and maximum are defined as $1.5\cdot IQR$. Any data outside of the the range between the minimum and the maximum, are the ``outliers'', depicted as small crosses. The boxplot gives a general overview of how the error values of the specific scene are distrubute. The distribution of the error values of the results in Figure~\ref{fig:boxplot_example}, for example, shows that the first three quartiles of the results are fairly close to the median (between approx. 0.14 and 0.19), whereas the fourth quartile extends, over almost the same range (0.19 to 0.225) and there are some extreme outliers. This indicates that there are some viewpoints that performed significantly worse than most of the others.
 
 \paragraph{Scene Analysis}
-Based on the insights gained in the distribution comparison, several interesting cases are selected for closer analysis. These cases are examined by color coding the error values and assigning the colors to the positions in the scene. This puts the error values in context with the scene surroundings. Figure~\ref{fig:posmap_example} shows the synthesized points in the context of the scene, color coded by their error values. The maximum and minimum values of the points (also clearly visible in Figure~\ref{fig:boxplot_example}) are coded as dark red and dark blue, respectively. This visualization gives a more detailed overview over the values of the different points. In Figure~\ref{fig:posmap_example}, for example, the synthesized points near the right wall of the room have much better values than the row on the left side of the room. The four red values are clearly the outliers that were visible in Figure~\ref{fig:boxplot_example}. Using this information, it is possible to draw som conclusions about the effect of the position of the synthesized viewpoint relative to the objects in the scene, and select a few synthesized images that merit closer examination.
+Based on the insights gained in the distribution comparison, several interesting cases are selected for closer analysis. These cases are examined by color coding the error values and assigning the colors to the positions in the scene. This puts the error values in context with the scene surroundings. Figure~\ref{fig:posmap_example} shows the synthesized points in the context of the scene, color coded by their error values. The maximum and minimum values of the points (also clearly visible in Figure~\ref{fig:boxplot_example}) are coded as light green and dark blue, respectively. This visualization gives a more detailed overview over the values of the different points. In Figure~\ref{fig:posmap_example}, for example, the synthesized points near the right wall of the room have much better values than the row on the left side of the room. The four light green values are clearly the outliers that were visible in Figure~\ref{fig:boxplot_example}. Using this information, it is possible to draw som conclusions about the effect of the position of the synthesized viewpoint relative to the objects in the scene, and select a few synthesized images that merit closer examination.
 
 \begin{figure}
 \centering
@@ -142,7 +142,7 @@ Based on the insights gained in the distribution comparison, several interesting
     \begin{subfigure}[c]{0.5\textwidth}
             \centering
             \includegraphics[height=6cm]{04/posmap_example.png}
-            \caption{Visualization for scene analysis: The error values from the boxplot in (a) are mapped to colors at the positions of the viewpoints in the scene. Dark red represents the worst value (approx. 0.27) and dark blue the best value (approx. 0.145).} \label{fig:posmap_example}
+            \caption{Visualization for scene analysis: The error values from the boxplot in (a) are mapped to colors at the positions of the viewpoints in the scene. Light green represents the worst value (approx. 0.27) and dark blue the best value (approx. 0.145).} \label{fig:posmap_example}
     \end{subfigure}
     \hfill
   \caption[Different types of result visualizations for L1 error values]{Different types of result visualizations for L1 error values (``rgb\_l1'') for example results of regular blending in a scene}
@@ -175,7 +175,20 @@ Three different scenes were modeled for testing: the \emph{checkersphere}, the \
 \paragraph{Checkersphere}
 The \emph{checkersphere} (Figure~\ref{fig:checkersphere}) is a perfect sphere with a diameter of approximately 2m. Its surface is covered with a checkerboard pattern with alternating colors of dark blue, dark red, and dark green. It represents a scene where the geometry of the scene is exactly the same as the proxy geometry. Although this kind of room is not likely to exist in reality, it serves as a good baseline, since the result of the reprojection should be very close to the ground truth. The checkerboard pattern was chosen so that distortions or inaccuracies are more visible.
 
-\begin{figure}
+
+\paragraph{Square Room}
+The \emph{square room} (Figure~\ref{fig:square_room}) is a room whose basic shape is a perfect cube with a side length of 3.5m. It contains an assortment of furniture\footnotemark: In one corner, there is an orange, L-shaped couch with dark blue and white cushions and a white marble coffee table with a dark blue bowl on it, and several small, simple black and white pictures on the wall behind the couch. There is a blue and white rug in the middle of the room, and to the left of the couch are a round blue table, as well as a white radiator. On the wall next to the blue table is a white marble bookshelf containing several red books, as well as three wine bottles, and two decorational objects in green and purple. Across from the couch is a low marble cabinet with a black monitor, a black laptop and a black speaker on it. To the left of the cabinet is a wooden door with a gray handle. The walls are brick, painted a dark purple and there is a lamp with a white lampshade hanging from the middle of the ceiling.
+
+\footnotetext{The furniture models used in the square room and the oblong room are adapted from \url{https://www.cgtrader.com/free-3d-models/interior/living-room/low-poly-interior-57731178-c955-4625-9e44-109c8eea5ee2}, by user ``miha29076'', and the textures are adapted from \url{https://www.poliigon.com/texture/plaster-17}, \url{ https://www.poliigon.com/texture/fabric-denim-003}, \url{https://www.poliigon.com/texture/wood-fine-dark-004}, and \url{https://www.poliigon.com/texture/interior-design-rug-starry-night-001}. \emph{All accessed last on September 23, 2020}}
+
+The intention of using the square room is to allow approximate accuracy for the reprojection step, while at the same time offering a more realistic indoor setting.
+
+\paragraph{Oblong room}
+The \emph{oblong room} (Figure~\ref{fig:oblong_room}) has a room size of approximately 5.5m x 3.5m and contains the same basic elements as the square room. It has the exact same furniture layout as the square room, except that some objects 
+
+%The \emph{oblong room} (Figure~\ref{fig:oblong_room}) has a room size of approximately 5.5m x 3.5m and contains the same basic elements as the square room. There are two variations: the oblong room I, which has the exact same furniture layout as the square room, and the oblong room II, in which the furniture layout is modified. This modification can help in examining possible correlations of the scene geometry with the result. For example, the bookshelf is a fairly complex geometry that is at eye-level (as opposed to many other objects which are below eye-level). Placing it at different positions in the two scenes makes the correlation between the proximity to the bookshelf and the possibly worse results easier to recognize.
+
+\begin{figure}[p]
 \centering
     \hfill
     \begin{subfigure}[t]{0.7\textwidth}
@@ -194,14 +207,7 @@ The \emph{checkersphere} (Figure~\ref{fig:checkersphere}) is a perfect sphere wi
   \label{fig:checkersphere}
 \end{figure}
 
-\paragraph{Square Room}
-The \emph{square room} (Figure~\ref{fig:square_room}) is a room whose basic shape is a perfect cube with a side length of 3.5m. It contains an assortment of furniture\footnotemark: In one corner, there is an orange, L-shaped couch with dark blue and white cushions and a white marble coffee table with a dark blue bowl on it, and several small, simple black and white pictures on the wall behind the couch. There is a blue and white rug in the middle of the room, and to the left of the couch are a round blue table, as well as a white radiator. On the wall next to the blue table is a white marble bookshelf containing several red books, as well as three wine bottles, and two decorational objects in green and purple. Across from the couch is a low marble cabinet with a black monitor, a black laptop and a black speaker on it. To the left of the cabinet is a wooden door with a gray handle. The walls are brick, painted a dark purple and there is a lamp with a white lampshade hanging from the middle of the ceiling.
-
-\footnotetext{The furniture models used in the square room and the oblong room are adapted from \url{https://www.cgtrader.com/free-3d-models/interior/living-room/low-poly-interior-57731178-c955-4625-9e44-109c8eea5ee2}, by user ``miha29076'', and the textures are adapted from \url{https://www.poliigon.com/texture/plaster-17}, \url{ https://www.poliigon.com/texture/fabric-denim-003}, \url{https://www.poliigon.com/texture/wood-fine-dark-004}, and \url{https://www.poliigon.com/texture/interior-design-rug-starry-night-001}. \emph{All accessed last on September 23, 2020}}
-
-The intention of using the square room is to allow approximate accuracy for the resampling step, while at the same time offering a more realistic indoor setting.
-
-\begin{figure}
+\begin{figure}[p]
 \centering
     \hfill
     \begin{subfigure}[b]{0.7\textwidth}
@@ -220,46 +226,28 @@ The intention of using the square room is to allow approximate accuracy for the 
   \label{fig:square_room}
 \end{figure}
 
-\paragraph{Oblong room}
-The \emph{oblong room} (Figure~\ref{fig:oblong_room}) has a room size of approximately 5.5m x 3.5m and contains the same basic elements as the square room. It has the exact same furniture layout as the square room, except that some objects 
-
-%The \emph{oblong room} (Figure~\ref{fig:oblong_room}) has a room size of approximately 5.5m x 3.5m and contains the same basic elements as the square room. There are two variations: the oblong room I, which has the exact same furniture layout as the square room, and the oblong room II, in which the furniture layout is modified. This modification can help in examining possible correlations of the scene geometry with the result. For example, the bookshelf is a fairly complex geometry that is at eye-level (as opposed to many other objects which are below eye-level). Placing it at different positions in the two scenes makes the correlation between the proximity to the bookshelf and the possibly worse results easier to recognize.
-
-\begin{figure}
+\begin{figure}[p]
 \centering
     \hfill
-    \begin{subfigure}[b]{0.5\textwidth}
+    \begin{subfigure}[b]{0.7\textwidth}
             \centering
-            \includegraphics[height=4cm]{04/oblong_overview.jpg}
-            \caption{``Oblong room''}
+            \includegraphics[height=5cm]{04/oblong_overview.jpg}
+            \caption{Latlong image from the center of the room}
     \end{subfigure}%
     \hfill
-    \begin{subfigure}[b]{0.5\textwidth}
+    \begin{subfigure}[b]{0.3\textwidth}
             \centering
-            \includegraphics[height=4cm]{04/oblong_top.jpg}
+            \includegraphics[width=5cm]{04/oblong_top.jpg}
             \caption{Top view}
     \end{subfigure}
     \hfill
-%
-%    \hfill
-%    \begin{subfigure}[b]{0.5\textwidth}
-%            \centering
-%            \includegraphics[height=4cm]{04/oblong2_overview.jpg}
-%            \caption{``Oblong room II''}
-%    \end{subfigure}%
-%    \hfill
-%    \begin{subfigure}[b]{0.5\textwidth}
-%            \centering
-%            \includegraphics[height=4cm]{04/oblong2_top.jpg}
-%            \caption{Top view}
-%    \end{subfigure}
-%    \hfill
   \caption{Overview of the ``oblong room''}
   \label{fig:oblong_room}
 \end{figure}
 
-\subsection{Captured Viewpoints}
-The viewpoint layout was chosen to be identical in all of the scenes. This means that all scenes contain 36 captured viewpoints, aligned in a regular grid of 6x6 viewpoints, with 60cm spacing. The grid of viewpoints is centered within the scene. This means that in the checkersphere (Figure~\ref{fig:vps_grid}a) and the square room (Figure~\ref{fig:vps_grid}b), the viewpoints cover approximately the complete scene, and in the oblong room, there is about a 1m area on each side of the grid that is not captured (Figure~\ref{fig:vps_grid}c and Figure~\ref{fig:vps_grid}d). It is necessary to take this difference in viewpoint coverage into account for the evaluation, since the viewpoints in the oblong room have a larger distance to two of the walls, which may have an effect on the accuracy of the results.
+
+\paragraph{}
+Given the different scenes, it is necessary to choose comparable viewpoints to capture that will be used as input for the synthesis. Since the scenes all have similar scale, the viewpoint layout was chosen to be identical in all of the scenes. This means that all scenes contain 36 captured viewpoints, aligned in a regular grid of 6x6 viewpoints, with 60cm spacing. The grid of viewpoints is centered within the scene. This means that in the checkersphere (Figure~\ref{fig:vps_grid}a) and the square room (Figure~\ref{fig:vps_grid}b), the viewpoints cover approximately the complete scene, and in the oblong room, there is about a 1m area on each side of the grid that is not captured (Figure~\ref{fig:vps_grid}c and Figure~\ref{fig:vps_grid}d). It is necessary to take this difference in viewpoint coverage into account for the evaluation, since the viewpoints in the oblong room have a larger distance to two of the walls, which may have an effect on the accuracy of the results.
 
 \begin{figure}
 \centering
@@ -284,13 +272,7 @@ The viewpoint layout was chosen to be identical in all of the scenes. This means
             \includegraphics[width=0.9\textwidth]{04/vps_oblong.jpg}
             \caption{The captured viewpoints in the oblong room}
     \end{subfigure}
-%    \hfill
-%    \begin{subfigure}[b]{0.4\textwidth}
-%            \centering
-%            \includegraphics[width=0.9\textwidth]{04/vps_oblong2.jpg}
-%            \caption{The captured viewpoints in the oblong room II}
-%    \end{subfigure}
-%    \hfill
+    \hfill
     \hfill
   \caption[The grid of captured viewpoints in each scene, including the proxy geometry]{The grid of captured viewpoints in each scene, including the proxy geometry (not to scale)} \label{fig:vps_grid}
 \end{figure}
@@ -302,16 +284,66 @@ Using Blender to create virtual scenes not only facilitates capture, but also of
 
 However, the focus of this evaluation is not the accuracy of an arbitrary optical flow algorithm. In the best case, it would be possible to emulate ``perfect'' optical flow, thus decoupling the success of the optical flow from the success of the flow-based blending. While this is practically impossible for real scenes, virtual scenes theoretically contain all necessary information for retrieving ``ground truth'' optical flow. Blender, for example, is capable of ``rendering'' motion vectors using its vector speed render pass, which calculates the movement between points from one frame to the next in pixel space. The result is a motion vector field, which corresponds to the result of a ``classic'' optical flow algorithm. This, in the best case, ``ground truth'' optical flow was first presented by Butler et al.\ \cite{sintel} as a benchmark for optical flow algorithms.
 
-Figure~\ref{fig:calc_vs_synth_flow} shows the improvement of the results of the 1DoF interpolation in the square room with three different distances of input viewpoints (2m, 60cm, 30cm). The interpolated viewpoint (orange) is always calculated at $\delta = 0.5$ between two captured viewpoints (blue). In this case, the interpolation algorithm is purely 1DoF, since only two viewpoints serve as input (i.e. no selection based on deviation angle, or resampling is necessary). The graphs show the improvement (decreasing error value) of the result with Blender flow compared to the result with Farneb\"ack optical flow.
+In order to demonstrate the improvement, Figure~\ref{fig:of_comparison}a shows a scene setup in which 25 viewpoints (A-Y) are synthesized using Farneb\"ack and Blender optical flow at the interpolation distance $\delta = 0.5$ between captured points. 
+Figure~\ref{fig:of_comparison}b shows the improvement of the results using Blender optical flow: In all but one case for the L1 values, and in the majority of the SSIM values the Blender optical flow improved the error values. The visual difference of the 1DoF interpolation is clear: Figure~\ref{fig:of_comparison}c shows the viewpoint ``I'' interpolated using Farneb\"ack optical flow, and Figure~\ref{fig:of_comparison}d the same viewpoint using Blender optical flow. There are distincly fewer artefacts with Blender optical flow, for example the rug and the couch both have a much more distinct outline, and the bookshelf is also clearer. Figure~\ref{fig:of_comparison}e and Figure~\ref{fig:of_comparison}f show the same for interpolated viewpoint ``M''. In this case, the TV cabinet is much clearer in the Blender optical flow version.
 
 \begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{04/blender_flow_improvement.png}
-		\caption[Accuracy improvement with Blender flow versus Farneb\"ack flow]{Accuracy improvement with Blender flow versus Farneb\"ack flow: The y axis shows the improvement of the error metric when using Blender flow.}
-		\label{fig:calc_vs_synth_flow}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/1DoF_scene.png}
+            \caption{The viewpoints for testing optical flow}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/blender_flow_improvement_small.png}
+            \caption{The improvement of error values using Blender optical flow vs Farneb\"ack optical flow}
+    \end{subfigure}
+    \hfill
+    \hfill
+\par\bigskip
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/I_calcflow.jpg}
+            \caption{1DoF interpolated viewpoint ``I'' using Farneb\"ack optical flow}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/I_blenderflow.jpg}
+            \caption{1DoF interpolated viewpoint ``I'' using Blender optical flow}
+    \end{subfigure}
+    \hfill
+    \hfill
+\par\bigskip
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/M_calcflow.jpg}
+            \caption{1DoF interpolated viewpoint ``M'' using Farneb\"ack optical flow}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/gt_flow/M_blenderflow.jpg}
+            \caption{1DoF interpolated viewpoint ``M'' using Blender optical flow}
+    \end{subfigure}
+    \hfill
+    \hfill
+  \caption{Comparing 1DoF interpolation results using Farneb\"ack to results using Blender optical flow} \label{fig:of_comparison}
 \end{figure}
 
-It is notable that using Blender's optical flow tends to improve the results, compared to Farneb\"ack's algorithm, but not in all cases. The reason for this is that the Blender optical flow (at least how it was calculated here), does not yield perfect ``ground truth'' optical flow, either. There are several possible reasons for this, mostly based on the fact that the process in Blender, like most optical flow algorithms, is designed for frame-to-frame use, and has been ``misused'' for distances that are infeasible for an actual animation. Nevertheless, no definitive explanation can be made at this point, since this would require in-depth understanding of Blender's vector speed render pass, which is outside of the scope of this thesis. Based on the results shown in Figure~\ref{fig:calc_vs_synth_flow}, and experience gained from testing both variants, the Blender optical flow is used for the limit evaluation, because, even though it is not perfect, it still seems to mostly yield better results than Scipy's implementation of Farneb\"ack's optical flow algorithm and as such decouples (to a degree) the success of the 2DoF synthesis with flow-based blending from the success of the optical flow algorithm.
+%\begin{figure}
+%		\centering
+%		\includegraphics[width=\textwidth]{04/blender_flow_improvement.png}
+%		\caption[Accuracy improvement with Blender flow versus Farneb\"ack flow]{Accuracy improvement with Blender flow versus Farneb\"ack flow: The y axis shows the improvement of the error metric when using Blender flow.}
+%		\label{fig:calc_vs_synth_flow}
+%\end{figure}
+
+It is notable that using Blender's optical flow tends to improve the results, compared to Farneb\"ack's algorithm, but that does not mean that the resulting optical flow is necessarily correct. For example, the bookshelf in the right and middle faces in Figure~\ref{fig:of_comparison}d still shows warping and doubling effects, indicating that there are still some inaccuracies. The same is true for the coffee table and the blue round table in the bottom face. There are several possible reasons for this, mostly based on the fact that the process in Blender, like most optical flow algorithms, is designed for frame-to-frame use, and has, in this case, been ``misused'' for distances that are infeasible for an actual animation. Nevertheless, no definitive explanation can be made at this point, since this would require in-depth understanding of Blender's vector speed render pass, which is outside of the scope of this thesis. Based on the results shown in Figure~\ref{fig:of_comparison}, and experience gained from testing both variants, the Blender optical flow is used for the limit evaluation, because, even though it is not perfect, it still seems to mostly yield better results than Scipy's implementation of Farneb\"ack's optical flow algorithm and as such decouples (to a degree) the success of the 2DoF synthesis with flow-based blending from the success of the optical flow algorithm.
 
 %\begin{itemize}
 %   \item points that are not visible because of perspective shift will not have a correspondence
@@ -320,13 +352,12 @@ It is notable that using Blender's optical flow tends to improve the results, co
 %\end{itemize}
 
 \subsection{Scenarios and Results}
-Using the generated scenes and optical flow, as well as the parameters defined for this limit evaluation, it is now possible to design, test, and evaluate the scenarios. This section presents the scenes, viewpoint setups, and tested parameters used in each scenario, as well as the results of the tests, which are evaluated using distribution comparison, scene analysis, and sample inspection, as described in Section~\ref{sec:eval_methodology}. First the effect of the parameter on the regular blending results is examined, then the effect on the flow-based blending results is examined, and finally, the the results of the regular blending are compared to the results of the flow-based blending.
+Using the generated scenes and optical flow, as well as the parameters defined for this limit evaluation, it is now possible to design, test, and evaluate the scenarios. This section presents the scenes, viewpoint setups, and tested parameters used in each scenario, as well as the results of the tests, which are evaluated using distribution comparison, scene analysis, and sample inspection, as described in Section~\ref{sec:eval_methodology}. First the effect of the parameter on the regular blending results is examined, then the effect on the flow-based blending results is examined, and finally, the the results of the flow-based blending are compared to the results of the regular blending.
 
-\subsubsection{The Effect of Different Scene Geometries}
-The first parameter to be examined is the effect of different scenes on the accuracy of the results generated using regular blending and flow-based blending. A key factor of this scenario is how different the scenes are from the proxy geometry. The larger the difference, the more inaccurate the result of the resampling will be. There are two attributes of a scene that may have an influence on the result: the basic shape of the scene (e.g. sphere, cube, rectangular prism, or arbitrary polygon), and the objects within the scene. The different scenes presented in \ref{subsec:data_acquisition} mostly differ in their basic shape, however, the impact of the objects within the scene can be examined by scene analysis.
+\subsubsection{Different Scene Geometries}
+The first parameter to be examined is the effect of different scenes on the accuracy of the results. A key factor of this scenario is how different the scenes are from the proxy geometry. The larger the difference, the more inaccurate the result of the reprojection will be. There are two attributes of a scene that may have an influence on the result: the basic shape of the scene (e.g. sphere, cube, rectangular prism, or arbitrary polygon), and the objects within the scene. All the scenes presented in \ref{subsec:data_acquisition} are used, as they differ both in their basic shape, as well as in the arrangement of the objects within, although the square room and the oblong room are more similar to each other than to the checkersphere.
 
-All of the virtual scenes are used (checkersphere, square room, oblong room). The arrangement of captured viewpoints in all the scenes is identical (6x6 grid with a spacing of 60cm), and 25 viewpoints are synthesized in each scene.
-The synthesized points are near or in the center of each grid cell, since these are the areas where the deviation angles are the highest, and where the largest artefacts for the regular blending are expected to emerge. In the square and oblong rooms, the synthesized points are slightly offset from the center of each grid cell (Figure~\ref{fig:scene_setup}). The offset is important in order to test actual 2DoF synthesis, instead of just 1DoF interpolation, since synthesizing in the center of a grid cell could be done with only 1DoF interpolation (e.g. by interpolating by 0.5 between the top right to the bottom left captured viewpoint, as was done in Section~\ref{subsec:gt_of} for testing Blender optical flow). No offset was used in the checkersphere scene, since the checkersphere scene is expected to have excellent results for the regular blending (since the proxy geometry and scene geometry are identical). In this case it is more interesting to use one of the presumably best positions for the flow-based blending to see how well it holds up in comparison.
+The arrangement of captured viewpoints in all the scenes is identical (a 6x6 grid with a spacing of 60cm), and 25 viewpoints are synthesized in each scene (Figure~\ref{fig:scene_setup}). The synthesized points are near or in the center of each grid cell, since these are the areas where the deviation angles are the highest, and where the largest artefacts for the regular blending are expected to emerge. In the square and oblong rooms, the synthesized points are slightly offset from the center of each grid cell (Figure~\ref{fig:scene_setup}). The offset is important in order to test actual 2DoF synthesis, instead of just 1DoF interpolation, since synthesizing in the center of a grid cell could be done with only 1DoF interpolation (e.g. by interpolating by 0.5 between the top right to the bottom left captured viewpoint, as was done in Section~\ref{subsec:gt_of} for testing Blender optical flow). No offset was used in the checkersphere scene, since the checkersphere scene is expected to have excellent results for the regular blending (since the proxy geometry and scene geometry are identical). In this case it is more interesting to use one of the presumably best positions for the flow-based blending to see how well it holds up in comparison.
 
 \begin{figure}
 \centering
@@ -382,10 +413,10 @@ The synthesized points are near or in the center of each grid cell, since these 
 \end{figure}
 
 \paragraph{Regular Blending Results}
-Figure~\ref{fig:scene_boxplot_split}a shows the distributions of the error values for the regular blending results in the three scenes. The most striking feature of this distribution is that the checkersphere results show the highest error values for the L1 error, whereas they show the lowest values for the SSIM error. The reason for this are the error metrics: L1 errors on the RGB images of the checkersphere will produce a higher value in general because of the checkerboard texture. A small displacement of the checkerboard texture will in most cases generate a higher error for the RGB L1 metric than the same displacement at an arbitrary position in one of the rooms: the difference between a dark blue pixel of a dark checkerboard field, and a white pixel on a white checkerboard field is close to 1, whereas the difference between a dark brown pixel and a dark purple pixel (e.g. between the door and the wall in one of the rooms) will produce a lower error value, although the distortion or displacement may be identical. The SSIM metric, which does not take the color values of the pixels into account, produces a distribution that is much closer to the expected result: Since the proxy geometry is identical to the real geometry, the result of the resampling should be almost perfect. And in fact, when visually comparing the results of a synthesized viewpoint to the ground truth (Figure~\ref{fig:scene_checkersphere_Y}, page~\pageref{fig:scene_checkersphere_Y} in Appendix~\ref{imgs}), the only difference is a little bit of blurriness due to resampling. The L1 difference depicted in the right column of Figure~\ref{fig:scene_checkersphere_Y} shows how the blurriness caused the high L1 error.
+Figure~\ref{fig:scene_boxplot_split}a shows the distributions of the error values for the regular blending results in the three scenes. The most striking feature of this distribution is that the checkersphere results show the highest error values for the L1 error, whereas they show the lowest values for the SSIM error. At first, this seems surprising, both because the error metrics do not ``agree'', as well as because the results of the regular blending are expected to be very good since the proxy geometry is identical to the scene geometry. The reason for this is the sensitivity of the L1 error value to different color values: L1 errors on the RGB images of the checkersphere will produce a higher value in general because of the checkerboard texture.
+The difference between a dark blue pixel of a dark checkerboard field, and a white pixel on a white checkerboard field is close to 1, whereas the difference between a dark brown pixel and a dark purple pixel (e.g. between the door and the wall in one of the rooms) will produce a lower error value, although the distortion or displacement may be identical. The SSIM metric, which does not take the color values of the pixels into account, produces a distribution that is much closer to the expected result: Since the proxy geometry is identical to the real geometry, the result of the reprojection should be almost perfect. And in fact, when visually comparing the results of a synthesized viewpoint to the ground truth (Figure~\ref{fig:scene_checkersphere_Y}, page~\pageref{fig:scene_checkersphere_Y} in Appendix~\ref{imgs}), the only difference is a little bit of blurriness due to sampling differences. The L1 difference depicted in the right column of Figure~\ref{fig:scene_checkersphere_Y} shows how the blurriness caused the high L1 error.
 
-The trend of the error metrics of the other two rooms is consistent. This is likely due to the fact that they use identical textures, so the RGB errors are comparable. The results however, are surprising: Instead of yielding better results because the proxy geometry is closer to the general geometry of the square room, the errors of the square room are generally higher than those of the oblong room. A closer scene analysis (Figure~\ref{fig:scene_regular_square_oblong}) shows the probable reason for this: The error values in the square room (Figure~\ref{fig:scene_regular_square_oblong}a) are particularly high near the bookshelf on the left side of the room. Comparing the synthesized images at location ``O'' (right in front of the bookshelf) for the two scenes (Figure~\ref{fig:scene_square_oblong_O}, page~\pageref{fig:scene_square_oblong_O} in Appendix~\ref{imgs}) confirms this impression: The bookshelf is so close to viewpoint O in the square room, that there are extreme inaccuracies in the synthesis due to large deviation angles. In the oblong room, the bookshelf is much further away, making the devation angles much smaller and the result more accurate. The larger net distance to the walls and some of the objects in the oblong room is the likely reason for the lower error results throughout the scene.
-\todo{maybe mention D or A as well}
+The trend of the error metrics of the other two rooms is consistent: Both the L1 and SSIM error values of the square room are generally higher than those of the oblong room. In this case, comparing the RGB color values is more reliant, since both rooms use the same textures. The results however, are surprising: Instead of yielding better results because the proxy geometry is closer to the general geometry of the square room, the errors of the square room are generally higher than those of the oblong room. A closer scene analysis (Figure~\ref{fig:scene_regular_square_oblong}) shows the probable reason for this: The error values in the square room (Figure~\ref{fig:scene_regular_square_oblong}a) are particularly high near the bookshelf on the left side of the room. Comparing the synthesized images at location ``O'' (right in front of the bookshelf) for the two scenes (Figure~\ref{fig:scene_square_oblong_O}, page~\pageref{fig:scene_square_oblong_O} in Appendix~\ref{imgs}) confirms this impression: The bookshelf is so close to viewpoint ``O'' in the square room, that there are extreme inaccuracies in the synthesis due to large deviation angles. In the oblong room, the bookshelf is much further away, making the devation angles much smaller and the result more accurate. The larger net distance to the walls and some of the objects in the oblong room is the likely reason for the lower error results throughout the scene.
 
 \begin{figure}
 \centering
@@ -406,31 +437,32 @@ The trend of the error metrics of the other two rooms is consistent. This is lik
 \end{figure}
 
 \paragraph{Flow-based Blending Results}
-The results of the synthesis using flow-based blending in the different scenes (Figure~\ref{fig:scene_boxplot_split}b) show similar tendencies as the results of the regular blending, except in the case of the checkersphere: Where the SSIM error in the checkersphere scene was significantly lower than the other two, in the flow-based blending results, the SSIM error yields worse results than the oblong room, but still mostly better than the square room. The worse performance of the flow-based blending in the checkersphere is likely due to the fact that the flow-based blending introduces some inaccuracies, for example due to imperfect optical flow, or ray approximation.
+The error values of the synthesis using flow-based blending in the different scenes (Figure~\ref{fig:scene_boxplot_split}b) show similar tendencies as the error values of the regular blending, in that the L1 values of the checkersphere are very high, and the results of the oblong room generally have lower values than those of the square room. One exception is the SSIM error value of the checkersphere: Where the SSIM error in the checkersphere scene is significantly lower than the other two for the regular blending results, in the flow-based blending results, the SSIM error yields worse results than the oblong room, but still mostly better than the square room. The worse performance of the flow-based blending in the checkersphere is likely due to the fact that the flow-based blending introduces some inaccuracies, for example due to imperfect optical flow, or ray approximation. Figure~\ref{fig:scene_checkersphere_Y} (page~\pageref{fig:scene_checkersphere_Y} in Appendix~\ref{imgs}) shows slightly higher inaccuracies for the flow result, as well as some artefacts and noise, that are the likeliest causes for the higher error values.
 
-In the other cases, the results of the flow-based blending mirror those of the regular blending: The results in the oblong room are better than those in the square room. Looking at the examples in Figure~\ref{fig:scene_square_oblong_O} (page~\pageref{fig:scene_square_oblong_O} in Appendix~\ref{imgs}) shows that, like in the case of the regular blending, this is due to the relative postion of the walls and objects to the points: the synthesis with flow-based blending also performs a lot better when there is no detailed object in close proximity. This is likely due to failing optical flow due to large displacements. In Figure~\ref{fig:scene_square_oblong_O} it is clearly visible that the 1DoF interpolation has had an effect on the image, since, for example, the normally straight lines of the books are warped (bottom face), but a comparison with the ground truth shows that they are warped in a way that bears no resemblance to the actual position.
+In the other cases, the results of the flow-based blending mirror those of the regular blending: The error values in the oblong room are generally lower than those in the square room. Looking at the examples in Figure~\ref{fig:scene_square_oblong_O} (page~\pageref{fig:scene_square_oblong_O} in Appendix~\ref{imgs}) shows that, like in the case of the regular blending, this is due to the relative postion of the walls and objects to the points: the synthesis with flow-based blending also performs a lot better when there is no detailed object in close proximity. This is (mostly) due to the optical flow calculation failing in proximity to the bookshelf, which was demonstrated in Section~\ref{subsec:gt_of}.
+The flow result in Figure~\ref{fig:scene_square_oblong_O} clearly shows the effect of the failed optical flow on the synthesized image. For example, the normally straight lines of the books are warped (bottom face), but a comparison with the ground truth shows that they are warped in a way that bears no resemblance to the actual position or shape.
 
 \paragraph{Comparing Regular Blending to Flow-based Blending Results}
 
 \begin{figure}
 		\centering
 		\includegraphics[width=\textwidth]{04/scenario_scene/all_boxplot.png}
-		\caption[The distribution of results in different scenes]{Comparing the distribution of the results in different scenes for the naive algorithm, regular blending, and flow-based blending}
+		\caption[The distribution of results in different scenes]{Comparing the distribution of the results in different scenes for the na\"ive algorithm, regular blending, and flow-based blending}
 		\label{fig:scenario_scene_boxplot}
 \end{figure}
 
-The distributions of the error values of both the regular blending (purple) and the flow-based blending (blue) are shown in Figure~\ref{fig:scenario_scene_boxplot}, as well as the error value distribution of the naive algorithm (orange) for comparison\footnotemark. The graph shows that the median of the results of the flow-based algorithm is slightly better than the median of the results of the regular blending, except in the case of the checkersphere, and that the results of the regular blending tend to be distinctly better than those of the naive algorithm. 
-\footnotetext{The naive algorithm error values of the checkersphere were omitted because they were so much higher than the other values that the scale of the plot became too small.}
+The distributions of the error values of both the regular blending (purple) and the flow-based blending (blue) are shown in Figure~\ref{fig:scenario_scene_boxplot}, as well as the error value distribution of the na\"ive algorithm (orange) for comparison\footnotemark. The graph shows that the error values of the results of the flow-based blending are generally slightly better than those of the regular blending, except in the case of the checkersphere, and that the error values of the results of the regular blending tend to be distinctly better than those of the na\"ive algorithm. 
+\footnotetext{The na\"ive algorithm error values of the checkersphere were omitted because they were so much higher than the other values that the scale of the plot became too small.}
 
-In the case of the checkersphere, where the proxy geometry is identical to the model geometry, the regular blending distinctly outperforms the flow-based blending. However, this is to be expected. The goal of the flow-based blending approach aims to improve problems due to the difference between the real and proxy geometries, and it introduces possible inaccuracies (optical flow, ray approximation) in order to do so. For this case, where the scene geometry is identical to the proxy geometry, it is superfluous.
+In the case of the checkersphere, where the proxy geometry is identical to the model geometry, the regular blending distinctly outperforms the flow-based blending. However, this is to be expected. The goal of the flow-based blending approach aims to improve problems due to the difference between the real and proxy geometries, and it introduces possible inaccuracies (viewpoint selection, optical flow, ray approximation) in order to do so. For this case, where the scene geometry is identical to the proxy geometry, it is to be expected that it produces less accurate results than the regular blending.
 
-For the square room and the oblong room, the net improvement of the flow-based blending versus the regular blending is shown in Figure~\ref{fig:scene_diff_square_oblong}. At a glance, it is clear that in all cases in the oblong room, and in all but one or two cases in the square room (depending on the metric) the flow-based blending improved the result. However, the L1 value range is larger in the oblong room than it is in the square room, which will most likely result in more visible improvements in the oblong room.
+For the square room and the oblong room, the net difference ($\Delta$) of the error values of the flow-based blending versus the regular blending is shown in Figure~\ref{fig:scene_diff_square_oblong}, with stars marking the highest and lowest $\Delta$. At a glance, it is clear that in all cases in the oblong room, and in all but one or two cases in the square room (depending on the metric) the flow-based blending improves the result based on the L1 and SSIM error metrics. However, the L1 value range is larger in the oblong room than it is in the square room (max. improvement of 0.037, compared to 0.015 in the square room), which most likely indicates more visible improvements in the oblong room.
 
-Figure~\ref{fig:scene_square_best_worst} (page~\pageref{fig:scene_square_best_worst} in Appendix~\ref{imgs}) shows the viewpoints with the best (N) and worst (L) improvement in the square scene. For the ``best improved'' viewpoint N (Figure~\ref{fig:scene_square_best_worst}a), the most visible difference is the rug on the bottom face: In the regular blending result, it has a visible discontinuity, which has been fixed in the flow-blending result. Other than that, the white coffee table with the blue bowl in the left face is slightly fuzzy, but covers a more accurate area than the result of the regular blending. Otherwise the two results are very similar visually.
+Figure~\ref{fig:scene_square_best_worst} (page~\pageref{fig:scene_square_best_worst} in Appendix~\ref{imgs}) shows the viewpoints with the best (N) and worst (L) L1 improvement in the square scene. For the ``best improved'' viewpoint N (Figure~\ref{fig:scene_square_best_worst}a), the most visible difference is the rug on the bottom face: In the regular blending result, it has a visible discontinuity, which has been mostly fixed in the flow-blending result. Other than that, the white coffee table with the blue bowl in the left face is slightly fuzzy, but covers a more accurate area than the result of the regular blending. Otherwise the two results are very similar visually.
 For the ``worst improved'' viewpoint L (Figure~\ref{fig:scene_square_best_worst}b) the regular and flow results are also visually very similar. The only striking differences are that the rug in the left face of the flow result is more accurate than in the regular result. On the other hand, the flow result shows black lines on the right face which are due to a bug in one of the libraries. Since the increase of the L1 and SSIM errors are extremely small, this may in part be due to the implementation problems discussed in Section~\ref{subsec:bugs}.
 
-Figure~\ref{fig:scene_oblong_best_worst} (page~\pageref{fig:scene_oblong_best_worst} in Appendix~\ref{imgs}) shows the viewpoints with the best (A) and worst (L improvement in the oblong scene. For the ``best improved'' viewpoint A (Figure~\ref{fig:scene_oblong_best_worst}a), the most visible difference is the couch in the left and bottom faces. Where the inner edge of the couch shows severe ghosting effects in the regular image, it is much cleaner in the flow result. The rug also covers a more accurate area of the image. However, the flow-based blending also introduces new artefacts, for example in the bottom face, where a part of orange couch appears detached from the rest of the couch.
-The ``worst improved'' viewpoint L (Figure~\ref{fig:scene_oblong_best_worst}b) has even more of these artefacts: The rug in the bottom face has a few extreme discontinuities, as well as the coffee table in the left face. These discontinuities are due to the selection of input viewpoints for flow-based blending: For each pixel i.e. ray, two input viewpoints are selected based on their deviation angle, and whether they are ``on either side'' of the ray in question (see Section~\ref{subsec:2dof_flow-based}). This means that while traversing the rays of synthesized viewpoint there comes a point where the selected input viewpoints for the 1DoF interpolation A and B suddenly switch to B and C. In these cases, the less accurate the ray approximation or the resampling step are, the more extreme the discontinuity at that place in the image is. Although these discontinuities are visually extremely irritating, it is possible that they do not have a large impact on the error metrics.
+Figure~\ref{fig:scene_oblong_best_worst} (page~\pageref{fig:scene_oblong_best_worst} in Appendix~\ref{imgs}) shows the viewpoints with the best (A) and worst (L) improvement in the oblong scene. For the ``best improved'' viewpoint A (Figure~\ref{fig:scene_oblong_best_worst}a), the most visible difference is the couch in the left and bottom faces. Where the inner edge of the couch shows severe ghosting artefacts (double edges) in the regular image, it is much cleaner in the flow result. The rug also covers a more accurate area of the image. However, the flow-based blending also introduces new artefacts, for example in the bottom face, where a part of orange couch appears detached from the rest of the couch, or in the front and right faces, where the rug still shows some different discontinuities.
+The ``worst improved'' viewpoint L (Figure~\ref{fig:scene_oblong_best_worst}b) shows even more of these artefacts: The rug in the bottom face has a few extreme discontinuities, as well as the coffee table in the left face. These discontinuities are due to the selection of input viewpoints for flow-based blending: For each ray of the synthesized image, two input viewpoints are selected based on their deviation angle, and whether they are ``on either side'' of the ray in question (see Section~\ref{subsec:2dof_flow-based}). This means that while traversing the rays of synthesized viewpoint there comes a point where the selected input viewpoints for the 1DoF interpolation A and B suddenly switch to B and C (this will be described in more detail in Section~\ref{subsec:discussion_virtual}). In these cases, the less accurate the ray approximation or the reprojection step are, the more extreme the discontinuity at that place in the image is. Although these discontinuities are visually extremely irritating, it is possible that they do not have a large impact on the error metrics.
 
 \begin{figure}
 \centering
@@ -449,12 +481,24 @@ The ``worst improved'' viewpoint L (Figure~\ref{fig:scene_oblong_best_worst}b) h
     \hfill
   \caption[Improvement of flow-based blending results over regular blending results in the square and oblong rooms]{Improvement of flow-based blending results over regular blending results in the square and oblong rooms. The stars denote the best and worst cases} \label{fig:scene_diff_square_oblong}
 \end{figure}
+\todo{delta error instead of ``improvement''?}
 
 
 \paragraph{}
-In summary, the results of the synthesis in the three different scenes indicate that the general shape of the scene does have an impact on the accuracy of the results: The results of the checkersphere are visually extremely accurate for regular blending, and mostly accurate for flow-based blending. However, the impact of the general shape seems to have a much smaller influence compared to the impact of the details of the geometry and the proximity of complex objects to the synthesized viewpoint. This is especially clear when comparing the results of the square and the oblong room. Although the general shape of the square room is closer to the proxy sphere, the results in the oblong room are better, due to the larger net distance of the viewpoints to the objects. This is the case for both regular and flow-based blending.
+- perfect geometry \ar excellent regular results
+- not-perfect geometry \ar better flow-based results
+- results are not very indicative of the effect of the general shape of the scene
+- mostly tested the effect of objects within the scene (larger distance is generally better, but flow-based can improve artefacts given that the optical flow actually worked)
 
-As for the impact of objects within the scene, the farther away the synthesized viewpoint is from an object, the better the result is, both for regular and flow-based blending. The flow-based blending improved the results of the regular blending for the vast majority of the cases in the square and oblong rooms. Even when the 1DoF interpolation failed (likely due to too-large displacements, e.g. in front of the bookshelf), the result was not worse than the regular blending result.
+Given the three input scenes, as well as the captured viewpoints and the locations of the synthesized viewpoints in this scenario, the measured results indicate that for scenes where the proxy geometry is identical to the scene geometry, the regular results have very low L1 and SSIM error values, whereas using flow-based blending increases the error value. For the scenes where the proxy geometry differs from the real scene geometry, in the majority of tested cases, the flow-based blending produced better results.
+
+However, due to the choice of the oblong and square rooms along with an identical grid that does not cover the whole area of the oblong room, the results are not very significant with regards to the effect of the general shape of the scene, since the different distances of the objects to the synthesized viewpoints within the two rooms overpowered most effects that the different basic shape might have had.
+
+As for the impact of objects within the scene, in the tested cases, the farther away the synthesized viewpoint is from an object, the better the result is, both for regular and flow-based blending. The flow-based blending improved the results of the regular blending for the vast majority of the cases in the square and oblong rooms, mosty by correcting ghosting artefacts. Even when the 1DoF interpolation failed (e.g. in front of the bookshelf), the result was not worse than the regular blending result.
+
+%In summary, the results of the synthesis in the three different scenes indicate that, unsurprisingly, the general shape of the scene has an impact on the accuracy of the results: The results of the checkersphere are visually extremely accurate for regular blending, and mostly accurate for flow-based blending. However, the impact of the general shape seems to have a much smaller influence compared to the impact of the details of the geometry and the proximity of complex objects to the synthesized viewpoint. This is especially clear when comparing the results of the square and the oblong room. Although the general shape of the square room is closer to the proxy sphere, the results in the oblong room are better, due to the larger net distance of the viewpoints to the objects. This is the case for both regular and flow-based blending.
+
+%As for the impact of objects within the scene, the farther away the synthesized viewpoint is from an object, the better the result is, both for regular and flow-based blending. The flow-based blending improved the results of the regular blending for the vast majority of the cases in the square and oblong rooms. Even when the 1DoF interpolation failed (likely due to too-large displacements, e.g. in front of the bookshelf), the result was not worse than the regular blending result.
 
 
 
@@ -465,10 +509,23 @@ As for the impact of objects within the scene, the farther away the synthesized 
 
 
 
-\subsubsection{The Effect of the Density of the Captured Viewpoints}
-The previous scenario demonstrated that close proximity of a synthesized viewpoint to an object tends to have a strong adverse effect on the accuracy of the result. A possible way to alleviate this problem is to improve the density of the captured viewpoints near objects. The scenario presented in this section explores the impact of viewpoint density on the accuracy of the results
 
-To test this parameter, the square room is used, as the viewpoint grid covers the entire area of the room, which guarantees higher proximity to all the objects. Three different versions of the captured viewpoint grid are used: a 2x2 grid with a spacing of approximately 2m (Figure~\ref{fig:density_setup}a), the 6x6 grid with a spacing of approximately 60cm, as was used in the previous scenario (Figure~\ref{fig:density_setup}b), and a 12x12 grid with a spacing of approximately 30cm (Figure~\ref{fig:density_setup}c). The 2x2 grid was chosen since it is the minimal grid to cover the entire room, and the 12x12 grid was chosen, since it halves the distance of the 6x6 grid and as such, retains the relative position of the captured viewpoints compared to the synthesized viewpoints. If a different grid was used, for example 10x10, some synthesized viewpoints would be closer to captured viewpoints than other synthesized viewpoints.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsubsection{Density of the Captured Viewpoints}
+The previous scenario demonstrated that close proximity of a synthesized viewpoint to an object can have a strong adverse effect on the accuracy of the result. A possible way to alleviate this problem is to improve the density of the captured viewpoints near objects. The scenario presented in this section explores the impact of viewpoint density on the accuracy of the results.
+
+To test the effect of viewpoint density, the square room is used, as the viewpoint grid covers the entire area of the room, which guarantees higher proximity to all the objects. Three different versions of the captured viewpoint grid are used: a 2x2 grid with a spacing of approximately 2.3m (Figure~\ref{fig:density_setup}a), the 6x6 grid with a spacing of approximately 60cm, as was used in the previous scenario (Figure~\ref{fig:density_setup}b), and a 12x12 grid with a spacing of approximately 30cm (Figure~\ref{fig:density_setup}c). The 2x2 grid was chosen since it is the minimal grid to cover the entire room, and the 12x12 grid was chosen, since it halves the distance of the 6x6 grid and as such, retains the relative position of the captured viewpoints compared to the synthesized viewpoints. If a different grid was used, for example 10x10, some synthesized viewpoints would be closer to captured viewpoints than other synthesized viewpoints, which may have an effect on the overall results.
 Like in the previous scenario, 25 viewpoints are synthesized, located near the center of each grid cell. They are offset slightly from the exact center, like in the previous scenario, to demonstrate true 2DoF synthesis.
 
 \begin{figure}
@@ -495,23 +552,18 @@ Like in the previous scenario, 25 viewpoints are synthesized, located near the c
   \caption[The different captured viewpoint densities in the square room]{The different captured viewpoint densities (blue) in the square room with the synthesized viewpoints (orange)} \label{fig:density_setup}
 \end{figure}
 
-
-\paragraph{Regular Blending Results}
-Figure~\ref{fig:density_boxplot_split}a shows the general distribution of the results of the regular blending with varying viewpoint densities. Unsurprisingly, the accuracy of the results improves, the closer together the input viewpoints are. The reason for this is that the changes of perspective due to the change in position are smaller, the closer together the input viewpoints are. Since the distances are smaller, the deviation angles are also smaller, giving a more accurate result. 
-
-\paragraph{Flow-based Blending Results}
 \begin{figure}
 \centering
     \hfill
     \begin{subfigure}[b]{0.5\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{04/scenario_density/dens_boxplot_regular.png}
+            \includegraphics[width=\textwidth]{04/scenario_density/boxplot_regular.png}
             \caption{Regular blending}
     \end{subfigure}%
     \hfill
     \begin{subfigure}[b]{0.5\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{04/scenario_density/dens_boxplot_flow.png}
+            \includegraphics[width=\textwidth]{04/scenario_density/boxplot_flow.png}
             \caption{Flow-based blending}
     \end{subfigure}
     \hfill
@@ -519,27 +571,140 @@ Figure~\ref{fig:density_boxplot_split}a shows the general distribution of the re
   \label{fig:density_boxplot_split}
 \end{figure}
 
+\paragraph{Regular Blending Results}
+Figure~\ref{fig:density_boxplot_split}a shows the general distribution of the results of the regular blending with varying viewpoint densities. Unsurprisingly, the accuracy of the results improves, the higher the density of the input viewpoints is.
+In the 6x6 and the 12x12 setup, there are several outliers with a higher error value for the L1 error, which are likely due to the proximity of some points to the bookshelf. In the 2x2 setup, there are no significant outliers, possibly because the error values are more uniform throughout the scene.
+
+A look at the scene visualization in Figure~\ref{fig:density_regular_scene_analysis} confirms these assumptions: The outliers in the 6x6 and 12x12 setups are caused by the bookshelf on the left side of the room. In the case of the 2x2 setup, the error values are fairly high throughout, compared to the other two setups, which is the reason that the viewpoints near the bookshelf do not register as outliers. Other than the area around the bookshelf, both the 6x6 and the 12x12 scenes have a fairly uniform distribution for the L1 error. For the SSIM error, the areas close to the walls have a slightly higher error than those in the middle of the scene. This is in line with the results of the previous scenario, where the error values near objects or walls tended to be higher.
+
+Although the error values near objects and walls are slightly higher in both the 6x6 and 12x12 setups, the improvement when going from the 6x6 to the 12x12 density is also higher in these areas, as can be seen in Figure~\ref{fig:dens_diff_6x6_12x12}a. This figure shows the improvement when using the 12x12 scene versus the 6x6 scene. In areas near walls (e.g. the top row for both metrics, viewpoints A-E), or objects (in front of the bookshelf for L1, viewpoints O and T, or in front of the TV screen for L1 and SSIM, viewpoints U,V,W), the improvement tends to be higher than near the center of the scene (e.g. viewpoints H, G, M, L).
+
+In order to understand more about how the density affects ghosting and other artefacts in the images, one of the better and one of the worse results for all of the setups is examined visually. According to the general tendencies of the values in the different setups (Figure~\ref{fig:density_regular_scene_analysis}), synthesized viewpoint ``T'' near the bottom left of the room, next to the bookshelf has a comparatively high error value in both metrics for all three scenes and synthesized viewpoint ``G'', above the coffee table towards the top right corner has a comparatively low error value for all of the scenes.
+Figure~\ref{fig:density_regular_T} (page~\pageref{fig:density_regular_T} in Appendix~\ref{imgs}) shows why T has a high error value: for the 2x2 scene, while most of the scene is moderately accurate (the objects are in approximately the right place), the bookshelf is shown from the wrong perspective, i.e. from the side versus from the front. The reason for this is that the perspective of the bookshelf of the viewpoint used for reprojection was from the side. Using only this information, it is impossible to reconstruct the front of the bookshelf. One other effect of the fairly large jump in perspective using only regular blending are the warped walls. This is due to using the sphere as proxy geometry. The warping problems are much less visible in the 6x6 and 12x12 results, since the reprojection jumps are much smaller due to the captured viewpoints being much closer together. While the L1 difference images on the right do show an improvement of the accuracy in the 12x12 image over the 6x6 image, it is not as visually obvious in the result image as might be expected from halving the distance between the viewpoints. The bookshelf still has many inaccuracies due to its proximity and high detail.
+However, while the difference between the 12x12 and the 6x6 image is not very evident in one of the worse results, Figure~\ref{fig:density_regular_G} (page~\pageref{fig:density_regular_G} in Appendix~\ref{imgs}) better illustrates the effect of the denser grid. The 2x2 image excellently demostrates the problem with using input images with large deviation angles in conjunction with a proxy geometry that is not identical to the scene geometry: The rays used to synthesize this image captured the coffee table at different positions and the reprojection does not account for this, since it only approximates the scene geometry by using the proxy geometry. As a result, the coffe table appears four times. In this example, the reprojection errors decrease visibly as the density increases: in the 6x6 image, a slight doubling effect of the coffe table is still visible, whereas in the 12x12 image, the table only appears slightly blurry.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/01_2x2_regular.png}
+            \caption{Results of regular blending with a 2x2 grid}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/01_6x6_regular.png}
+            \caption{Results of regular blending with a 6x6 grid}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/01_12x12_regular.png}
+            \caption{Results of regular blending with a 12x12 grid}
+    \end{subfigure}
+    \hfill
+  \caption{Scene analysis of the regular blending results in the square room with different densities} \label{fig:density_regular_scene_analysis}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/diff_regular-regular.png}
+            \caption{Improvement for regular blending}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/diff_flow-flow.png}
+            \caption{Improvement for flow-based blending}
+    \end{subfigure}
+    \hfill
+  \caption{Improvement of results using 12x12 density compared to 6x6 density} \label{fig:dens_diff_6x6_12x12}
+\end{figure}
+
+
+\paragraph{Flow-based Blending Results}
+%The error values of the flow-based blending results show similar tendencies as the regular blending results: The 6x6 and 12x12 setups have a few outliers, which can be attributed to the area near the bookshelf. The 2x2 
+%The doubling effect visible in the regular results should be improved by using the flow-based blending, as long as the flow-based blending can accurately calculate optical flow. The farther apart the captured viewpoints are, the more likely this is to fail.
+The error values of the flow-based blending results (Figure~\ref{fig:density_boxplot_split}) show similar tendencies as the regular blending results. Like for the regular blending, the 6x6 and 12x12 setups have several outliers in the L1 metric, but otherwise a fairly close distribution. The scene visualization (Figure~\ref{fig:density_flow_scene_analysis} also shows a similar pattern: In the 2x2 scene, the error values are generally high, whereas in the 6x6 and 12x12 scenes, the error values are high near the bookshelf, but generally similar everywhere else. Like in the regular blending scene, the improvement of the values in the 12x12 setup compared to the 6x6 setup is slightly higher near the walls. Since the tendencies are very similar as in the regular blending, it is more interesting to examine the comparison of the regular blending to the flow-based blending, instead of the flow-based blending by itself, as there do not seem to be any findings other than the improvement of the results with higher density, especially near the walls.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/02_2x2_flow.png}
+            \caption{Results of flow-based blending with a 2x2 grid}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/02_6x6_flow.png}
+            \caption{Results of flow-based blending with a 6x6 grid}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/02_12x12_flow.png}
+            \caption{Results of flow-based blending with a 12x12 grid}
+    \end{subfigure}
+    \hfill
+  \caption{Scene analysis of the flow-based blending results in the square room with different densities} \label{fig:density_flow_scene_analysis}
+\end{figure}
+
+
 \paragraph{Comparing Regular Blending to Flow-based Blending Results}
-Like in the previous scenario, the flow-based blending tends to have lower error values than the regular blending. The only setup where this is not the case is in the 2x2 L1 error, where the distribution is 
+The tendencies of the regular blending results compared to the flow-blending results shown in Figure~\ref{fig:scenario_dens_boxplot} are not immediately apparent. Only the results of the 6x6 scene show a consistent improvement of the flow-based results compared to the regular results. For the 2x2 scene, the median L1 error is higher for the flow-based blending, while the error range is lower. The SSIM error for the 2x2 scene, however, is clearly lower for the flow-based blending. In the 12x12 scene, the L1 error shows an almost identical distribution, whereas for the SSIM result, the general distribution of the flow-based blending is wider, which implies that some results were improved while others were worsened.
+
+Figure~\ref{fig:dens_diff_2x2_12x12} shows the improvements of the flow-based blending over the regular blending for the 2x2 and the 12x12 scenes. Both the 2x2 and the 12x12 scenes show improved values nearer to the walls, and a slightly worse values near the center of the room. However, although this overview shows similar tendencies, a look into the synthesized images shows some of the fallacies of the metrics. 
+
+For the 2x2 scene, the regular blending produced relatively inaccurate results, due to the extreme perspective changes. The flow-based blending relies on optical flow, which does not handle large displacements well (even with Blender optical flow). The results show that in the 2x2 scene, the optical flow algorithm did not produce very accurate results, which is visible in both the ``best'' and ``worst improvement''. Figure~\ref{fig:density_2x2_best_worst} (page~\pageref{fig:density_2x2_best_worst} in Appendix~\ref{imgs}) The ``best improvement'' image (Figure~\ref{fig:density_2x2_best_worst}a) is the image that was one of the worst rated for the regular blending, since it did not correctly show the bookshelf. In the flow-based version, a blurry shadow of the bookshelf is visible, however, the whole image shows blurry distortions of all of the objects. So although the metrics show an improved value, visually it is much harder to distinguish the different objects. The same holds true for the ``worst improvement'' image, where both metrics measured a slight increase in error value from the regular to the flow-based result. Figure~\ref{fig:density_2x2_best_worst}b shows point ``K'', and while the regular blending result shows extreme artefacts due to doubling, the flow-based version, due to the failure of optical flow, exacerbates the problem: some objects, such as the rug, are reduced to a blurry spot, whereas others, such as the coffee table, suffer from even worse blurring. In summary, it is safe to say that the captured viewpoints in the 2x2 density are too far apart to produce any satisfying results.
+
+As for the 12x12 scene, The error metrics show a slight decrease in error values near the walls, and a slight increase of error values near the middle of the scene. However, when looking at the best and worst improvement in Figure~\ref{fig:density_12x12_best_worst} (page~\pageref{fig:density_12x12_best_worst} in Appendix~\ref{imgs}, very little difference is actually visible. In the best improvement image (Figure~\ref{fig:density_12x12_best_worst}a), the flow-based blending slightly improves the accuracy of the bookshelf in the right and back faces, although some ghosting artefacts remain. It also does not display an artefact present in the front face of the regular blending result (a white blurry spot, which appears due to the use of an input viewpoint that had a deviation angle of zero at that position, but seems to have captured a part of the bookshelf with that ray). However, other than that, the two images are visually extremely similar. The same holds true for the ``worst improvement'' (Figure~\ref{fig:density_12x12_best_worst}b): Looking at the L1 difference images, it is hard to see any difference between the two, but when comparing the synthesized images, it is noticeable that the flow-based blending removed the ghosting artefacts on the rug and the coffee table. This change is so slight that it is not surprising that it did not register with the metrics. Visually however, the flow-based blending result seems more accurate, since it improves the ghosting artefacts. An explanation for the lower rating by the SSIM metric could be that some of the straight lines that have ghosting artefacts in the regular blending result (e.g. the right edge of the coffee table) are rated higher than the same lines in the flow-based blending result, that do not display ghosting artefacts, but are slightly warped. Since the SSIM metric uses structural elements, it is possible that it prefers the version with the ghosting artefacts.
+
+The 6x6 scene is more straightforward. Figure~\ref{fig:dens_diff_6x6} shows the improvement of the flow-based blending results over the regular blending results. As this is very similar to the improvement in the previous scenario for the square room (Figure~\ref{fig:scene_diff_square_oblong}a), where an improvement was achieved by the flow-based blending, the images are not examined in detail.
 
 \begin{figure}
 		\centering
-		\includegraphics[width=\textwidth]{04/scenario_density/dens_boxplot.png}
-		\caption[Comparing the distributions of all of the results with different densities]{Comparing the distributions of the results in the square room with different densities of captured viewpoints for the naive algorithm, regular blending, and flow-based blending}
+		\includegraphics[width=\textwidth]{04/scenario_density/boxplot_all.png}
+		\caption[Comparing the distributions of all of the results with different densities]{Comparing the distributions of the results in the square room with different densities of captured viewpoints for the regular blending and flow-based blending}
 		\label{fig:scenario_dens_boxplot}
 \end{figure}
 
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/diff_2x2_regular-flow.png}
+            \caption{Improvement in the 2x2 scene}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/scenario_density/diff_12x12_regular-flow.png}
+            \caption{Improvement in the 12x12 scene}
+    \end{subfigure}
+    \hfill
+  \caption[Improvement of flow-based blending results over regular blending results in the 2x2 and 12x12 scenes]{Improvement of flow-based blending results over regular blending results in the 2x2 and 12x12 scenes} \label{fig:dens_diff_2x2_12x12}
+\end{figure}
+
+\begin{figure}
+		\centering
+		\includegraphics[width=0.45\textwidth]{04/scenario_density/diff_6x6_regular-flow.png}
+		\caption[]{Improvement of flow-based blending results over regular blending results in the 6x6 scene}
+		\label{fig:dens_diff_6x6}
+\end{figure}
+
 \paragraph{}
+In summary it can be said that for the tested room (and presumably in most other cases, as well), increasing the density of the captured viewpoints also increases the accuracy of the results. In the tested cases, the improvement was more apparent near objects and walls.
 
-\begin{comment}
-Hypothesis: higher density --> better results, but difference is larger for flow-based.
-
-Hypothesis II: the effect of higher density is more marked near walls and corners
-
-Test:
-  - use square room and test 2x2, 6x6, 10x10
-  - compare flow with flow, reg with flow, and reg with reg -> 3 graphs
-\end{comment}
+In the extreme case of the 2x2 density, both the regular and the flow-based blending lead to extreme artefacts, due to the large jumps in reprojection and the failure of the optical flow algorithm.
+For the 6x6 density, the results are unambiguous: both metrics produce lower error values for the flow-based blending than for the regular blending.
+sing the 12x12 density results in fairly low errors and few artefacts for both regular and flow-based blending. In this case, the metrics are ambiguous, since the difference between the two versions is very small. A visual evaluation of some of the samples indicates that the flow-based blending improves ghosting artefacts, which visually improves the images, even though the error metric may be slightly higher.
 
 
 
@@ -551,10 +716,14 @@ Test:
 
 
 
-\subsubsection{The Effect of the Position of Synthesized Viewpoints Relative to Captured Viewpoints}
-In most of the previous results, the flow-based blending showed an improvement over the regular blending. However, the locations of the synthesized viewpoints were chosen explicitly so that the regular blending would most likely have the most difficulty: areas near the center of the grid cells with comparably high deviation angles. Naturally, this is not the only location that comes into consideration for synthesis. In fact, all locations within the convex hull can potentially be synthesized by the 2DoF algorithm. In order to have a more general understanding of the impact of the relative positons of the captured viewpoints on regular versus flow-based blending, this scenario \dots
 
-Instead of choosing a few select locations in the scene, a dense grid of viewpoints is synthesized, using the square room with a captured viewpoint density of 6x6. The square room gives the advantage of covering the whole possible space, and a density of 6x6 with a spacing of 60cm is a conceivable distance for extrapolation to real scenes. A grid of 25x25 viewpoints is synthesized, totaling 625 synthesized points (Figure~\ref{fig:scenario_offset_setup}).
+
+
+
+\subsubsection{Position of Synthesized Viewpoints Relative to Captured Viewpoints}
+In most of the previous results, the flow-based blending showed an improvement over the regular blending. However, the locations of the synthesized viewpoints were chosen explicitly so that the regular blending would most likely have the most difficulty: areas near the center of the grid cells with comparably high deviation angles. Naturally, this is not the only location that comes in question for synthesis. In fact, all locations within the convex hull can potentially be synthesized by the 2DoF algorithm. In order to gain a more general understanding of the impact of the relative positons of the captured viewpoints on regular versus flow-based blending, this scenario synthesizes a dense grid of viewpoints, instead of choosing a few select locations in the scene, like in the previous scenarios.
+
+Based on the insights gained from the last two scenarios, the square room is used with a captured viewpoint density of 6x6. The square room gives the advantage of covering the whole possible space, and a density of 6x6 with a spacing of 60cm is a conceivable distance for extrapolation to real scenes. A grid of 25x25 viewpoints is synthesized, totaling 625 synthesized points (Figure~\ref{fig:scenario_offset_setup}).
 
 \begin{figure}
 		\centering
@@ -564,8 +733,11 @@ Instead of choosing a few select locations in the scene, a dense grid of viewpoi
 \end{figure}
 
 \paragraph{Regular Blending Results}
+In this scenario, only the position of the viewpoints within a single scene is examined, so the distribution can be inspected directly in the scene analysis visualization (Figure~\ref{fig:offset_regular_flow}a). The dense coverage of synthesized viewpoints gives a fairly detailed picture of the effects of the location relative to the scene, and especially relative to the location of the captured viewpoints. It is immediately striking that the synthesized viewpoints in the close vicinity of a captured viewpoint have a distincly lower error value than viewpoints that are farther away. The exceptions to this are the synthesized viewpoints near the walls and near the bookshelf. The observation of higher error values near the bookshelf and walls are consistent with the observations in the previous scenarios. However, this scenario shows that the error values are higher near walls and objects, independent of whether the synthesized viewpoints are close to the captured viewpoints or not. This phenomenon is clearly visible in the L1 error visualization, but even more so in the SSIM error visualization, where the accuracy dropoff is even more extreme. 
+
 
 \paragraph{Flow-based Blending Results}
+The error values of the flow-based blending results (Figure~\ref{fig:offset_regular_flow}b) display a different pattern than those of the regular results: While the error values are lower in the vicinity of captured viewpoints, they are comparably low in the vertical and horizontal spaces between the captured viewpoints, as well. This implies that it does not make a big difference to the error values whether a synthesized viewpoint is very close to a captured viewpoint, or anywhere between a set of horizontally or vertically adjacent viewpoints. In general, the majority of the values is fairly similar, with clear outliers only visible near the bookshelf.
 
 \begin{figure}
 \centering
@@ -586,47 +758,171 @@ Instead of choosing a few select locations in the scene, a dense grid of viewpoi
 \end{figure}
 
 \paragraph{Comparing Regular Blending to Flow-based Blending Results}
+%The distribution comparison of the two approaches in Figure~\ref{fig:scenario_offset_boxplot} supports the observation that the results are more spread out for the regular blending than for the flow-based blending, as this is also clearly visible in the plot. Nonetheless, both the regular, and the flow-based blending results are significantly better than the results of the na\"ive algorithm.
+Just by inspecting the scene analysis visualization of the regular and flow-based blending results (Figure~\ref{fig:offset_regular_flow}) indicates that there are areas in which the regular blending performs better, and others in which the flow based blending does. Figure~\ref{fig:scenario_offset_diff} shows the $\Delta$ error values when using the flow-based blending compared to the regular blending. Here, the results are clear: In general, the error values of synthesized points in close proximity to captured points go up when using flow-based blending. An exception to this are the captured points near the walls of the room: In these cases, the flow-based blending improves the results in the majority of cases. An area where the results are ambiguous is the area near the bookshelf. Here, the improvement or degradation cannot be clearly attributed to the proximity to a captured viewpoint or the proximity of the bookshelf. It must be kept in mind, however, that in the case of the bookshelf, the Blender optical flow does not yield good, or even acceptable results, which has a direct, detrimental effect on the flow-based blending, so the results near the bookshelf should not be taken into strong consideration.
+
+%l1 reg best:254 , worst:249
+%ssim reg best: 254, worst: 572
+
+%l1 flow best:475, worst: 274
+%ssim flow best: 475, worst: 322
+
+
+%\begin{figure}
+%		\centering
+%		\includegraphics[width=0.6\textwidth]{04/scenario_offset/dense_boxplot.png}
+%		\caption{Distribution of results for 625 points}
+%		\label{fig:scenario_offset_boxplot}
+%\end{figure}
 
 \begin{figure}
 		\centering
 		\includegraphics[height=\textheight]{04/scenario_offset/diff_square_regular-flow.png}
-		\caption[]{}
-		\label{fig:scenario_offset_setup}
+		\caption{Improvement of flow-based blending results over regular blending results for 625 synthesized images in the square room}
+		\label{fig:scenario_offset_diff}
 \end{figure}
 
-%A feature that sets this approach apart from many other viewpoint synthesis algorithms using image correspondences is that it has two degrees of freedom, instead of only synthesizing images on a line between two viewpoints. Given the grid-like setup of the captured viewpoints, there are many cases in which the synthesized viewpoint is on a line between the captured viewpoints. In these cases, for some image areas (those whith the smallest deviation angles falling to the aligned captured viewpoints), the 1DoF interpolation will calculate the synthesized image at the correct location and there is no need for any reprojection. In all the cases where the location of the synthesized viewpoint is not on a line between two captured viewpoints, the 1DoF interpolation is followed by a reprojection. In the best case scenario, there would be no impact on the accuracy of the result, no matter whether the synthesized viewpoint is on a line between two viewpoints or not. However, due to possible reprojection errors based on the proxy-scene difference, as well as possible inaccuracies introduced by the approximation of non-viewpoint-plane rays (Section~\ref{subsec:2dof_flow-based} on page \pageref{subsec:2dof_flow-based}), it is probable that the position of the synthesized viewpoint relative to the captured viewpoints does have an effect on the result. In order to examine this, several experiments are set up that compare the accuracy of synthesized points in the optimal position (at the intersection between several captured viewpoints) to the accuracy of synthesized viewpoints non-optimal positions (not at the intersection between any captured viewpoints). The different scene setups are demonstrated in Figure~\ref{fig:offset_setup}.
+The 
 
-
-exact observations:
-flow
-- outer rows: top and bottom generally worsen for flow and offset (close to objects/walls, so problems are more extreme) left worsens, right improves but this could well be because of distance to objects increases/decreases
-- middle points don't change too much 
-
-regular:
-- seems like only proximity to objects matters
-
-
+\subsection{Discussion} \label{subsec:discussion_virtual}
 \begin{verbatim}
-- hypothesis: no big difference for regular blending, flow-based blending better if on axis
-
-- test: compare results of offset points with centered points in square room (with different densities
-
 - the worse the regular blending is, the worse the jumps/discontinuities at the borders will be for the flow-based(except on a direct line), since it is dependent on the regular blending
 \end{verbatim}
 
+In general, the flow-based blending produced lower error values than the regular blending in the tested scenarios. However, the evaluation also uncovered some factors that decreased the accuracy of the results, originating from the implementation details as well as the underlying approach:
+
+\begin{itemize}
+  \item failure of the optical flow algorithm
+  \item bugs in external libraries
+  \item deviation-angle-based choice of input viewpoints with abrupt change
+  \item ray approximation
+\end{itemize}
+
+The failure of the optical flow algorithm, notably in the cases where a viewpoint was in close proximity to the bookshelf, presumably degraded the results of the flow-based blending considerably. However, since it was not possible to test with perfect optical flow, it remains unclear whether even ``perfect'' optical flow could improve the accuracy of viewpoints that are extremely close to objects, as there would still be large occluded areas.
+
+Furthermore, due to reprojection problems in the external library Skylibs \ref{skylibs}, a slight error \dots
+
+The biggest implementation-related problem is the choice of input viewpoints per pixel in combination with the reprojection using the proxy geometry. This is the reason for the abrupt jumps and discontinuities in the flow-based blending results. Figure~\ref{fig:flow_problem_oblong} breaks down the cause of the problem step-by-step: Looking at an arbitrary synthesized viewpoint in the oblong room (Figure~\ref{fig:flow_problem_oblong}, the abrupt discontinuities are clearly visible. As introduced in Section~\ref{subsec:2dof_flow-based}, for each pixel and its corresponding ray, two viewpoints A and B are chosen that are on either side of the ray in the viewpoint plane. If more than one viewpoint is found on either side of the ray, the points with the smallest deviation angles are chosen. The interpolation distance between these points A and B is then calculated and the 1DoF interpolation is performed. Finally the interpolated point is reprojected to the position of the synthesized viewpoint. This succession of operations is performed for each ray of the synthesized image. As a result, there are areas in the synthesized image, where, from one pixel to the next, a different set of input viewpoints is chosen. This leads to image areas (``panels'') originating from different sets of input viewpoints (Figure~\ref{fig:flow_problem_oblong}b). When applying these panels to the synthesized image (Figure~\ref{fig:flow_problem_oblong}c), it becomes clear that these are the source of the abrupt continuities. Figure~\ref{fig:flow_problem_oblong}d shows a visualization of the scene with an approximation of the rays that are associated with each panel\footnote{The rays were inserted by hand, so they are not 100\% accurate in terms of deviation angles}. The switch between viewpoint sets within the image in itself is not necessarily a problem, given the 1DoF interpolation worked well, and the reprojection was more or less accurate. However, in the cases where the proxy geometry deviates strongly from the actual geometry, the reprojection will introduce inaccuracies, which are exacerbated by the discontinuities.
+%If, for example, only one interpolated image was calculated for the entire synthesized image, there would be no discontinuities. However, doing this would also remove the 
+For example, the square room's geometry is closer to the proxy geometry. When comparing a very similar viewpoint from the square room with the example from the oblong room, (Figure~\ref{fig:flow_problem_square}), some discontinuities are hardly visible, for example at the coffee table, or on the door. Other discontinuities are less apparent, since the displacement is relatively small, for example on the rug, or on the TV cabinet.
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_result_extended_oblong.jpg}
+            \caption{An arbitrary viewpoint in the oblong room}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_visualized_indices_annotated_oblong.jpg}
+            \caption{The panels of the image that have been assigned to a set of input viewpoints A, B $\in [13, 14, 19, 20]$}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_result_panels_extended_oblong.jpg}
+            \caption{The chosen ``panels'' applied to the image}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/flow_problem_circle.png}
+            \caption{The panels visualized in the scene (approximation)}
+    \end{subfigure}
+    \hfill
+  \caption{The input viewpoint choice problem in the oblong room (geometry further from proxy geometry)} \label{fig:flow_problem_oblong}
+\end{figure}
+
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_result_extended_square.jpg}
+            \caption{A similar viewpoint to Figure~\ref{fig:flow_problem_oblong} in the square room}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_visualized_indices_annotated_square.jpg}
+            \caption{The panels of the image that have been assigned to a set of input viewpoints A, B $\in [13, 14, 19, 20]$}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_result_panels_extended_square.jpg}
+            \caption{The chosen ``panels'' applied to the image}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/flow_problem_circle_square.png}
+            \caption{The panels visualized in the scene (approximation)}
+    \end{subfigure}
+    \hfill
+  \caption{The input viewpoint choice problem in a the square room (geometry closer to proxy geometry)} \label{fig:flow_problem_square}
+\end{figure}
+
+The half-circle shapes of most of the panels in Figure~\ref{fig:flow_problem_oblong} and Figure~\ref{fig:flow_problem_square} are due to the ray approximation. At the moment it is hard to judge how much of an impact the ray approximation has on the results, however, based on the analyzed images, it does not seem to create noticeable artefacts that can unambiguously be traced back to it.
 
 
 
-\section{Proof-of-Concept Evaluation using Real Scenes} \label{sec:pof_eval}
 
-%- captured using Ricoh Theta Z1 on a tripod
-The images were captured using a Ricoh Theta Z1 camera with a tripod. For the locations of the captured viewpoints, a grid was mapped out on the floor, so that the distances between the captured viewpoints would be uniform. The spacing used for the grid was 40cm, as this was estimated to be a feasible distance for optical flow calculations.
 
-\section{Discussion} \label{sec:discussion}
-%- latlong storage maybe not best option, since there is lots of redundancy
- However, since it is not possible to test with perfect optical flow, it remains uncertain whether even perfect optical flow could improve the accuracy of viewpoints that are extremely close to objects. Probably not, since there would be too high occlusions
 
-\subsection{Limits}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Proof-of-Concept Evaluation using a Real Scene} \label{sec:pof_eval}
+
+After the extensive evaluation of the virtual scenes, this section shows the results of testing the 2DoF synthesis on a real scene. The images were captured using a Ricoh Theta Z1 camera with a tripod in an approximately 3m by 2.5m living room with a sloped roof (Figure~\ref{fig:real_setup}a). For the locations of the captured viewpoints, a 5x5 grid was mapped out on the floor, so that the distances between the captured viewpoints would be approximately uniform. The spacing used for the grid was 40cm, as this was estimated to be a feasible distance for optical flow calculations. For the ground truth data, the tripod was randomly placed within the boundaries of the grid, capturing 13 different viewpoints to be used as ground truth data.
+
+After capturing the data, the structure-from-motion library OpenSfM \cite{opensfm} was used to automatically determine the positions and rotations of the images. The acquired scene is shown in Figure~\ref{fig:real_setup}b. The radius was chosen to be slightly smaller than usual, so that it would be closer to the actual scene geometry.
+
+\begin{figure}[p]
+\centering
+    \hfill
+    \begin{subfigure}[b]{0.7\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/real/sw_overview.jpg}
+            \caption{Latlong image from the center of the room}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.25\textwidth}
+            \centering
+            \includegraphics[height=5cm]{04/real/scene_spoints.jpg}
+            \caption{The points in the scene}
+    \end{subfigure}
+    \hfill
+  \caption{Overview of the real scene}
+  \label{fig:real_setup}
+\end{figure}
+
+\subsection{Results}
+
+\subsection{Discussion}
+
+
+\section{Limits}
 
 limits of the evaluation:
 \begin{itemize}
@@ -661,5 +957,6 @@ Assuming radius accuracy does in fact make a slight assumption about the scene g
   \item human perception evaluation with user study
   \item tradeoff between line consistency and perspective accuracy \ar would be interesting to introduce color constraints / optical flow smoothing, or other techniques to avoid discontinuities. this may come at the cost of accuracy
   \item use an HMD like in the paper for capture
+%- latlong storage maybe not best option, since there is lots of redundancy
 \end{itemize}
 

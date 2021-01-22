@@ -3,7 +3,7 @@
 \begin{figure}
 		\centering
 		\includegraphics[width=\textwidth]{04/inspection_example_K.jpg}
-		\caption{Sample inspection of example viewpoint ``K''}
+		\caption{Sample inspection of example viewpoint ``K'': The images are in cube map representation, as this is tends to be more intuitive to understand than latlong representation. The top face is omitted for a more compact representation.}
 		\label{fig:inspection_example}
 \end{figure}
 
@@ -40,7 +40,7 @@
     \begin{subfigure}[b]{\textwidth}
             \centering
             \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_N.jpg}
-            \caption{Synthesized point `N'' (best improvement for L1, good for SSIM)}
+            \caption{Synthesized point ``N'' (best improvement for L1, good for SSIM)}
     \end{subfigure}
     \hfill
 
@@ -74,3 +74,56 @@
   \caption[Best and worst improvements of flow-based blending over regular blending in the oblong room]{Best (A) and worst (L) improvements of flow-based blending over regular blending in the oblong room. The ``worst'' improvement, however, is still slightly better than the regular blending result} \label{fig:scene_oblong_best_worst}
 \end{figure}
 
+\begin{figure}
+		\centering
+    \includegraphics[width=\textwidth]{04/scenario_density/strip_dens_T_regular.jpg}
+		\caption{The regular blending results for point ``T'' (one of the worse results) in the square room with a viewpoint density of 2x2, 6x6, and 12x12}
+		\label{fig:density_regular_T}
+\end{figure}
+
+\begin{figure}
+		\centering
+    \includegraphics[width=\textwidth]{04/scenario_density/strip_dens_G_regular.jpg}
+		\caption{The regular blending results for point ``G'' (one of the better results) in the square room with a viewpoint density of 2x2, 6x6, and 12x12}
+		\label{fig:density_regular_G}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_density/stripX_2x2v2_offset_new_T.jpg}
+            \caption{Synthesized point ``T'' (best improvement for L1, good for SSIM)}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_density/stripX_2x2v2_offset_new_K.jpg}
+            \caption{Synthesized point ``K'' (worst ``improvement'': slight increase of error)}
+    \end{subfigure}
+    \hfill
+  \caption[Best and worst improvements of flow-based blending over regular blending in the 2x2 setup]{Best (T) and worst (K) improvements of flow-based blending over regular blending with the 2x2 setup in the square room. The ``worst'' improvement is slightly worse than the regular blending result} \label{fig:density_2x2_best_worst}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_density/stripX_12x12_offset_new_Y.jpg}
+            \caption{Synthesized point ``Y'' (best improvement for L1 and SSIM)}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_density/stripX_12x12_offset_new_H.jpg}
+            \caption{Synthesized point ``H'' (worst ``improvement'': slight increase of error)}
+    \end{subfigure}
+    \hfill
+  \caption[Best and worst improvements of flow-based blending over regular blending with the 12x12 setup]{Best (Y) and worst (H) improvements of flow-based blending over regular blending in the 12x12 setup in the square room. The ``worst'' improvement is slightly worse than the regular blending result} \label{fig:density_12x12_best_worst}
+\end{figure}
