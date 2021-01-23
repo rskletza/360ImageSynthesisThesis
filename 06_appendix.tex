@@ -127,3 +127,43 @@
     \hfill
   \caption[Best and worst improvements of flow-based blending over regular blending with the 12x12 setup]{Best (Y) and worst (H) improvements of flow-based blending over regular blending in the 12x12 setup in the square room. The ``worst'' improvement is slightly worse than the regular blending result} \label{fig:density_12x12_best_worst}
 \end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_offset/stripX_6x6_dense_52_good.jpg}
+            \caption{The coffee table is in a more accurate position, even though it shows some blurriness}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_offset/stripX_6x6_dense_567_good.jpg}
+            \caption{The rug no longer has doubled edges, however, there are still some artefacts}
+    \end{subfigure}
+    \hfill
+  \caption{Results for which the flow-based blending improved the accuracy} \label{fig:offset_good}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_offset/stripX_6x6_dense_145_bad.jpg}
+            \caption{The results are very similar, except on the blue table in the bottom face, and the white coffee table in the left face, where there are distinct artefacts in the flow-based result.}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/scenario_offset/stripX_6x6_dense_504_bad_ok.jpg}
+            \caption{In this case, there is hardly a visible difference between the two results}
+    \end{subfigure}
+    \hfill
+  \caption{Results for which the flow-based blending decreased the accuracy (both examples are in the direct vicinity of a captured viewpoint} \label{fig:offset_bad}
+\end{figure}

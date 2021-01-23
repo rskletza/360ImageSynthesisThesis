@@ -533,4 +533,5 @@ Unfortunately, there are some implementation-related problems that are unrelated
 
 The other, more visible problem, also from the skylibs library, concerns the conversion from the cubemap back to the latlong representation. Due to a bug in this operation, a black line sometimes appears at on or more borders of a face. Since the synthesized images are made up of mosaicked, reprojected areas, it is possible that in some cases, these lines shift into the middle of faces.
 
-Both of these errors are relatively small, and their effect is negligible compared to some of the algorithm-related artefacts, so they can be disregarded.
+%Both of these errors are relatively small, and their effect is negligible compared to some of the algorithm-related artefacts, so they can be disregarded.
+Although these errors seem relatively small, it is necesssary to keep them in mind during the evaluation, since they only apply to the flow-based blending and may skew the results.
