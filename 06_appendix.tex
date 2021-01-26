@@ -10,68 +10,70 @@
 \begin{figure}
 		\centering
     \includegraphics[width=\textwidth]{04/scenario_scene/stripX_checkersphere_Y.jpg}
-		\caption{Results for synthesized viewpoint Y of the checkersphere}
+		\caption{Results for synthesized viewpoint ``Y'' in the checkersphere scene: The regular blending result is very close to the ground truth, except for some blurriness. The flow-based blending result shows some inaccuracies (magenta) and noise (green)}
 		\label{fig:scene_checkersphere_Y}
 \end{figure}
 
 \begin{figure}
-\centering
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_O.jpg}
-            \caption{Square room: The proximity to the bookshelf results in extreme inaccuracies in the synthesis}
-    \end{subfigure}
-    \hfill
-
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_O.jpg}
-            \caption{Oblong room: The bookshelf is farther away from the viewpoint, which improves the accuracy immensely}
-    \end{subfigure}
-    \hfill
-  \caption{Comparing the viewpoints at location ``O'' in the square and oblong rooms} \label{fig:scene_square_oblong_O}
+		\centering
+    \includegraphics[width=\textwidth]{04/scenario_scene/O_regular_both_scenes.jpg}
+		\caption{Regular blending result of viewpoint ``O'' in the square and oblong rooms: The bookshelf has a strong impact on the difference in error values (marked in green)}
+		\label{fig:scene_O_regular}
 \end{figure}
 
 \begin{figure}
-\centering
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_N.jpg}
-            \caption{Synthesized point ``N'' (best improvement for L1, good for SSIM)}
-    \end{subfigure}
-    \hfill
+		\centering
+    \includegraphics[width=\textwidth]{04/scenario_scene/O_flow_both_scenes.jpg}
+		\caption{Flow-based blending result of viewpoint ``O'' in the square and oblong rooms: The bookshelf has a strong impact on the difference in error values (green) and the details of the bookshelf are warped due to inaccurate optical flow (magenta).}
+		\label{fig:scene_O_flow}
+\end{figure}
 
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_O.jpg}
-            \caption{Synthesized point ``L'' (worst ``improvement'': slight increase of error)}
-    \end{subfigure}
-    \hfill
-  \caption[Best and worst improvements of flow-based blending over regular blending in the square room]{Best (N) and worst (L) improvements of flow-based blending over regular blending in the square room. The ``worst'' improvement is slightly worse than the regular blending result} \label{fig:scene_square_best_worst}
+%\begin{figure}
+%\centering
+%    \hfill
+%    \begin{subfigure}[b]{\textwidth}
+%            \centering
+%            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_O.jpg}
+%            \caption{Square room: The proximity to the bookshelf results in extreme inaccuracies in the synthesis}
+%    \end{subfigure}
+%    \hfill
+%
+%    \hfill
+%    \begin{subfigure}[b]{\textwidth}
+%            \centering
+%            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_O.jpg}
+%            \caption{Oblong room: The bookshelf is farther away from the viewpoint, which improves the accuracy immensely}
+%    \end{subfigure}
+%    \hfill
+%  \caption{Comparing the viewpoints at location ``O'' in the square and oblong rooms} \label{fig:scene_square_oblong_O}
+%\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_N.jpg}
+  \caption[Synthesized point ``N'' in the square room]{Synthesized point ``N'' in the square room (best improvement for L1, good for SSIM): The flow-based blending removed the ghosting artefacts on the rug (magenta) and improved the accuracy on the coffee table (cyan), and the lower part of the bookshelf (green). The rest of the scene is very similar for both results.}
+  \label{fig:scene_square_N}
 \end{figure}
 
 \begin{figure}
-\centering
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_A.jpg}
-            \caption{Synthesized point ``A'' (best improvement)}
-    \end{subfigure}
-    \hfill
+  \centering
+  \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_square_synth_room_L.jpg}
+  \caption[Synthesized point ``L'' in the square scene]{Synthesized point ``L'' in the square room (worst ``improvement'': slight increase of error for both metrics): The ghosting artefact on the rug in the regular blending result was replaced by a displacement artefact in the flow-based blending (magenta), which also introduced a new artefact, namely the warped top edge of the coffee table (green). Otherwise the scenes are very similar.}
+  \label{fig:scene_square_L}
+\end{figure}
 
-    \hfill
-    \begin{subfigure}[b]{\textwidth}
-            \centering
-            \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_L.jpg}
-            \caption{Synthesized point ``L'' (worst improvement)}
-    \end{subfigure}
-    \hfill
-  \caption[Best and worst improvements of flow-based blending over regular blending in the oblong room]{Best (A) and worst (L) improvements of flow-based blending over regular blending in the oblong room. The ``worst'' improvement, however, is still slightly better than the regular blending result} \label{fig:scene_oblong_best_worst}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_A.jpg}
+  \caption{Synthesized point ``A'' in the oblong room (best improvement): The flow-based blending drastically improved ghosting artefacts on the couch (magenta) and the accuracy of the rug (cyan), but also introduced new artefacts (green).}
+  \label{fig:scene_oblong_A}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{04/scenario_scene/stripX_oblong_room_L.jpg}
+  \caption{Synthesized point ``L'' in the oblong room (worst improvement): The flow-based blending result introduced some severe discontinuity artefacts on the rug (magenta) and on the coffee table (cyan), although the coffe table is positioned more accurately in the flow-based blending result (green)}
+  \label{fig:scene_oblong_L}
 \end{figure}
 
 \begin{figure}
@@ -167,3 +169,71 @@
     \hfill
   \caption{Results for which the flow-based blending decreased the accuracy (both examples are in the direct vicinity of a captured viewpoint} \label{fig:offset_bad}
 \end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_D.jpg}
+            \caption{Viewpoint ``D''}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_M.jpg}
+            \caption{Viewpoint ``M''}
+    \end{subfigure}
+    \hfill
+  \caption{Viewpoints in the real scene where both regular and flow-based blending produced results with high error values} \label{fig:real_bad}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_I.jpg}
+            \caption{Viewpoint ``I''}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_F.jpg}
+            \caption{Viewpoint ``F''}
+    \end{subfigure}
+    \hfill
+  \caption{Viewpoints in the real scene where both regular and flow-based blending produced results with low error values} \label{fig:real_good}
+\end{figure}
+
+\begin{figure}
+		\centering
+    \includegraphics[width=\textwidth]{04/real/cube_5x5_random_G.jpg}
+		\caption{Viewpoint ``G''}
+		\label{fig:real_G}
+\end{figure}
+
+\begin{figure}
+\centering
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_A.jpg}
+            \caption{Viewpoint ``A'', where the flow-based blending produced worse results than the regular blending}
+    \end{subfigure}
+    \hfill
+
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{04/real/stripX_5x5_random_K.jpg}
+            \caption{Viewpoint ``K'', where the flow-based blending produced better results than the regular blending}
+    \end{subfigure}
+    \hfill
+  \caption{Viewpoints in the real scene where there is a clear difference between the regular and the flow-based blending results} \label{fig:real_good_bad}
+\end{figure}
+
