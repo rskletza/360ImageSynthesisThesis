@@ -20,7 +20,8 @@ An alternative to capturing all of these viewpoints manually is to generate them
 
 The area and the degrees of freedom (DoF) required for navigation usually depend on the goal and requirements of the application: A virtual tour on a pre-defined path for example, would only require generating intermediate views between existing viewpoints (i.e.\ synthesis with 1-DoF) for a smooth transition. For a less constrained virtual tour that enables users to navigate freely, generating viewpoints with 2-DoF at eye-height could be sufficient. Users could move around and look in any direction but not change their viewing height. Some applications may require three degrees of freedom, for example in order to enable users to closely inspect certain objects from all angles, but restrict them from moving away from the object.
 
-Depending on the type of scene, the required fidelity, and the real-time requirements, different IBR techniques leverage different amounts and types of information extracted from the input images. On one end of the scale\todo{Markus: what scale}, there are approaches that extract as much geometry information as possible from the set of images and try to reconstruct the 3D geometry of the scene as closely as possible. These approaches can suffer from the problem of extracting accurate geometry information, since errors in geometry can lead to unappealing results.\todo{JF says cite some examples for both types}
+Depending on the type of scene, the required fidelity, and the real-time requirements, different IBR techniques leverage different amounts and types of information extracted from the input images.
+On one end of the scale\todo{Markus: what scale}, there are approaches that extract as much geometry information as possible from the set of images and try to reconstruct the 3D geometry of the scene as closely as possible. These approaches can suffer from the problem of extracting accurate geometry information, since errors in geometry can lead to unappealing results.\todo{JF says cite some examples for both types}
 Other approaches try to extract some information from the image, such as feature correspondences, or motion vectors (optical flow), which enables interpolation between pairs of images, i.e.\ a smooth transition with 1-DoF.
 At the other end of the scale, there are approaches that use no semantic image information whatsoever. Instead, they may use color values, simple proxies for the scene geometry, or information about the relative location of captures, but they tend to operate on a pixel level. Although there is no specific label for this kind of synthesis, for the purpose of this thesis, it will be referred to as \emph{pixel-based synthesis}.
 
@@ -52,11 +53,11 @@ As the number of possible different environments is infinite, as well as the pos
 
 The parameters that will be examined are:
 \begin{description}
-  \item[Difference between the scene geometry and the proxy geometry] The proxy geometry used in the approach is a sphere of the approximate size of the scene. Scenes of different basic shapes, containing different objects are tested, in order to gauge the effect of the difference between the proxy model and the scene. The ``difference'' of the model to the sphere is difficult to quantify in a meaningful way, so it is not measured but done intuitively.
-  \item[Density of captured viewpoints] 
+  \item[Difference between the scene geometry and the proxy geometry] The proxy geometry used in the approach is a sphere of the approximate size of the scene. Scenes of different basic shapes, containing different objects are tested, in order to gauge the effect of the difference between the proxy model and the scene.
+  \item[Density of captured viewpoints] The density of the captured viewpoints is an important aspect, as it is directly related to the effort required to capture a scene (the higher the necessary density, the more images needed to be captured). In order to test the effect of different densities on the accuracy of the results, different densities of captured viewpoints are used.
     %For the evaluation in this thesis, the viewpoints used for synthesis (the ``captured viewpoints'') are arranged on a regular grid. The effect of different densities on the accuracy of the results is explored, specifically, grids of between 3m and 30cm distance are used.
-  \item[Position of synthesized points relative to captured points] 
-    %Since the captured viewpoints are arranged on a grid, there are many positions where a synthesized point can be on a line between two captured viewoints. In this case, the problem is reduced to 1-DoF interpolation. This is compared to the case where the synthesized point is not located on any line, which requires 2-DoF synthesis.
+  \item[Position of synthesized points relative to captured points] A synthesized viewpoint can theoretically be located anywhere within the boundaries of the scene. The relative position of the synthesized point to the captured points is likely to have an effect on the accuracy of the result and will be examined in more detail.
+    %This means that it can be very close to a captured viewpoint, or further away. Furthermore, it may make a difference whether the synthesized viewpoint is directly on a line between captured viewpoints. A dense grid of viewpoints is synthesized to test the effect of the relative positioning.
 \end{description}
 
 These parameters will not be examined exhaustively, as this is impossible, given the infinite possibilities of scene shapes and object placements, alone. Instead, for each parameter to be examined, a scenario is designed that tests this parameter in a reasonable context.
@@ -90,9 +91,11 @@ These parameters will not be examined exhaustively, as this is impossible, given
 \section*{Methodology}
 In order to implement and evaluate an algorithm that combines basic pixel-based synthesis and flow-based interpolation, this thesis follows an approach consisting of two distinct phases: implementation and evaluation (Figure~\ref{fig:methodology}). The implementation consists of first developing a basic pixel-based synthesis algorithm using proxy geometry. Then, based on existing 1-DoF flow-based interpolation algorithms (presented in Section~\ref{sec:related_work}), the extended pixel-based algorithm using flow-based interpolation is developed. The approach and implementation are presented in Chapter~\ref{chap:implementation}.
 
-The evaluation step is further divided into three phases. In the preparation phase, based on the parameter space described in detail in Section~\ref{sec:params}, data for testing and evaluation is acquired. This data includes virtual and real scenes. Additionally, the error metrics are adapted for 360\degree images (Section~\ref{sec:eval_methodology}).
+The evaluation is used to judge under which circumstances the flow-based algorithm yields more accurate results than the basic pixel-based algorithm.
+The evaluation step is further divided into three phases. In the preparation phase, based on the parameter space described in detail in Section~\ref{sec:params}, data for testing and evaluation is acquired, including virtual and real scenes. Additionally, the error metrics are adapted for 360\degree images (Section~\ref{sec:eval_methodology}).
 Then, in the synthesis and testing phase, the images are synthesized using the implementations developed in the implementations step. Using the result images and the ground truth data generated during the data acquisition, error calculation is performed with the adapted metrics.
-Finally, using the calculated error values, along with the synthesized images, the results are analyzed. The analysis is made up of two parts: First, an analysis is performed on the virtual data that explores the limits of the chosen parameters (Section~\ref{sec:limit_eval}). Then, the results using the real data are examined as a proof-of-concept (Section~\ref{sec:pof_eval}).
+Finally, using the calculated error values, along with the synthesized images, the results are analyzed.
+The analysis is made up of two parts: First, an more extensive analysis is performed on the virtual data that explores the chosen parameters (Section~\ref{sec:limit_eval}). Then, the results using the real data are examined as a proof-of-concept (Section~\ref{sec:pof_eval}). 
 
 \begin{figure}
 		\centering
@@ -104,11 +107,9 @@ Finally, using the calculated error values, along with the synthesized images, t
 \section*{Contributions}
 The contributions of this thesis are:
 \begin{itemize}
-  \item An algorithm for 2-DoF pixel-based synthesis algorithm with flow-based interpolation
+  \item An algorithm for pixel-based 2-DoF synthesis algorithm with flow-based interpolation
   \item A basic proof-of-concept implementation of this algorithm
-  \item An evaluation of the results of this algorithm with a comparison of the basic pixel-based algorithm versus with flow-based interpolation, proving that flow-based interpolation does improve the results of the basic algorithm in the majority of the examined cases
-    \todo{reformulate, this is too contrived}
-%  \item evaluation methodology for 360\degree images, including models and samples that can be used for benchmarking other methods \ar is it better than a naive algorithm?
+  \item An evaluation of the results of this algorithm, including a comparison with the results of the basic pixel-based algorithm, proving that flow-based interpolation does improve the results of the basic algorithm in a number of cases
 \end{itemize}
 
 %The results of this thesis can be the basis of various future work. Since the implementation is a first attempt at combining the two methods, the problems and limitations discovered in the evaluation can be used to improve future versions. Alternative proxy geometries could be examined, potentially based on sparse scene geometry, which would improve the basic results and could lead to a distinct improvement of the flow-based results. Furthermore, parallelization and optimization could be used in order to achieve real-time framerates. 

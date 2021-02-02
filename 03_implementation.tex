@@ -372,7 +372,7 @@ The vectors and intersection points are each calculated and stored in latlong re
 The deviation angle calculation is a simple angle calculation between vectors. This calculation is performed for each ray of the synthesized point and the corresponding rays of all of the input viewpoints. The rays are defined by their origin (location of the viewpoint), and the intersection points calculated in the previous step. The deviation angles per viewpoint are stored in latlong representation (Figure~\ref{fig:dev_angle_storage}a). The deviation angles for all viewpoints are stacked in a three-dimensional matrix, which allows comparison of the deviation angles per pixel/ray of all the viewpoints (Figure~\ref{fig:dev_angle_storage}b) in the next steps.
 
 \subsubsection{``Regular'' Knn Blending}
-The previously calcuated and stored deviation angles are used for the regular blending step. The storage of the deviation angles in the three dimensional matrix (Figure~\ref{fig:dev_angle_storage}b) makes the selection of the best viewpoint per pixel very straightforward, since the id of the k best input viewpoints can easily be extracted and the corresponding pixel value retrieved. With this information, the ``regular'', k-nearest-neighbor (knn) blending is performed.
+The previously calcuated and stored deviation angles are used for the regular blending step. The storage of the deviation angles in the three dimensional matrix (Figure~\ref{fig:dev_angle_storage}b) makes the selection of the best viewpoint per pixel very straightforward, since the ID of the k best input viewpoints can easily be extracted and the corresponding pixel value retrieved. With this information, the ``regular'', k-nearest-neighbor (knn) blending is performed.
 
 \begin{figure}
 \centering
