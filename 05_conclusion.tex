@@ -1,4 +1,25 @@
-\chapter{Conclusion}
+\chapter{Conclusion and Future Work}
+
+\section{Future Work} \label{sec:future_work}
+Naturally, the pixel-based 2-DoF synthesis using flow-based interpolation has its limitations as well.
+%Some of these are intrinsic to the algorithm, and others may be overcome by modifying or adapting the implementation.
+Some of these, for example the reliance on optical flow, are intrinsic to the approach. Others, for example the problem of abrupt discontinuities, were uncovered by the evaluation. In most cases, there are possible changes and adaptations, so that the results could be improved in future work.
+
+The most obvious limitation of the approach is the reliance on accurate optical flow. The optical flow algorithms used in this thesis did not always manage to provide accurate optical flow, which had a noticeable impact on the results. It could be very advantageous to explore different optical flow algorithms, especially ones that focus on capturing large displacements. For example, there are many optical flow algorithms based on Deep Learning techniques \cite{of-deep} that could be relevant for this task. Furthermore, it could be possible to undistort the extended cube map before calculating optical flow (e.g., by using a method like the one presented in \cite{fov}), which could also improve the accuracy of the optical flow result on the extended cube maps.
+
+%The next limitation is the necessity to approximate rays in order to find appropriate input viewpoints for 1-DoF interpolation. As long as the viewpoints are captured on a plane (2-DoF synthesis), the rays that point outside of this viewpoint plane need to be approximated in some way. In the approach presented in this thesis, the rays are approximated by projecting them to the viewpoint plane. However, there may be other approximations that lead to better results. %A different approach would be to extend the  to 3-DoF, which would necessitate capturing viewpoints in 3D space, instead of on a 2D plane. This could also increase the accuracy of the ray approximation.
+
+The other, visibly most detrimental limitation at the moment is the effect of the abrupt change in the selection of viewpoints for 1-DoF interpolation, which results in visual discontinuities.  
+%The artefacts created by the flow-based approach could be improved by either adding a constraint to the viewpoint selection, or by increasing the accuracy of the proxy geometry. 
+In order to improve this, one possible approach would be to use a proxy geometry that is closer to the scene geometry, that could for example be approximated using a structure-from-motion algorithm to calculate a sparse scene geometry. By using a more accurate reprojection, the discontinuities would most likely be lessened. An alternative would be to change the selection of input viewpoints for the 1-DoF interpolation, or to introduce some kind of constraint (e.g., a color constraint) in order to blend and soften the abrupt edges.
+%It may also be possible to incorporate deep learning methods, such as \cite{nerf}, into the synthesis pipeline, in order to
+
+As for more implementation-related improvements, the exchange of the problematic external library is necessary to remove the bug-related artefacts. Furthermore, the implementation offers a lot of opportunities for parallelization and the offloading of operations to the GPU. Leveraging these opportunities would be very advantageous, as this could enable real-time navigation, opening up more possibilities for a more user-based evaluation.
+
+Using these improvements of the algorithm, it would be beneficial to carry out an improved evaluation, specifically in terms of the parameter space and the error metrics. Since the evaluation of different scenes mostly focused on elements within the scene instead of the general scene shape, it would be interesting to explore the effect of the general scene shape, as well as performing a user study, which would enable an evaluation that is more specific to the needs of a Virtual Reality application.
+
+%either use sphere since this is easy, or use approximated geo and improve artefacts
+\section{Conclusion} \label{sec:conclusion}
 
 The approach and implementation presented in this thesis laid the groundwork for a pixel-based 2-DoF synthesis using 1-DoF interpolation. 
 The goal of using the 1-DoF interpolation was to mitigate artefacts caused by the inaccuracy of the proxy geometry by generating viewpoints with more accurate perspectives.
@@ -8,7 +29,26 @@ The results of the evaluation showed that the flow-based blending was able to im
 Using the insights gained in the evaluation, it will be possible to improve the 2-DoF synthesis with flow-based interpolation, for example by combining it with cutting-edge deep learning technologies, and leveraging its potential for parallelization. will make it possible to synthesize images in real-time.
 This could potentially enable casually captured environments to be experienced interactively, which could enhance a broad range of Virtual Reality applications.
 
-
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+  \resizebox{\columnwidth}{!}{
+\begin{tabular}{ccccccccc}
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{}}} & \multicolumn{3}{c|}{\textbf{method}} & \multicolumn{5}{c|}{\textbf{evaluation}} \\ \cline{2-9} 
+\multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}input\\ type\end{tabular}}} & \multicolumn{1}{c|}{\textbf{DoF}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}extracted\\ features\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}defined\\ parameter\\ space?\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}visual\\ eval.\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}error\\ metrics\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}compu-\\ tational\\ cost\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}comparison\\ to other\\ approaches\end{tabular}}} \\ \hline
+\multicolumn{1}{|c|}{\cite{simple_poster}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ images\end{tabular}} & \multicolumn{1}{c|}{2} & \multicolumn{1}{c|}{none} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} \\ \hline
+\multicolumn{1}{|c|}{\cite{raytracing}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ images\end{tabular}} & \multicolumn{1}{c|}{2} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}none/\\ dense geo\end{tabular}} & \multicolumn{1}{c|}{(\cross)} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} \\ \hline
+\multicolumn{1}{|c|}{\cite{segue}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ images\end{tabular}} & \multicolumn{1}{c|}{2} & \multicolumn{1}{c|}{none} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} \\ \hline
+\multicolumn{1}{|c|}{\cite{megastereo}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}planar\\ images\end{tabular}} & \multicolumn{1}{c|}{1} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}dense\\ flow\end{tabular}} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} \\ \hline
+\multicolumn{1}{|c|}{\cite{360flowblending}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ images\end{tabular}} & \multicolumn{1}{c|}{1} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}dense\\ flow\end{tabular}} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} \\ \hline
+\multicolumn{1}{|c|}{\cite{6dof}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ video\end{tabular}} & \multicolumn{1}{c|}{3*} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}dense\\ geo\end{tabular}} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\cross} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} \\ \hline
+\multicolumn{1}{|c|}{\cite{cube2video}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ video\end{tabular}} & \multicolumn{1}{c|}{1} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}sparse\\ feature\end{tabular}} & \multicolumn{1}{c|}{(\cross)} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} \\ \hline
+\multicolumn{1}{|c|}{\begin{tabular}[c]{@{}c@{}}Synthesis\\ with \\ flow-based\\ blending\\ (this thesis)\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}360\degree\\ images\end{tabular}} & \multicolumn{1}{c|}{2} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}dense\\ flow\end{tabular}} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{\checkm} & \multicolumn{1}{c|}{(\checkm)} \\ \hline
+\multicolumn{9}{r}{*on a constrained path}
+\end{tabular}
+  }
+\end{table}
 %The evaluation provided insights on the strengths and limitations of this approach, which can be used in the future in order to improve the proof-of-concept implementation.
 %casually captured environments could be experienced interactively, which could enhance a broad range of Virtual Reality applications.
 

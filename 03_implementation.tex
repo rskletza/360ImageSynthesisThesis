@@ -538,10 +538,10 @@ As this is a first attempt at 2-DoF synthesis, performance was not deemed import
 The synthesis of an image of 1000x500 pixels with no optimization using regular blending with 4 input viewpoints takes approximately 4s on a single Intel Xeon (Skylake) processor, whereas flow-based blending with the same input takes between 10 and 30 minutes, depending on the constellation of the viewpoints.
 Fortunately, many of the operations are ``embarrassingly parallel'', meaning they can be very easily parallelized in the future.
 
-\subsection{Implementation-related Problems}\label{subsec:bugs}
-Unfortunately, there are some implementation-related problems that are unrelated to the algorithm, but nonetheless have an effect on the result. The extension of the regular cube map to the \emph{ExtendedCubeMap} with the skylibs library slightly distorts the image for an as-of-yet unknown reason, so that when the map is clipped back down to its regular size, it is not identical to the original. Although the difference is not extreme, it is apparent.
-
-The other, more visible problem, also from the skylibs library, concerns the conversion from the cubemap back to the latlong representation. Due to a bug in this operation, a black line sometimes appears at on or more borders of a face. Since a synthesized image is made up of mosaicked, reprojected areas, it is possible that in some cases, these lines are shifted into the middle of different faces.
-
-%Both of these errors are relatively small, and their effect is negligible compared to some of the algorithm-related artefacts, so they can be disregarded.
-Although these errors seem relatively small, it is necessary to keep them in mind during the evaluation, since they only apply to the flow-based blending and may skew the results.
+%\subsection{Implementation-related Problems}\label{subsec:bugs}
+%Unfortunately, there are some implementation-related problems that are unrelated to the algorithm, but nonetheless have an effect on the result. The extension of the regular cube map to the \emph{ExtendedCubeMap} with the skylibs library slightly distorts the image for an as-of-yet unknown reason, so that when the map is clipped back down to its regular size, it is not identical to the original. Although the difference is not extreme, it is apparent.
+%
+%The other, more visible problem, also from the skylibs library, concerns the conversion from the cubemap back to the latlong representation. Due to a bug in this operation, a black line sometimes appears at on or more borders of a face. Since a synthesized image is made up of mosaicked, reprojected areas, it is possible that in some cases, these lines are shifted into the middle of different faces.
+%
+%%Both of these errors are relatively small, and their effect is negligible compared to some of the algorithm-related artefacts, so they can be disregarded.
+%Although these errors seem relatively small, it is necessary to keep them in mind during the evaluation, since they only apply to the flow-based blending and may skew the results.
