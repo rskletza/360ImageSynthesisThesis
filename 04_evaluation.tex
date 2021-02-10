@@ -1,5 +1,5 @@
 \chapter{Evaluation and Results} \label{chap:evaluation}
-Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis with two degrees of freedom without 3D geometry, as not many methods exist that try to achieve this. Since the approach presented in Chapter~\ref{chap:implementation} is a first, basic attempt at solving this problem, this chapter presents a basic evaluation of the algorithm, based on mathematically calculable error metrics. These metrics measure the accuracy of a synthesized image compared to the ground truth and are used to assess the effect of a limited number of parameters. Using these metrics, it is possible to measure the performance of the 2-DoF synthesis using regular blending, and the 2-DoF synthesis using flow-based blending and compare the two.
+Unfortunately, there are no publicly available benchmarks for 360\degree image synthesis with two degrees of freedom without 3D geometry, as not many methods exist that try to achieve this. Since the approach presented in Chapter~\ref{chap:implementation} is a first attempt at solving this problem, this chapter presents a basic evaluation of the algorithm, relying on mathematically calculable error metrics. These metrics measure the accuracy of a synthesized image compared to the ground truth and are used to assess the effect of a limited number of parameters. Using these metrics, it is possible to measure the performance of the 2-DoF synthesis using regular blending, and the 2-DoF synthesis using flow-based blending and compare the two.
 %Furthermore, it compares the results of regular blending, flow-based blending, and a na\"ive baseline algorithm to analyze whether, and in which cases an improvement could be achieved.
 The performance in the context of this evaluation is defined as the accuracy of the synthesized image based on the error metrics, as well as visual examination.
 \todo{transition}
@@ -887,7 +887,7 @@ The evaluation of the three scenarios using virtual data gives a first impressio
 
 %the results of the regular blending in the tested scenarios were very much as expected. Areas where the proxy geometry deviated strongly from the actual geometry (e.g., near detailed objects) showed moderate to severe ghosting artefacts or displacements. Nonetheless, the results using regular blending generally had lower error values than the results of the na\"ive algorithm, and in some cases, even than the flow-based blending.
 
-In many of the tested cases the flow-based blending produces lower error values than the regular blending. However, the evaluation also uncovered some factors that decrease the accuracy of the results, originating from the implementation details as well as the underlying approach. The most important of these factors are:
+In many of the tested cases the flow-based blending produces lower error values than the regular blending. However, the evaluation also uncovered some factors that decrease the accuracy of the flow-based blending results, originating from the implementation details as well as the underlying approach. The most important of these factors are:
 
 \begin{itemize}
   \item failure of the optical flow algorithm
@@ -896,7 +896,7 @@ In many of the tested cases the flow-based blending produces lower error values 
   \item ray approximation
 \end{itemize}
 
-In general, there are certain objects in the square and oblong rooms for which the Blender optical flow yields better results than for others. A notable example is the rug, which is synthesized with clear edges without warping or blurring effects in all of the examined images (there were some discontinuities, but these are not due to the 1-DoF interpolation). The coffee table is an example for the optical flow being partially accurate, since it is often synthesized in an accurate position, but with blurred details. For the bookshelf, on the other hand, the Blender optical flow almost always yielded inaccurate results, which results in warped, blurry, and distorted areas. It is clear that the accuracy of the flow-based blending is directly dependent on the accuracy of the optical flow used in the 1-DoF interpolation, so it is very likely that better results can be achieved with a more accurate optical flow algorithm.
+In general, there are certain objects in the square and oblong rooms for which the Blender optical flow yields better results than for others. A notable example is the rug, which is synthesized with clear edges without warping or blurring effects in all of the examined images (there are some discontinuities, but these are not due to the 1-DoF interpolation). The coffee table is an example for the optical flow being partially accurate, since it is often synthesized in an accurate position, but with blurred details. For the bookshelf, on the other hand, the Blender optical flow almost always yielded inaccurate results, which results in warped, blurry, and distorted areas. It is clear that the accuracy of the flow-based blending results is directly dependent on the accuracy of the optical flow used in the 1-DoF interpolation, so it is very likely that better results can be achieved with a more accurate optical flow algorithm.
 
 %The failure of the optical flow algorithm, notably in the cases where a viewpoint was in close proximity to the bookshelf, presumably degraded the results of the flow-based blending considerably. However, since it was not possible to test with perfect optical flow, it remains unclear whether even ``perfect'' optical flow could improve the accuracy of viewpoints that are extremely close to objects, as there would still be large occluded areas. However, for areas where there is little occlusion, different optical flow algorithms may 
 
@@ -906,20 +906,20 @@ Another external factor that may cause elevated error values for the flow-based 
 
 The accuracy of the optical flow and the bug in the external library are both implementation-related problems, as they are not part of the approach, and may be improved by using different algorithms or libraries. However, there are also some problems that are intrinsic to the approach, and thus need to be discussed in more detail.
 
-One of the most common artefacts in the results of the flow-based blending are severe discontinuities and jumps. This type of artefact is caused by the choice of input viewpoints for the 1-DoF interpolation. Figure~\ref{fig:flow_problem_oblong} breaks down the cause of the problem step by step: Looking at an arbitrary synthesized viewpoint in the oblong room (Figure~\ref{fig:flow_problem_oblong}a) that displays this problem, the abrupt discontinuities are clearly visible, for example in the rug in the bottom and right faces. 
+One of the most common artefacts in the flow-based blending results are severe discontinuities and jumps. This type of artefact is caused by the choice of input viewpoints for the 1-DoF interpolation. Figure~\ref{fig:flow_problem_oblong} breaks down the cause of the problem step by step: Looking at an arbitrary synthesized viewpoint in the oblong room (Figure~\ref{fig:flow_problem_oblong}a) that displays this problem, the abrupt discontinuities are clearly visible, for example in the rug in the bottom and right faces.
 In the synthesis process for each pixel of this image, two viewpoints A and B are chosen that are on either side of the ray corresponding to the pixel (explained in detail in Section~\ref{subsec:2dof_flow-based}). If more than one viewpoint is found on either side of the ray, the points with the smallest deviation angles are chosen. The interpolation distance between these points A and B is then calculated and the 1-DoF interpolation is performed. Finally the interpolated point is reprojected to the position of the synthesized viewpoint.
-This succession of operations is performed for each ray of the synthesized image. As a result, there are areas in the synthesized image, where, from one pixel to the next, a different set of input viewpoints is chosen.
+This succession of operations is performed for \emph{each ray} (i.e., each pixel) of the synthesized image. As a result, there are areas in the synthesized image, where, from one pixel to the next, a different set of input viewpoints is chosen.
 Figure~\ref{fig:flow_problem_oblong}b shows the synthesized point in the scene (the oblong room), along with the (approximated) rays where the choice of input viewpoints changes. The surrounding captured viewpoints are viewpoints 13, 14, 19 and 20.
 This process leads to image areas (``panels'') originating from a 1-DoF interpolation between different sets of input viewpoints (Figure~\ref{fig:flow_problem_oblong}c). When applying these panels to the synthesized image (Figure~\ref{fig:flow_problem_oblong}d), it becomes clear that these are the source of the abrupt continuities.
 %Figure~\ref{fig:flow_problem_oblong}d shows a visualization of the scene with an approximation of the rays that are associated with each panel\footnote{The rays were inserted by hand, so they are not 100\% accurate in terms of deviation angles}.
 
-\begin{figure}
+\begin{figure}[p]
 \centering
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
             \centering
             \includegraphics[width=\textwidth]{04/cubevis_result_extended_oblong.jpg}
-            \caption{An arbitrary viewpoint in the oblong room}
+            \caption{A viewpoint in the oblong room with visible discontinuities}
     \end{subfigure}
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
@@ -933,7 +933,7 @@ This process leads to image areas (``panels'') originating from a 1-DoF interpol
     \begin{subfigure}[c]{0.45\textwidth}
             \centering
             \includegraphics[width=\textwidth]{04/cubevis_visualized_indices_annotated_oblong.jpg}
-            \caption{The panels of the image that have been assigned to a set of input viewpoints A, B $\in [13, 14, 19, 20]$}
+            \caption{The panels of the image that have been assigned to a set of input viewpoints $A, B \in [13, 14, 19, 20]$}
     \end{subfigure}
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
@@ -950,7 +950,7 @@ Since each panel is reprojected separately, it is possible that the severity of 
 This theory would explain why the discontinuities are less severe in the square room than the oblong room, since the basic geometry of the square room is more similar to the proxy sphere than the basic geometry of the oblong room.
 However, since the scenario that evaluated the effect of the scene geometry focused mostly on objects within the scene instead of the basic scene geometry, no definitive assertion can be made at the moment. %it is difficult to judge whether this problem of abrupt change in viewpoint sets could affect the flow-based blending so much that it generally produced higher error values than the flow-based blending. However, if the general scene geometry deviated strongly from the proxy geometry, the regular blending algorithm would presumably also generate poor results.
 
-\begin{figure}
+\begin{figure}[p]
 \centering
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
@@ -961,11 +961,17 @@ However, since the scenario that evaluated the effect of the scene geometry focu
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{04/cubevis_visualized_indices_annotated_square.jpg}
-            \caption{The panels of the image that have been assigned to a set of input viewpoints A, B $\in [13, 14, 19, 20]$}
+            \includegraphics[width=\textwidth]{04/flow_problem_circle_square.png}
+            \caption{The panels visualized in the scene (approximation)}
     \end{subfigure}
     \hfill
 
+    \hfill
+    \begin{subfigure}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{04/cubevis_visualized_indices_annotated_square.jpg}
+            \caption{The panels of the image that have been assigned to a set of input viewpoints $A, B \in [13, 14, 19, 20]$}
+    \end{subfigure}
     \hfill
     \begin{subfigure}[c]{0.45\textwidth}
             \centering
@@ -973,13 +979,7 @@ However, since the scenario that evaluated the effect of the scene geometry focu
             \caption{The panels applied to the image}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[c]{0.45\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{04/flow_problem_circle_square.png}
-            \caption{The panels visualized in the scene (approximation)}
-    \end{subfigure}
-    \hfill
-  \caption{The input viewpoint choice problem in a the square room}
+  \caption{The input viewpoint choice problem in the square room}
   \label{fig:flow_problem_square}
 \end{figure}
 
@@ -1115,6 +1115,7 @@ An evaluation is only ever as significant as the parameter space it covers and t
 Firstly, only a limited number of external parameters are tested, for example leaving out more extreme room shapes that deviate strongly from the basic rectangular shape. It is possible that, given a strong deviation from the proxy geometry, the artefacts in the flow-based blending caused by the abrupt change in viewpoint would increase to a degree where the regular blending would be preferable. Also, only indoor scenes are considered. It is possible that the behavior of the algorithms is is completely different for outdoor scenes with much larger distances between the viewpoint and the scene geometry. Furthermore, the parameters that are tested are not tested exhaustively, so it is possible that some interactions between parameters are overlooked.
 
 Secondly, the metrics that are used (i.e., the L1 error and the SSIM error), can show an improvement between different results, but it is difficult to quantify this improvement. For example, it is not possible to explicitly compare the error values of different scenes (unless they contain very similar colors and patterns), since the L1 error metric is very dependent on pixel color values, and it is difficult to differentiate the exact cause-and-effect of the SSIM error metric. Futhermore, the L1 and SSIM error metrics give no indication on believability or visual preference, since they cannot measure the severity of artefacts for human perception. This means that it is possible that users may prefer the regular blending results over flow-based blending results, due to the smoother transitions of the regular blending between different areas. Although user acceptability is not a criterium for this evaluation, it is crucial for the intended area of appliation, namely Virtual Reality. Another factor that plays into the visual acceptability is temporal consistency, i.e., whether the parallax movement of objects in the scene is believable when navigating through the scene using synthesized views. This is also not tested in the evaluation.
+\todo{image areas to figure out the effect of the ray approximation}
 
 Lastly, due to the bug in the external library, the results of the flow-based blending have an unquantifiable disadvantage. It is possible that an implementation without the bug would have performed significantly better, but it is also possible that the bug has no significant impact.
 

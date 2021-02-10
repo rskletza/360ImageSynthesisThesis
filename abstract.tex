@@ -8,22 +8,13 @@
 
 \noindent 
 Virtual Reality technology allows users to experience virtual environments by interacting with them, and navigating within them. These environments tend to be either meticulously modeled in 3D by hand, or recorded using 360\degree cameras. The advantage of using 360\degree images is that a high level of realism is achievable with relatively little effort. However, the use of 360\degree images generally limits users to a single viewpoint or forces them to ``jump'' between different viewpoints.
-In order to improve the viewing experience,
-image-based rendering, or image-based synthesis, aims to create novel viewpoints based on captured viewpoints, in the best case enabling a user to navigate freely and naturally within a scene.
-There are a number of different approaches to image-based synthesis, many of which use some form of feature correspondence to extract
-%information from the captured images.
- the scene geometry from the captured images.
-While using the scene geometry makes it possible to synthesize novel views, it can also be problematic, since accurate scene geometry is very difficult to obtain unless dedicated depth sensors are used, and inaccurate scene geometry can lead to severe artefacts.
+In order to improve the viewing experience, image-based rendering, or image-based synthesis, aims to create novel viewpoints based on captured viewpoints, in the best case enabling a user to navigate freely and naturally within a scene.
+There are a number of different approaches to image-based synthesis, many of which use some form of feature correspondence to extract the scene geometry from the captured images.
+While using the scene geometry makes it possible to synthesize novel views, it can also be problematic, since accurate scene geometry is difficult to obtain unless dedicated depth sensors are used, and inaccurate scene geometry can lead to severe artefacts.
 
 In order to reduce the number and severity of these artefacts,
 this thesis proposes a pixel-based 2-DoF synthesis algorithm that combines basic reprojection with flow-based interpolation.
 Instead of estimating scene geometry, a sphere is used as a proxy for inaccurately estimated scene geometry.
-%which is similar to using incorrectly estimated geometry, in that it can lead to severe artefacts. 
-%in place of estimated scene geometry makes it possible to synthesize novel views within a scene without knowledge about the geometry.
-%However, the difference of the proxy geometry from the scene geometry can lead to severe artefacts.
 To mitigate the artefacts caused by the inaccurate geometry, flow-based interpolation is used to generate viewpoints with more accurate perspectives in a method called ``flow-based blending''.
-%The introduction of flow-based interpolation, which is generally leveraged for 1-DoF interpolation between pairs of images, aims to alleviate some of the artefacts by generating viewpoints with more accurate perspectives.
 A proof-of-concept implementation of the approach is presented and tested with a select set of parameters, using different virtual and real scenes.
 The synthesized images are then evaluated based on mathematical error metrics, as well as on visible artefacts. The results of the evaluation show that in the majority of cases where the basic method produces significant artefacts, the synthesis using flow-based blending improves the accuracy of the results.
-
-

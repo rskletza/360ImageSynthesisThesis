@@ -1,0 +1,16 @@
+\vspace*{2cm}
+
+\begin{center}
+    \textbf{Zusammenfassung}
+\end{center}
+
+\vspace*{1cm}
+
+\noindent 
+``Virtual Reality'' Technologien ermöglichen Nutzer*innen, virtuelle Welten zu erleben, indem sie mit diesen Umgebungen interagieren und darin navigieren. Diese Umgebungen werden oft entweder sorgf\"altig mit der Hand 3D-modelliert oder mithilfe 360\degree Kameras aufgezeichnet.
+Der Vorteil an der Aufzeichnung mithilfe 360\degree Kameras ist der hohe Grad an Realismus, der mit wenig Aufwand erreicht wird. Andererseits limitiert die Benutzung von 360\degree Bildern in der Regel die Bewegungsfreiheit der Nutzer*innen, da sie entweder auf einen einzigen Aussichtspunkt beschr\"ankt werden, oder von einem Aussichtspunkt zum n\"achsten ``springen'' müssen.
+Um dieses Besichtigungserlebnis zu verbessern, gibt es den Forschungsbereich der Bildsynthese, der versucht, neue Aussichtspunkte anhand von existierenden zu berechnen. Dies kann im besten Fall dazu f\"uhren, dass Nutzer*innen frei und intuitiv innerhalb einer Szene navigieren k\"onnen.
+Es gibt eine Vielzahl unterschiedlicher Ans\"atze f\"ur die Bildsynthese, unter anderem welche, die \"Ubereinstimmungen in den Bildern verwenden, um das geometrische Szenenmodell zu extrahieren. Zwar erm\"oglicht die Benutzung des Szenenmodells die Synthese von neuen Aussichtspunkten, allerdings kann dieses Verfahren auch problematisch sein, da die Beschaffung eines pr\"aziser Szenenmodells sehr schwierig ist und die Synthese mit fehlerhaftem Szenenmodell zu schwerwiegenden Artefakten f\"uhren kann.
+
+Um die Anzahl und den Schweregrad dieser Artefakte zu reduzieren, pr\"asentiert diese Arbeit einen Ansatz f\"ur einen pixel-basierten Synthesealgorithmus mit zwei Freiheitsgraden, der grundlegende Reprojektion mit ``flow-basierter'' Interpolation kombiniert. Anstelle eines berechneten Szenenmodells wird eine Kugel als Proxy-Modell verwendet, die ein fehlerhaft berechnetes Szenenmodell repr\"asentiert. Um die durch die Abweichung von dem tats\"achlichen Szenenmodell entstehenden Artefakte zu verbessern, wird Interpolation basierend auf optischem Fluss verwendet, mithilfe derer Aussichtspunkte mit passenderer Perspektive generiert werden. Dieser Synthesealgorithmus mit sogenanntem ``flow-based blending'' wird pr\"asentiert und anhand von einer Auswahl an Parametern in virtuellen und realen Szenen getestet. Die synthetisierten Bilder werden dann mithilfe von mathematischen Metriken und visueller Einsch\"atzung untersucht und evaluiert. Die Ergebnisse der Evaluation zeigen im Gro{\ss}teil der F\"alle wo der grundlegende Algorithmus eindeutige Artefakte aufweist, dass die Synthese mit flow-based blending die Pr\"azision der Resultate verbessert.
+

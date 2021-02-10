@@ -1,36 +1,10 @@
-\chapter{Conclusion and Future Work}
+\chapter{Conclusion and Future Work}\label{chap:conclusion}
 
-\section{Future Work} \label{sec:future_work}
-Naturally, the pixel-based 2-DoF synthesis using flow-based interpolation has its limitations as well.
-%Some of these are intrinsic to the algorithm, and others may be overcome by modifying or adapting the implementation.
-Some of these, for example the reliance on optical flow, are intrinsic to the approach. Others, for example the problem of abrupt discontinuities, were uncovered by the evaluation. In most cases, there are possible changes and adaptations, so that the results could be improved in future work.
+The goal of this thesis was to examine whether flow-based interpolation can be used in pixel-based 2-DoF synthesis of 360\degree images with proxy geometry, as well as to evaluate whether this ``synthesis with flow-based blending'' improves the accuracy of the results compared to basic pixel-based synthesis.
+The synthesis with flow-based blending was developed as a combination of pixel-based, 2-DoF synthesis with proxy geometry (i.e., without scene geometry) and flow-based blending adapted from \cite{megastereo}. The combination of 2-DoF synthesis with interpolation based on optical flow is unique in the related work (shown in Table~\ref{fig:rel_work_comparison}), where most approaches either use no image features and provide 2-DoF, or extract optical flow but only provide 1-DoF. Furthermore, the evaluation presented in this thesis has a clearly defined parameter space, and methodically tests and evaluates the parameters based on objective error metrics, whereas most other approaches evaluate only a very limited number of samples based on subjective, visual characteristics.
 
-The most obvious limitation of the approach is the reliance on accurate optical flow. The optical flow algorithms used in this thesis did not always manage to provide accurate optical flow, which had a noticeable impact on the results. It could be very advantageous to explore different optical flow algorithms, especially ones that focus on capturing large displacements. For example, there are many optical flow algorithms based on Deep Learning techniques \cite{of-deep} that could be relevant for this task. Furthermore, it could be possible to undistort the extended cube map before calculating optical flow (e.g., by using a method like the one presented in \cite{fov}), which could also improve the accuracy of the optical flow result on the extended cube maps.
+The results of the evaluation show that in the majority of cases where the basic method produces significant artefacts, the synthesis using flow-based blending improves the accuracy of the results.
 
-%The next limitation is the necessity to approximate rays in order to find appropriate input viewpoints for 1-DoF interpolation. As long as the viewpoints are captured on a plane (2-DoF synthesis), the rays that point outside of this viewpoint plane need to be approximated in some way. In the approach presented in this thesis, the rays are approximated by projecting them to the viewpoint plane. However, there may be other approximations that lead to better results. %A different approach would be to extend the  to 3-DoF, which would necessitate capturing viewpoints in 3D space, instead of on a 2D plane. This could also increase the accuracy of the ray approximation.
-
-The other, visibly most detrimental limitation at the moment is the effect of the abrupt change in the selection of viewpoints for 1-DoF interpolation, which results in visual discontinuities.  
-%The artefacts created by the flow-based approach could be improved by either adding a constraint to the viewpoint selection, or by increasing the accuracy of the proxy geometry. 
-In order to improve this, one possible approach would be to use a proxy geometry that is closer to the scene geometry, that could for example be approximated using a structure-from-motion algorithm to calculate a sparse scene geometry. By using a more accurate reprojection, the discontinuities would most likely be lessened. An alternative would be to change the selection of input viewpoints for the 1-DoF interpolation, or to introduce some kind of constraint (e.g., a color constraint) in order to blend and soften the abrupt edges.
-%It may also be possible to incorporate deep learning methods, such as \cite{nerf}, into the synthesis pipeline, in order to
-
-As for more implementation-related improvements, the exchange of the problematic external library is necessary to remove the bug-related artefacts. Furthermore, the implementation offers a lot of opportunities for parallelization and the offloading of operations to the GPU. Leveraging these opportunities would be very advantageous, as this could enable real-time navigation, opening up more possibilities for a more user-based evaluation.
-
-Using these improvements of the algorithm, it would be beneficial to carry out an improved evaluation, specifically in terms of the parameter space and the error metrics. Since the evaluation of different scenes mostly focused on elements within the scene instead of the general scene shape, it would be interesting to explore the effect of the general scene shape, as well as performing a user study, which would enable an evaluation that is more specific to the needs of a Virtual Reality application.
-
-%either use sphere since this is easy, or use approximated geo and improve artefacts
-\section{Conclusion} \label{sec:conclusion}
-
-The approach and implementation presented in this thesis laid the groundwork for a pixel-based 2-DoF synthesis using 1-DoF interpolation. 
-The goal of using the 1-DoF interpolation was to mitigate artefacts caused by the inaccuracy of the proxy geometry by generating viewpoints with more accurate perspectives.
-The results of the evaluation showed that the flow-based blending was able to improve the accuracy of the results in the majority of cases where the basic reprojection produced significant artefacts.
-%However, the evaluation also uncovered some of the limitations of the flow-based approach, predominantly some severe artefacts based on ...
-
-Using the insights gained in the evaluation, it will be possible to improve the 2-DoF synthesis with flow-based interpolation, for example by combining it with cutting-edge deep learning technologies, and leveraging its potential for parallelization. will make it possible to synthesize images in real-time.
-This could potentially enable casually captured environments to be experienced interactively, which could enhance a broad range of Virtual Reality applications.
-
-% Please add the following required packages to your document preamble:
-% \usepackage{multirow}
 \begin{table}[]
   \resizebox{\columnwidth}{!}{
 \begin{tabular}{ccccccccc}
@@ -48,8 +22,36 @@ This could potentially enable casually captured environments to be experienced i
 \multicolumn{9}{r}{*on a constrained path}
 \end{tabular}
   }
+  \caption{Comparison of this thesis to the related work presented in Section~\ref{sec:related_work}} \label{fig:rel_work_comparison}
 \end{table}
 %The evaluation provided insights on the strengths and limitations of this approach, which can be used in the future in order to improve the proof-of-concept implementation.
 %casually captured environments could be experienced interactively, which could enhance a broad range of Virtual Reality applications.
 
+\section*{Future Work} \label{sec:future_work}
+Naturally, the pixel-based 2-DoF synthesis using flow-based blending has its limitations as well.
+%Some of these are intrinsic to the algorithm, and others may be overcome by modifying or adapting the implementation.
+Some of these, for example the reliance on optical flow, are intrinsic to the approach. Others, for example the problem of abrupt discontinuities, were uncovered by the evaluation. In most cases, there are possible changes and adaptations, so that the results could be improved in future work.
 
+The most obvious limitation of the approach is the reliance on accurate optical flow. The optical flow algorithms used in this thesis did not always manage to provide accurate optical flow, which had a noticeable impact on the results. It could be very advantageous to explore different optical flow algorithms, especially ones that focus on capturing large displacements. For example, there are many optical flow algorithms based on Deep Learning techniques \cite{of-deep} that could be relevant for this task. Furthermore, it could be possible to undistort the extended cube map before calculating optical flow (e.g., by using a method like the one presented in \cite{fov}), which could also improve the accuracy of the optical flow result on the extended cube maps.
+
+%The next limitation is the necessity to approximate rays in order to find appropriate input viewpoints for 1-DoF interpolation. As long as the viewpoints are captured on a plane (2-DoF synthesis), the rays that point outside of this viewpoint plane need to be approximated in some way. In the approach presented in this thesis, the rays are approximated by projecting them to the viewpoint plane. However, there may be other approximations that lead to better results. %A different approach would be to extend the  to 3-DoF, which would necessitate capturing viewpoints in 3D space, instead of on a 2D plane. This could also increase the accuracy of the ray approximation.
+
+The other, visibly most detrimental limitation at the moment is the effect of the abrupt change in the selection of viewpoints for 1-DoF interpolation, which results in visual discontinuities.  
+%The artefacts created by the flow-based approach could be improved by either adding a constraint to the viewpoint selection, or by increasing the accuracy of the proxy geometry. 
+In order to improve this, one possible approach would be to use a proxy geometry that is closer to the scene geometry, that could for example be approximated using a structure-from-motion algorithm to calculate a sparse scene geometry. By using a more accurate reprojection, the discontinuities would most likely be lessened. An alternative would be to change the selection of input viewpoints for the 1-DoF interpolation, or to introduce some kind of constraint (e.g., a color constraint) in order to blend and soften the abrupt edges.
+%It may also be possible to incorporate deep learning methods, such as \cite{nerf}, into the synthesis pipeline, in order to
+
+As for more implementation-related improvements, the exchange of the problematic external library is necessary to remove the bug-related artefacts. Furthermore, the implementation offers a lot of opportunities for parallelization and the offloading of operations to the GPU. Leveraging these opportunities would be very advantageous, as this could enable real-time navigation, opening up more possibilities for a more user-based evaluation.
+
+Using these improvements of the algorithm, it would be beneficial to carry out an improved evaluation, specifically in terms of the parameter space and the error metrics. Since the evaluation of different scenes mostly focused on elements within the scene instead of the general scene shape, it would be interesting to explore the effect of the general scene shape, as well as performing a user study, which would enable an evaluation that is more specific to the needs of a Virtual Reality application.
+
+%either use sphere since this is easy, or use approximated geo and improve artefacts
+
+\paragraph{}
+%The approach and implementation presented in this thesis laid the groundwork for a pixel-based 2-DoF synthesis using 1-DoF interpolation. 
+%The goal of using the 1-DoF interpolation was to mitigate artefacts caused by the inaccuracy of the proxy geometry by generating viewpoints with more accurate perspectives.
+%The results of the evaluation showed that the flow-based blending was able to improve the accuracy of the results in the majority of cases where the basic reprojection produced significant artefacts.
+%However, the evaluation also uncovered some of the limitations of the flow-based approach, predominantly some severe artefacts based on ...
+
+%Using the insights gained in the evaluation, it will be possible to improve the 2-DoF synthesis with flow-based interpolation, for example by combining it with cutting-edge deep learning technologies, and leveraging its potential for parallelization. will make it possible to synthesize images in real-time.
+The insights gained from the development and evaluation of the pixel-based 2-DoF synthesis with flow-based blending can be used to improve various geometry-based algorithms, and potentially even be combined with cutting-edge deep learning technologies. This could help enable casually captured environments to be experienced interactively, which could enhance a broad range of Virtual Reality applications, allowing users to immersively experience remote locations, historical landmarks, and foreign cityscapes around the world.
