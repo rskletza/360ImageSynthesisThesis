@@ -13,12 +13,13 @@ Whether a scene is viewed stereoscopically with a head-mounted display, or monos
 An alternative to capturing all of these viewpoints manually is to generate them digitally. This requires capturing a much smaller subset of images and using these to generate the desired, novel viewpoints. Generating new images based on already captured images is generally known as \emph{image-based rendering} (IBR), or \emph{image-based synthesis}. There are many different approaches to synthesizing new images from captured ones, and they can generally be categorized in two different ways:
 %These approaches can be divided into general categories which can be defined by \ldots
 \begin{itemize}
-  \item by the spacial limitations within the scene imposed by the synthesis technique, including degrees of freedom and range of motion
+  \item by the spacial limitations imposed by the synthesis technique, including degrees of freedom and range of motion
   \item by the type and amount of information extracted from the captured images
 \end{itemize}
 %the area where new images can be synthesized, as well as the type and amount of information extracted from the captured images.
 %degrees of freedom (DoF) that the technique can synthesize images with
 
+\noindent
 The area and the degrees of freedom (DoF) required for navigation usually depend on the goal and requirements of the application: A virtual tour on a pre-defined path for example, would only require generating intermediate views between existing viewpoints (i.e.\ synthesis with 1-DoF) for a smooth transition. For a less constrained virtual tour that enables users to navigate freely on a plane, generating viewpoints with 2-DoF at eye-level could be sufficient. Users could move around and look in any direction but not change their viewing height. Some applications may require 3-DoF, for example in order to enable users to closely inspect certain objects from all angles, but restrict them from moving away from the object.
 
 Depending on the type of scene, the required fidelity, and the real-time requirements, different IBR techniques leverage different amounts and types of information extracted from the input images.
@@ -50,13 +51,13 @@ In order to measure the accuracy of the different results, the synthesized image
 %Finally, using the calculated error values, along with the synthesized images, the results are analyzed.
 %The analysis is made up of two parts: First, an more extensive analysis is performed on the virtual data that explores the chosen parameters (Section~\ref{sec:limit_eval}). Then, the results using the real data are examined as a proof-of-concept (Section~\ref{sec:pof_eval}). 
 
-The methodical approach used in this thesis consists of two distinct phases which address the two research questions: The first phase (the ``implementation phase'') aims to design and implement a pixel-based 2-DoF synthesis with proxy geometry using flow-based interpolation. The second phase (the ``evaluation phase'') aims to examine whether the flow-based interpolation can improve the results of the basic synthesis without flow-based interpolation. Figure~\ref{fig:methodology} shows the details of the metodical approach, including these two phases, along with the inputs and the results of the process.
+The methodical approach used in this thesis consists of two distinct phases which address the two research questions: The first phase (the ``implementation phase'') aims to design and implement a pixel-based 2-DoF synthesis with proxy geometry using flow-based interpolation. The second phase (the ``evaluation phase'') aims to examine whether the flow-based interpolation can improve the results of the basic synthesis without flow-based interpolation. Figure~\ref{fig:methodology} shows the details of the methodical approach, including these two phases, along with the inputs and the results of the process.
 
 For the implementation phase, first, a basic pixel-based synthesis algorithm using proxy geometry is developed (``synthesis with regular blending''). Then, the basic synthesis is combined with an existing flow-based interpolation algorithm (the input to the implementation phase in Figure~\ref{fig:methodology}) to create a flow-based synthesis algorithm (``synthesis with flow-based blending''). The development of this proof-of-concept algorithm proves that it is possible to leverage flow-based interpolation for pixel-based 2-DoF synthesis with proxy geometry, which is the first result.
 
-The algorithms developed in the implementation phase are then tested and evaluated in the evaluation phase. The goal of this phase is to determine the effect of the chosen parameters on the results, as well as to examine under which circumstances the synthesis with flow-based blending performs better than the synthesis with regular blending. The ``performance'' is defined as the accuracy of the results compared to ground truth data and is measured using mathematical error metrics that are adapted for 360\degree images.
-
-The evaluation phase is further divided into three steps. In the preparation step, data for testing and evaluation is acquired based on the defined parameter space, including virtual and real scenes. Then, the images are synthesized with both the regular blending and the flow-based blending algorithm, which are the output of the implementation phase. The resulting images are then compared with the ground truth data using the error metrics adapted for 360\degree images. 
+The algorithms developed in the implementation phase are then tested and evaluated in the evaluation phase.
+%The goal of this phase is to determine the effect of the chosen parameters on the results, as well as to examine under which circumstances the synthesis with flow-based blending performs better than the synthesis with regular blending. The ``performance'' is defined as the accuracy of the results compared to ground truth data and is measured using mathematical error metrics that are adapted for 360\degree images.
+The evaluation phase is further divided into three steps, separated vertically in Figure~\ref{fig:methodology}: preparation, synthesis and testing, and evaluation. In the preparation step, data for testing and evaluation is acquired based on the defined parameter space, including virtual and real scenes. Then, the images are synthesized with both the regular blending and the flow-based blending algorithm, which are the output of the implementation phase. The resulting images are then compared with the ground truth data using the error metrics adapted for 360\degree images. 
 Finally, using the calculated error values, along with the synthesized images, the results are analyzed, leading to the conclusion that the synthesis using flow-based blending performs better than the synthesis using regular blending in a number of cases, particularly when the regular blending produces significant artefacts. This full evaluation is the second result of the thesis.
 
 \begin{figure}
@@ -70,6 +71,7 @@ Finally, using the calculated error values, along with the synthesized images, t
 \section*{Scope}
 As the number of possible different environments is infinite, as well as the positions at which images can be captured, it is necessary to limit the parameter space for testing and evaluation. First of all, only indoor scenes are examined. The scenes are assumed to be static, meaning the objects within the scene do not change their positions. To reduce the complexity of the implementation, as well as the number of necessary input images to be captured, only 2-DoF synthesis is considered. Specifically, all captured and synthesized viewpoints are located on a plane at approximate eye-level parallel to the ground. 
 
+\noindent
 The parameters that will be examined in detail are:
 \begin{description}
   \item[Difference between the scene geometry and the proxy geometry] The proxy geometry used in this thesis is a sphere of the approximate size of the scene. Scenes of different basic shapes, containing different objects, are tested in order to gauge the effect of the difference between the proxy geometry and the scene.
@@ -79,6 +81,7 @@ The parameters that will be examined in detail are:
     %This means that it can be very close to a captured viewpoint, or further away. Furthermore, it may make a difference whether the synthesized viewpoint is directly on a line between captured viewpoints. A dense grid of viewpoints is synthesized to test the effect of the relative positioning.
 \end{description}
 
+\noindent
 These parameters will not be examined exhaustively, as this is impossible, given the infinite possibilities of scene shapes and object placements, alone. Instead, for each parameter to be examined, a scenario is designed that tests this parameter in a reasonable context.
 
 %Since the implementation is a basic proof-of-concept, a user study does not make much sense, since the results are expected to have some distinct artefacts. Instead, two mathematical error metrics are used to compare the 
@@ -116,14 +119,20 @@ The contributions of this thesis are:
   \item An evaluation of the results of this algorithm, including a comparison with the results of the algorithm with regular blending
 \end{itemize}
 
+\noindent
 The results show that in the majority of cases where the basic method with regular blending produces significant artefacts, the synthesis using flow-based blending does improve the the accuracy of the results. 
 
 %The results of this thesis can be the basis of various future work. Since the implementation is a first attempt at combining the two methods, the problems and limitations discovered in the evaluation can be used to improve future versions. Alternative proxy geometries could be examined, potentially based on sparse scene geometry, which would improve the basic results and could lead to a distinct improvement of the flow-based results. Furthermore, parallelization and optimization could be used in order to achieve real-time framerates. 
 
 
 \section*{Outline}
-The structure of this thesis follows the order presented in the methodical approach: 
-First, the underlying concepts of 360\degree images and optical flow are presented (Section~\ref{sec:fundamentals}), along with related work in the field of image-based synthesis (Section~\ref{sec:related_work}). Next, the ``interpolation step'' is presented, including the approach to the pixel-based 2-DoF synthesis algorithm with regular blending and flow-based blending (Section~\ref{sec:approach}) along with the details of the implementation (Section~\ref{sec:impl_details}).
-For the ``evaluation step'', first the evaluation parameters and methodology are presented (Section~\ref{sec:params} and Section~\ref{sec:eval_methodology}), followed by the evaluation of the virtual scenes (Section~\ref{sec:limit_eval}) and the real scene (Section~\ref{sec:pof_eval}). Based on the insights gained in these evaluations, the limitations of the evaluation are discussed (Section~\ref{sec:limitations}).
-Finally, possibilities for future work are presented, along the conclusion of the thesis (Section~\ref{chap:conclusion}).
+In order to understand the underlying concepts and techniques that are used in the synthesis approach proposed in this thesis, Section~\ref{sec:fundamentals} introduces the fundamentals of 360\degree images and optical flow, followed by related work in the field of image-based synthesis in Section~\ref{sec:related_work}.
+Based on this information, Section~\ref{chap:implementation} presents the approach and implementation details of the pixel-based 2-DoF synthesis algorithm with regular blending and flow-based blending.
+Then, in order to understand how the algorithm is evaluated, the evaluation parameters and methodology are presented in Section~\ref{sec:params} and Section~\ref{sec:eval_methodology}, followed by the evaluation of the virtual scenes based on the selected parameters in Section~\ref{sec:limit_eval} and the proof-of-concept evaluation of the real scene in Section~\ref{sec:pof_eval}. Based on the results of these evaluations, the limitations of the evaluation are discussed in Section~\ref{sec:limitations}.
+Finally, building on the insights gained in the evaluation, possibilities for future work are presented in Section~\ref{chap:conclusion}, along with the conclusion of the thesis.
+
+%The structure of this thesis follows the order presented in the methodical approach:
+%First, the underlying concepts of 360\degree images and optical flow are presented (Section~\ref{sec:fundamentals}), along with related work in the field of image-based synthesis (Section~\ref{sec:related_work}). Next, the ``interpolation step'' is presented, including the approach to the pixel-based 2-DoF synthesis algorithm with regular blending and flow-based blending (Section~\ref{sec:approach}) along with the details of the implementation (Section~\ref{sec:impl_details}).
+%For the ``evaluation step'', first the evaluation parameters and methodology are presented (Section~\ref{sec:params} and Section~\ref{sec:eval_methodology}), followed by the evaluation of the virtual scenes (Section~\ref{sec:limit_eval}) and the real scene (Section~\ref{sec:pof_eval}). Based on the insights gained in these evaluations, the limitations of the evaluation are discussed (Section~\ref{sec:limitations}).
+%Finally, possibilities for future work are presented, along the conclusion of the thesis (Section~\ref{chap:conclusion}).
 
