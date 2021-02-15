@@ -31,6 +31,7 @@ In order to simplify the process of synthesis, some assumptions are made based o
   \item the scale (approximate radius) of the scene is known
 \end{itemize}
 
+\noindent
 Furthermore, for the moment, it is assumed that the optical flow algorithm used in the flow-based blending calculates an acceptable result between any pair of viewpoints.
 
 \subsection{Basic 2-DoF Synthesis using Regular Blending} \label{subsec:basic-synthesis}
@@ -347,6 +348,7 @@ The equation describing any point on the ray can be expressed by Equation~\ref{e
   P = O + tD& \label{eq:rsi_point}
 \end{align} 
 
+\noindent
 The point $P$ in Equation~\ref{eq:rsi_sphereP} can be substituted with the equation of any point on the ray which yields Equation~\ref{eq:rsi_sub}. This equation can be developed into Equation~\ref{eq:rsi_quad}, which is a quadratic function with $a = D^2$, $b = 2OD$, $c = O^2-R^2$ (Equation~\ref{eq:quadf}).
 
 \begin{align}
@@ -360,6 +362,7 @@ The point $P$ in Equation~\ref{eq:rsi_sphereP} can be substituted with the equat
   t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:solvequadf}
 \end{align}
 
+\noindent
 This equation can then be solved for $t$. Since the radius of the sphere is chosen so that it contains the complete scene and no viewpoints are synthesized outside of the scene, the quadratic function will always have two solutions (i.e., two intersections): one for which the vector length $t$ is negative, and one for which the vector length $t$ is positive. Since the original ray used for the calculation is unidirectional (i.e., it cannot invert its direction), it needs to be extended by a positive value. The original ray, being a unit ray of length 1, can then be multiplied by the positive $t$, which yields the intersection point. 
 
 The vectors and intersection points are each calculated and stored in latlong representation (i.e., a matrix of vectors of the same shape as the latlong image), which means that they can easily be associated with the unit directions, as well as the uv coordinates (and thus, pixel values) using the latlong mapping function. By storing the values in this representation (i.e., 3D matrix), Numpy's vectorization can be used, which greatly facilitates implementation.
@@ -480,6 +483,7 @@ Given the two viewpoints A and B, it is now possible to calculate the intersecti
   d = \frac{(x_A - x_S)(y_S - y_T) - (y_A - y_S)(x_S - x_T)}{(x_A - x_B)(y_S - y_T) - (y_A - y_B)(x_S - x_T)} \label{eq:t}
 \end{align}
 
+\noindent
 Since the synthesized viewpoint S is within the convex hull, there is always an intersection d $\in [0,1]$. This value can then directly be used as $\delta$. The only case that merits an exception is if the synthesized viewpoint is directly on the border of the convex hull, i.e., directly on the line between two captured viewpoints. In this case, the ray that is parallel to vector $\overrightarrow{AB}$ is equal to the line AB. As a result t is not defined and $\delta$ must be found by dividing the distance $|\overrightarrow{AS}|$ by $|\overrightarrow{AB}|$.
 
 \begin{figure}
